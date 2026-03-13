@@ -1,6 +1,3 @@
-//
-// Created by polyunicorn on 2026/3/12.
-//
 #include "ResourceManager.h"
 
 #include "Util/Logger.hpp"
@@ -17,35 +14,69 @@ void ResourceManager::Initialize() {
 
     const std::string root = std::string(RESOURCE_DIR);
 
-    m_ImagePaths["background"] = root + "/background.png";
-    m_ImagePaths["enemy"] = root + "/enemy.png";
-    m_ImagePaths["tower"] = root + "/tower.png";
-    m_ImagePaths["slot"] = root + "/slot.png";
+    // Scene backgrounds
+    m_ImagePaths["bg_start"]  = root + "/background-0.png";
+    m_ImagePaths["bg_easy"]   = root + "/background-1.png";
+    m_ImagePaths["bg_normal"] = root + "/background-2.png";
+    m_ImagePaths["bg_hard"]   = root + "/background-3.png";
+    m_ImagePaths["bg_result"] = root + "/background-0.png";
 
+    // Fallback / old key
+    m_ImagePaths["bg_game"] = root + "/background.png";
+
+    // Buttons
+    m_ImagePaths["btn_tower_1"] = root + "/button-0.png";
+    m_ImagePaths["btn_tower_2"] = root + "/button-1.png";
+    m_ImagePaths["btn_start"]   = root + "/button-3.png";
+    m_ImagePaths["btn_action"]  = root + "/button-4.png";
+
+    // Enemies
+    m_ImagePaths["bloon_0"] = root + "/enemy-0.png";
+    m_ImagePaths["bloon_1"] = root + "/enemy-1.png";
+    m_ImagePaths["bloon_2"] = root + "/enemy-2.png";
+    m_ImagePaths["bloon_3"] = root + "/enemy-3.png";
+    m_ImagePaths["bloon_4"] = root + "/enemy-4.png";
+    m_ImagePaths["bloon_5"] = root + "/enemy-5.png";
+    m_ImagePaths["bloon_6"] = root + "/enemy-6.png";
+    m_ImagePaths["bloon_7"] = root + "/enemy-7.png";
+    m_ImagePaths["bloon_default"] = root + "/enemy.png";
+
+    // Projectiles
+    m_ImagePaths["projectile_0"] = root + "/projectile-0.png";
+    m_ImagePaths["projectile_1"] = root + "/projectile-1.png";
+    m_ImagePaths["projectile_2"] = root + "/projectile-2.png";
+    m_ImagePaths["projectile_3"] = root + "/projectile-3.png";
+    m_ImagePaths["hit"] = root + "/BTD1_dart_hitbit.png";
+
+    // Towers / slots
+    m_ImagePaths["tower_basic"] = root + "/tower.png";
+    m_ImagePaths["tower_slot"]  = root + "/slot.png";
+
+    // Fonts
     m_FontPaths["default"] = root + "/font.ttf";
 
     LOG_TRACE("ResourceManager initialized.");
 }
 
 void ResourceManager::Clear() {
-    m_Images.clear();
     m_ImagePaths.clear();
     m_FontPaths.clear();
+    m_ImageCache.clear();
 }
 
 std::shared_ptr<Util::Image> ResourceManager::GetImage(const std::string& key) {
-    auto found = m_Images.find(key);
-    if (found != m_Images.end()) {
-        return found->second;
+    const auto cached = m_ImageCache.find(key);
+    if (cached != m_ImageCache.end()) {
+        return cached->second;
     }
 
-    auto it = m_ImagePaths.find(key);
-    if (it == m_ImagePaths.end()) {
+    const auto found = m_ImagePaths.find(key);
+    if (found == m_ImagePaths.end()) {
         throw std::runtime_error("Image key not found: " + key);
     }
 
-    auto image = std::make_shared<Util::Image>(it->second);
-    m_Images[key] = image;
+    auto image = std::make_shared<Util::Image>(found->second);
+    m_ImageCache[key] = image;
     return image;
 }
 
@@ -55,26 +86,14 @@ std::shared_ptr<Util::Text> ResourceManager::CreateText(
     const std::string& text,
     const Util::Color& color
 ) const {
-    return std::make_shared<Util::Text>(
-        GetFontPath(fontKey),
-        fontSize,
-        text,
-        color
-    );
-}
-
-std::string ResourceManager::GetImagePath(const std::string& key) const {
-    auto it = m_ImagePaths.find(key);
-    if (it == m_ImagePaths.end()) {
-        throw std::runtime_error("Image path key not found: " + key);
-    }
-    return it->second;
+    std::string safeText = text.empty() ? " " : text;
+    return std::make_shared<Util::Text>(GetFontPath(fontKey), fontSize, safeText, color);
 }
 
 std::string ResourceManager::GetFontPath(const std::string& key) const {
-    auto it = m_FontPaths.find(key);
-    if (it == m_FontPaths.end()) {
-        throw std::runtime_error("Font path key not found: " + key);
+    const auto found = m_FontPaths.find(key);
+    if (found == m_FontPaths.end()) {
+        throw std::runtime_error("Font key not found: " + key);
     }
-    return it->second;
+    return found->second;
 }

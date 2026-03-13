@@ -1,31 +1,27 @@
 #ifndef APP_HPP
 #define APP_HPP
 
-#include "pch.hpp" // IWYU pragma: export
-#include "GameScene.h"
+#include "pch.hpp"
+#include "scene/SceneManager.h"
 
 class App {
 public:
     enum class State {
         START,
         UPDATE,
-        END,
+        END
     };
 
     State GetCurrentState() const { return m_CurrentState; }
 
     void Start();
-
     void Update();
-
-    void End(); // NOLINT(readability-convert-member-functions-to-static)
-
-private:
-    void ValidTask();
+    void End();
 
 private:
     State m_CurrentState = State::START;
-    std::unique_ptr<GameScene> m_GameScene = nullptr;
+    std::unique_ptr<SceneManager> m_SceneManager = nullptr;
 };
+
 
 #endif

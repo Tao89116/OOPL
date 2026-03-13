@@ -1,16 +1,10 @@
-//
-// Created by polyunicorn on 2026/3/12.
-//
-
-#ifndef REPLACE_WITH_YOUR_PROJECT_NAME_RESOURCEMANAGER_H
-#define REPLACE_WITH_YOUR_PROJECT_NAME_RESOURCEMANAGER_H
+#ifndef RESOURCE_MANAGER_H
+#define RESOURCE_MANAGER_H
 
 #include "pch.hpp"
+#include "Util/Color.hpp"
 #include "Util/Image.hpp"
 #include "Util/Text.hpp"
-#include "Util/SFX.hpp"
-#include "Util/BGM.hpp"
-#include "Util/Color.hpp"
 
 class ResourceManager {
 public:
@@ -27,7 +21,6 @@ public:
         const Util::Color& color
     ) const;
 
-    std::string GetImagePath(const std::string& key) const;
     std::string GetFontPath(const std::string& key) const;
 
 private:
@@ -38,8 +31,7 @@ private:
 private:
     std::unordered_map<std::string, std::string> m_ImagePaths;
     std::unordered_map<std::string, std::string> m_FontPaths;
-    std::unordered_map<std::string, std::shared_ptr<Util::Image>> m_Images;
+    std::unordered_map<std::string, std::shared_ptr<Util::Image>> m_ImageCache;
 };
 
-
-#endif //REPLACE_WITH_YOUR_PROJECT_NAME_RESOURCEMANAGER_H
+#endif

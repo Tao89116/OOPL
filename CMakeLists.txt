@@ -35,16 +35,49 @@ add_executable(${PROJECT_NAME}
     ${SRC_DIR}/main.cpp
     ${SRC_FILES}
     ${HEADER_FILES}
-        include/GameScene.h
-        include/Enemy.h
-        src/Enemy.cpp
-        include/Tower.h
-        src/Tower.cpp
-        src/GameScene.cpp
         include/ResourceManager.h
         src/ResourceManager.cpp
-        include/Projectile.h
-        src/Projectile.cpp
+        include/GameConfig.h
+        include/model/EnemyModel.h
+        src/model/EnemyModel.cpp
+        include/model/TowerModel.h
+        src/model/TowerModel.cpp
+        include/model/ProjectileModel.h
+        src/model/ProjectileModel.cpp
+        include/model/MapModel.h
+        src/model/MapModel.cpp
+        include/model/GameModel.h
+        src/model/GameModel.cpp
+        include/View/UIView.h
+        src/View/UIView.cpp
+        include/View/GameView.h
+        src/View/GameView.cpp
+        include/Controller/GameController.h
+        src/Controller/GameController.cpp
+        include/Scene/GameScene.h
+        src/Scene/GameScene.cpp
+        include/SceneType.h
+        include/scene/IScene.h
+        include/scene/SceneManager.h
+        src/scene/SceneManager.cpp
+        src/View/StartView.cpp
+        include/View/StartView.h
+        include/Controller/StartController.h
+        src/Controller/StartController.cpp
+        include/scene/StartScene.h
+        src/scene/StartScene.cpp
+        include/View/DifficultyView.h
+        src/View/DifficultyView.cpp
+        include/Controller/DifficultyController.h
+        src/Controller/DifficultyController.cpp
+        include/scene/DifficultyScene.h
+        src/scene/DifficultyScene.cpp
+        include/View/ResultView.h
+        src/View/ResultView.cpp
+        include/Controller/ResultController.h
+        src/Controller/ResultController.cpp
+        include/scene/ResultScene.h
+        src/scene/ResultScene.cpp
 )
 
 if(MSVC)
