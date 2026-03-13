@@ -6,30 +6,25 @@
 #include "Util/Logger.hpp"
 
 void App::Start() {
-    LOG_TRACE("Start");
-    m_GameScene = std::make_unique<GameScene>();
+    LOG_TRACE("App Start");
+    m_SceneManager = std::make_unique<SceneManager>();
     m_CurrentState = State::UPDATE;
 }
 
 void App::Update() {
-    
-    //TODO: do your things here and delete this line <3
-    if (!m_GameScene) {
+    if (!m_SceneManager) {
         m_CurrentState = State::END;
         return;
     }
-    m_GameScene->Update();
-    /*
-     * Do not touch the code below as they serve the purpose for
-     * closing the window.
-     */
-    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE) ||
-        Util::Input::IfExit()) {
+
+    m_SceneManager->Update();
+
+    if (Util::Input::IfExit() || Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) {
         m_CurrentState = State::END;
     }
 }
 
-void App::End() { // NOLINT(this method will mutate members in the future)
-    LOG_TRACE("End");
-    m_GameScene.reset();
+void App::End() {
+    LOG_TRACE("App End");
+    m_SceneManager.reset();
 }
