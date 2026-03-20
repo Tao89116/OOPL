@@ -46,6 +46,6 @@ void GameController::HandleInput(GameModel& model) {
     // TODO:
     // 後續若要改成滑鼠互動，這個 Controller 可以補：
     // - 點擊 tower button
-    // - 點擊 slot 建塔
+    // - slot去除 點擊建塔
     // - 點擊已建好的塔查看資訊
 }
