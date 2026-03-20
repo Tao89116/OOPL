@@ -49,7 +49,7 @@ void ResourceManager::Initialize() {
     m_ImagePaths["hit"] = root + "/BTD1_dart_hitbit.png";
 
     // Towers / slots
-    m_ImagePaths["tower_basic"] = root + "/tower.png";
+    m_ImagePaths["tower_basic"] = root + "/tower-0.png";
     m_ImagePaths["tower_slot"]  = root + "/slot.png";
 
     // Fonts

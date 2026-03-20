@@ -78,7 +78,8 @@ void GameView::SyncTowers(const GameModel& model) {
                 m_Resources.GetImage(tower->GetSpriteKey()),
                 20.0f
             );
-            obj->m_Transform.scale = {0.20f, 0.20f};
+            //obj->m_Transform.scale = {0.20f, 0.20f};
+            obj->m_Transform.scale*=0.8;
             m_Renderer.AddChild(obj);
             m_TowerObjects[key] = obj;
             found = m_TowerObjects.find(key);
@@ -114,7 +115,8 @@ void GameView::SyncEnemies(const GameModel& model) {
                 m_Resources.GetImage(enemy->GetSpriteKey()),
                 30.0f
             );
-            obj->m_Transform.scale = {0.13f, 0.13f};
+            //obj->m_Transform.scale = {0.13f, 0.13f};
+            obj->m_Transform.scale*=0.8f;
             m_Renderer.AddChild(obj);
             m_EnemyObjects[key] = obj;
             found = m_EnemyObjects.find(key);
@@ -150,7 +152,8 @@ void GameView::SyncProjectiles(const GameModel& model) {
                 m_Resources.GetImage(projectile->GetSpriteKey()),
                 40.0f
             );
-            obj->m_Transform.scale = {0.10f, 0.10f};
+            //obj->m_Transform.scale = {0.10f, 0.10f};
+            obj->m_Transform.scale*=0.8f;
             m_Renderer.AddChild(obj);
             m_ProjectileObjects[key] = obj;
             found = m_ProjectileObjects.find(key);
