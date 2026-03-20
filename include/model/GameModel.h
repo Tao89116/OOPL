@@ -9,6 +9,7 @@
 #include "SceneType.h"
 #include "model/EnemyModel.h"
 #include "model/MapModel.h"
+#include "model/PlacementModel.h"
 #include "model/ProjectileModel.h"
 #include "model/TowerModel.h"
 
@@ -20,7 +21,16 @@ public:
     void Update(float deltaTimeMs);
 
     void SelectTower(TowerType type);
-    bool PlaceTowerAtSlot(int slotIndex);
+    //test 座標
+    void SetMessage(const std::string& message) { m_Message = message; }
+    // placement system
+    void BeginPlacement(TowerType type);
+    void CancelPlacement();
+    void UpdatePlacementPreview(const glm::vec2& worldPos);
+    bool ConfirmPlacement();
+
+    bool CanPlaceTower(TowerType type, const glm::vec2& position) const;
+
     void StartRound();
     void TogglePause();
 
@@ -43,10 +53,11 @@ public:
     const std::string& GetMessage() const { return m_Message; }
 
     const MapModel& GetMap() const { return m_Map; }
+    const PlacementModel& GetPlacement() const { return m_Placement; }
+
     const std::vector<std::shared_ptr<TowerModel>>& GetTowers() const { return m_Towers; }
     const std::vector<std::shared_ptr<EnemyModel>>& GetEnemies() const { return m_Enemies; }
     const std::vector<std::shared_ptr<ProjectileModel>>& GetProjectiles() const { return m_Projectiles; }
-    const std::vector<bool>& GetSlotOccupied() const { return m_SlotOccupied; }
 
 private:
     void SetupDifficulty();
@@ -61,6 +72,7 @@ private:
 private:
     DifficultyType m_Difficulty;
     MapModel m_Map;
+    PlacementModel m_Placement;
 
     int m_HP = 20;
     int m_Gold = 300;
@@ -73,9 +85,8 @@ private:
     bool m_Lose = false;
 
     TowerType m_SelectedTowerType = TowerType::Dart;
-    std::string m_Message = "Press SPACE to start round.";
+    std::string m_Message = "Press 1/2/3 to choose tower, click to place.";
 
-    std::vector<bool> m_SlotOccupied;
     std::vector<std::shared_ptr<TowerModel>> m_Towers;
     std::vector<std::shared_ptr<EnemyModel>> m_Enemies;
     std::vector<std::shared_ptr<ProjectileModel>> m_Projectiles;
@@ -84,6 +95,11 @@ private:
     int m_SpawnedCount = 0;
     float m_SpawnTimerMs = 0.0f;
     float m_SpawnIntervalMs = 900.0f;
+
+    // TODO: 之後若要做更完整的建塔限制，可加：
+    // 1. 地圖邊界判斷
+    // 2. UI panel 區域禁放
+    // 3. 與裝飾物 / 障礙物碰撞
 };
 
 #endif

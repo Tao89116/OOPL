@@ -13,22 +13,30 @@ void TowerModel::SetupStatsByType() {
     switch (m_Type) {
         case TowerType::Dart:
             m_Range = 145.0f;
+            m_Radius = 26.0f;
+            m_CanPlaceOnPath = false;
             m_AttackIntervalMs = 650.0f;
             m_Damage = 1;
             m_Cost = 100;
             m_SpriteKey = "tower_basic";
             m_ProjectileKey = "projectile_0";
             break;
+
         case TowerType::Rapid:
             m_Range = 125.0f;
+            m_Radius = 24.0f;
+            m_CanPlaceOnPath = false;
             m_AttackIntervalMs = 380.0f;
             m_Damage = 1;
             m_Cost = 140;
             m_SpriteKey = "tower_basic";
             m_ProjectileKey = "projectile_1";
             break;
+
         case TowerType::Heavy:
             m_Range = 165.0f;
+            m_Radius = 30.0f;
+            m_CanPlaceOnPath = true;
             m_AttackIntervalMs = 900.0f;
             m_Damage = 2;
             m_Cost = 180;
@@ -46,7 +54,7 @@ void TowerModel::UpdateCooldown(float deltaTimeMs) {
 
 int TowerModel::GetCostByType(TowerType type) {
     switch (type) {
-        case TowerType::Dart: return 100;
+        case TowerType::Dart:  return 100;
         case TowerType::Rapid: return 140;
         case TowerType::Heavy: return 180;
     }
@@ -55,9 +63,27 @@ int TowerModel::GetCostByType(TowerType type) {
 
 std::string TowerModel::GetDisplayName(TowerType type) {
     switch (type) {
-        case TowerType::Dart: return "Dart Tower";
+        case TowerType::Dart:  return "Dart Tower";
         case TowerType::Rapid: return "Rapid Tower";
         case TowerType::Heavy: return "Heavy Tower";
     }
     return "Unknown Tower";
+}
+
+float TowerModel::GetRadiusByType(TowerType type) {
+    switch (type) {
+        case TowerType::Dart:  return 26.0f;
+        case TowerType::Rapid: return 24.0f;
+        case TowerType::Heavy: return 30.0f;
+    }
+    return 28.0f;
+}
+
+bool TowerModel::GetCanPlaceOnPathByType(TowerType type) {
+    switch (type) {
+        case TowerType::Dart:  return false;
+        case TowerType::Rapid: return false;
+        case TowerType::Heavy: return true;
+    }
+    return false;
 }

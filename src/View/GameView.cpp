@@ -1,12 +1,10 @@
 //
 // Created by polyunicorn on 2026/3/13.
 //
+
 #include "view/GameView.h"
-
 #include "GameConfig.h"
-
 #include <unordered_set>
-
 GameView::GameView(DifficultyType difficulty)
     : m_Difficulty(difficulty), m_UIView(m_Renderer) {
 }
@@ -22,32 +20,19 @@ void GameView::Initialize(const GameModel& model) {
 }
 
 void GameView::InitializeStaticObjects(const GameModel& model) {
-    std::string bgKey = "bg_easy";
-    if (m_Difficulty == DifficultyType::Normal) {
-        bgKey = "bg_normal";
-    } else if (m_Difficulty == DifficultyType::Hard) {
-        bgKey = "bg_hard";
-    }
+    // 背景圖直接從目前地圖資料取得
+    // 這樣 difficulty 和 map path 會保持一致
+    const std::string bgKey = model.GetMap().GetBackgroundKey();
 
-    //m_Background = std::make_shared<Util::GameObject>(m_Resources.GetImage(bgKey), 0.0f);
     auto image = m_Resources.GetImage(bgKey);
-
     m_Background = std::make_shared<Util::GameObject>(image, 0.0f);
 
-    float scaleX = GameConfig::WindowWidth  / image->GetSize().x;
-    float scaleY = GameConfig::WindowHeight / image->GetSize().y;
-
-    m_Background->m_Transform.translation = {0.0, 0.0};
+    const float scaleX = static_cast<float>(GameConfig::WindowWidth) / image->GetSize().x;
+    const float scaleY = static_cast<float>(GameConfig::WindowHeight) / image->GetSize().y;
+    m_Background->m_Transform.translation = {0.0f, 0.0f};
     m_Background->m_Transform.scale = {scaleX, scaleY};
-    m_Renderer.AddChild(m_Background);
 
-    for (const auto& slotPos : model.GetMap().GetTowerSlots()) {
-        auto slot = std::make_shared<Util::GameObject>(m_Resources.GetImage("tower_slot"), 10.0f);
-        slot->m_Transform.translation = slotPos;
-        slot->m_Transform.scale = {0.18f, 0.18f};
-        m_SlotObjects.push_back(slot);
-        m_Renderer.AddChild(slot);
-    }
+    m_Renderer.AddChild(m_Background);
 }
 
 void GameView::Render(const GameModel& model) {
@@ -56,8 +41,9 @@ void GameView::Render(const GameModel& model) {
     SyncTowers(model);
     SyncEnemies(model);
     SyncProjectiles(model);
-    m_UIView.Sync(model);
+    SyncPlacementPreview(model);
 
+    m_UIView.Sync(model);
     m_Renderer.Update();
 }
 
@@ -78,8 +64,8 @@ void GameView::SyncTowers(const GameModel& model) {
                 m_Resources.GetImage(tower->GetSpriteKey()),
                 20.0f
             );
-            //obj->m_Transform.scale = {0.20f, 0.20f};
-            obj->m_Transform.scale*=0.8;
+
+            obj->m_Transform.scale *= 0.8f;
             m_Renderer.AddChild(obj);
             m_TowerObjects[key] = obj;
             found = m_TowerObjects.find(key);
@@ -115,8 +101,8 @@ void GameView::SyncEnemies(const GameModel& model) {
                 m_Resources.GetImage(enemy->GetSpriteKey()),
                 30.0f
             );
-            //obj->m_Transform.scale = {0.13f, 0.13f};
-            obj->m_Transform.scale*=0.8f;
+
+            obj->m_Transform.scale *= 0.6f;
             m_Renderer.AddChild(obj);
             m_EnemyObjects[key] = obj;
             found = m_EnemyObjects.find(key);
@@ -152,8 +138,8 @@ void GameView::SyncProjectiles(const GameModel& model) {
                 m_Resources.GetImage(projectile->GetSpriteKey()),
                 40.0f
             );
-            //obj->m_Transform.scale = {0.10f, 0.10f};
-            obj->m_Transform.scale*=0.8f;
+
+            obj->m_Transform.scale *= 0.8f;
             m_Renderer.AddChild(obj);
             m_ProjectileObjects[key] = obj;
             found = m_ProjectileObjects.find(key);
@@ -170,10 +156,37 @@ void GameView::SyncProjectiles(const GameModel& model) {
             ++it;
         }
     }
+}
+
+void GameView::SyncPlacementPreview(const GameModel& model) {
+    const PlacementModel& placement = model.GetPlacement();
+
+    if (!placement.IsActive()) {
+        if (m_PreviewTowerObject) {
+            m_Renderer.RemoveChild(m_PreviewTowerObject);
+            m_PreviewTowerObject = nullptr;
+        }
+        return;
+    }
+
+    // 如果還沒建立 preview 物件，就建立一個
+    if (!m_PreviewTowerObject) {
+        auto previewTower = std::make_shared<Util::GameObject>(
+            m_Resources.GetImage("tower_basic"),
+            50.0f
+        );
+
+        previewTower->m_Transform.scale *= 0.8f;
+        m_Renderer.AddChild(previewTower);
+        m_PreviewTowerObject = previewTower;
+    }
+
+    // 目前先共用 tower_basic 當 preview 圖
+    // 如果之後不同塔型有不同外觀，可改成依 towerType 切 sprite key
+    m_PreviewTowerObject->m_Transform.translation = placement.GetPreviewPosition();
 
     // TODO:
-    // 後續可以補：
-    // - 命中特效物件池
-    // - 飛行方向旋轉
-    // - 爆炸動畫
+    // 1. 之後可依 placement.GetTowerType() 切換 preview 圖
+    // 2. 之後可依 placement.IsValid() 顯示綠色 / 紅色效果
+    // 3. 之後在這裡加 range circle
 }

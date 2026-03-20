@@ -78,6 +78,11 @@ add_executable(${PROJECT_NAME}
         src/Controller/ResultController.cpp
         include/scene/ResultScene.h
         src/scene/ResultScene.cpp
+        include/model/MapData.h
+        include/model/MapFactory.h
+        include/model/PlacementModel.h
+        src/model/MapFactory.cpp
+        src/model/PlacementModel.cpp
 )
 
 if(MSVC)

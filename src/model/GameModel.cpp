@@ -1,15 +1,12 @@
 //
 // Created by polyunicorn on 2026/3/13.
 //
-#include "model/GameModel.h"
 
+#include "model/GameModel.h"
 #include "GameConfig.h"
 
-#include <algorithm>
-#include <cmath>
-
 GameModel::GameModel(DifficultyType difficulty)
-    : m_Difficulty(difficulty) {
+    : m_Difficulty(difficulty), m_Map(difficulty) {
     Reset();
 }
 
@@ -31,34 +28,24 @@ void GameModel::SetupDifficulty() {
             m_SpawnIntervalMs = 720.0f;
             break;
     }
-
-    // TODO:
-    // 之後不同難度可不只影響 HP / Gold / SpawnInterval，
-    // 還可以影響：
-    // - 敵人種類
-    // - 波數
-    // - 回合獎勵
-    // - 地圖路徑
-    // - 塔位數量
 }
 
 void GameModel::Reset() {
     m_Round = 1;
     m_TotalRounds = GameConfig::TotalRounds;
-
     m_RoundRunning = false;
     m_Paused = false;
     m_Win = false;
     m_Lose = false;
 
     m_SelectedTowerType = TowerType::Dart;
-    m_Message = "Press SPACE to start round.";
+    m_Message = "Press 1/2/3 to choose tower, click to place.";
+
+    m_Placement.Cancel();
 
     m_Towers.clear();
     m_Enemies.clear();
     m_Projectiles.clear();
-
-    m_SlotOccupied.assign(m_Map.GetTowerSlots().size(), false);
 
     m_CurrentWave.clear();
     m_SpawnedCount = 0;
@@ -69,46 +56,91 @@ void GameModel::Reset() {
 
 void GameModel::SelectTower(TowerType type) {
     m_SelectedTowerType = type;
-    m_Message = "Selected: " + TowerModel::GetDisplayName(type);
+    BeginPlacement(type);
 }
 
-bool GameModel::PlaceTowerAtSlot(int slotIndex) {
+void GameModel::BeginPlacement(TowerType type) {
     if (m_Win || m_Lose) {
-        return false;
+        return;
     }
 
-    if (slotIndex < 0 || slotIndex >= static_cast<int>(m_SlotOccupied.size())) {
-        m_Message = "Invalid slot.";
-        return false;
+    m_SelectedTowerType = type;
+    m_Placement.Begin(type);
+    m_Message = "Placing: " + TowerModel::GetDisplayName(type);
+}
+
+void GameModel::CancelPlacement() {
+    m_Placement.Cancel();
+    m_Message = "Placement cancelled.";
+}
+
+void GameModel::UpdatePlacementPreview(const glm::vec2& worldPos) {
+    if (!m_Placement.IsActive()) {
+        return;
     }
 
-    if (m_SlotOccupied[slotIndex]) {
-        m_Message = "That slot is already occupied.";
-        return false;
-    }
+    m_Placement.UpdatePreviewPosition(worldPos);
+    m_Placement.SetValid(CanPlaceTower(m_Placement.GetTowerType(), worldPos));
+}
 
-    const int cost = TowerModel::GetCostByType(m_SelectedTowerType);
+bool GameModel::CanPlaceTower(TowerType type, const glm::vec2& position) const {
+    const int cost = TowerModel::GetCostByType(type);
     if (m_Gold < cost) {
-        m_Message = "Not enough gold.";
         return false;
     }
 
-    auto tower = std::make_shared<TowerModel>(
-        m_SelectedTowerType,
-        m_Map.GetTowerSlots()[slotIndex]
-    );
+    const float radius = TowerModel::GetRadiusByType(type);
+    const bool canPlaceOnPath = TowerModel::GetCanPlaceOnPathByType(type);
+
+    // 1. 若該塔不能放在 path 上，就做 path 碰撞判斷
+    if (!canPlaceOnPath && m_Map.IsCircleOverlappingAnyPath(position, radius)) {
+        return false;
+    }
+
+    // 2. 不可和其他塔重疊
+    for (const auto& tower : m_Towers) {
+        if (!tower) {
+            continue;
+        }
+
+        const glm::vec2 delta = tower->GetPosition() - position;
+        const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+        const float minDistance = tower->GetRadius() + radius;
+
+        if (distance < minDistance) {
+            return false;
+        }
+    }
+
+    // TODO: 之後補地圖邊界判斷 / 右側 UI 區域禁放
+
+    return true;
+}
+
+bool GameModel::ConfirmPlacement() {
+    if (!m_Placement.IsActive()) {
+        return false;
+    }
+
+    const TowerType type = m_Placement.GetTowerType();
+    const glm::vec2 position = m_Placement.GetPreviewPosition();
+
+    if (!CanPlaceTower(type, position)) {
+        m_Placement.SetValid(false);
+        m_Message = "Cannot place tower here.";
+        return false;
+    }
+
+    const int cost = TowerModel::GetCostByType(type);
+    auto tower = std::make_shared<TowerModel>(type, position);
 
     m_Towers.push_back(tower);
-    m_SlotOccupied[slotIndex] = true;
     m_Gold -= cost;
-    m_Message = "Built " + TowerModel::GetDisplayName(m_SelectedTowerType);
 
-    // TODO:
-    // 後續這裡可以加入：
-    // - 建塔音效
-    // - 建塔動畫
-    // - 建塔失敗特效 / 提示
-    // - 滑鼠點擊 slot 建塔
+    // 放完後保留建塔模式，方便連續建造同類塔
+    m_Placement.SetValid(false);
+    m_Message = "Built " + TowerModel::GetDisplayName(type);
+
     return true;
 }
 
@@ -116,7 +148,6 @@ void GameModel::StartRound() {
     if (m_Win || m_Lose) {
         return;
     }
-
     if (m_RoundRunning) {
         m_Message = "Round is already running.";
         return;
@@ -142,39 +173,16 @@ void GameModel::SetupWave() {
     m_CurrentWave.clear();
 
     if (m_Round == 1) {
-        m_CurrentWave = {
-            EnemyType::Red, EnemyType::Red, EnemyType::Red,
-            EnemyType::Red, EnemyType::Blue
-        };
+        m_CurrentWave = {EnemyType::Red, EnemyType::Red, EnemyType::Red, EnemyType::Red, EnemyType::Blue};
     } else if (m_Round == 2) {
-        m_CurrentWave = {
-            EnemyType::Red, EnemyType::Blue, EnemyType::Blue,
-            EnemyType::Green, EnemyType::Blue, EnemyType::Red
-        };
+        m_CurrentWave = {EnemyType::Red, EnemyType::Blue, EnemyType::Blue, EnemyType::Green, EnemyType::Blue, EnemyType::Red};
     } else if (m_Round == 3) {
-        m_CurrentWave = {
-            EnemyType::Blue, EnemyType::Blue, EnemyType::Green,
-            EnemyType::Green, EnemyType::Yellow, EnemyType::Blue
-        };
+        m_CurrentWave = {EnemyType::Blue, EnemyType::Blue, EnemyType::Green, EnemyType::Green, EnemyType::Yellow, EnemyType::Blue};
     } else if (m_Round == 4) {
-        m_CurrentWave = {
-            EnemyType::Green, EnemyType::Green, EnemyType::Yellow,
-            EnemyType::Yellow, EnemyType::Blue, EnemyType::Green
-        };
+        m_CurrentWave = {EnemyType::Green, EnemyType::Green, EnemyType::Yellow, EnemyType::Yellow, EnemyType::Blue, EnemyType::Green};
     } else {
-        m_CurrentWave = {
-            EnemyType::Yellow, EnemyType::Yellow, EnemyType::Yellow,
-            EnemyType::Green, EnemyType::Green, EnemyType::Blue,
-            EnemyType::Yellow
-        };
+        m_CurrentWave = {EnemyType::Yellow, EnemyType::Yellow, EnemyType::Yellow, EnemyType::Green, EnemyType::Green, EnemyType::Blue, EnemyType::Yellow};
     }
-
-    // TODO:
-    // 後續可把 wave data 抽成外部設定：
-    // - json
-    // - csv
-    // - txt
-    // 這樣調整平衡會更方便
 }
 
 void GameModel::Update(float deltaTimeMs) {
@@ -184,7 +192,6 @@ void GameModel::Update(float deltaTimeMs) {
 
     if (m_RoundRunning) {
         m_SpawnTimerMs += deltaTimeMs;
-
         if (m_SpawnedCount < static_cast<int>(m_CurrentWave.size()) &&
             m_SpawnTimerMs >= m_SpawnIntervalMs) {
             SpawnEnemy();
@@ -204,19 +211,16 @@ void GameModel::SpawnEnemy() {
         return;
     }
 
+    const int pathBranchIndex = m_SpawnedCount % static_cast<int>(m_Map.GetPathCount());
+
     auto enemy = std::make_shared<EnemyModel>(
         m_CurrentWave[m_SpawnedCount],
-        m_Map.GetSpawnPoint()
+        m_Map.GetSpawnPoint(pathBranchIndex),
+        pathBranchIndex
     );
 
     m_Enemies.push_back(enemy);
     ++m_SpawnedCount;
-
-    // TODO:
-    // 之後可以在這裡補：
-    // - 敵人生成特效
-    // - 生成音效
-    // - 更複雜的敵人分裂／多層氣球機制
 }
 
 void GameModel::UpdateTowers(float deltaTimeMs) {
@@ -226,14 +230,6 @@ void GameModel::UpdateTowers(float deltaTimeMs) {
         }
 
         tower->UpdateCooldown(deltaTimeMs);
-
-        // TODO:
-        // 目前先保留基本開火邏輯。
-        // 後續要補：
-        // - 不同 tower 的 targeting priority
-        // - first / last / strong / close
-        // - 升級系統
-        // - 範圍傷害 / 減速 / 爆炸效果
 
         if (!tower->CanFire()) {
             continue;
@@ -272,16 +268,9 @@ void GameModel::UpdateTowers(float deltaTimeMs) {
 void GameModel::UpdateEnemies(float deltaTimeMs) {
     for (const auto& enemy : m_Enemies) {
         if (enemy) {
-            enemy->Update(deltaTimeMs, m_Map.GetPathPoints());
+            enemy->Update(deltaTimeMs, m_Map.GetPath(enemy->GetPathBranchIndex()));
         }
     }
-
-    // TODO:
-    // 之後若要做 Bloons 更接近原作的行為，可以補：
-    // - 氣球被打爆後分裂
-    // - 特殊抗性
-    // - 加速區段
-    // - 飛行單位 / 裝甲單位
 }
 
 void GameModel::UpdateProjectiles(float deltaTimeMs) {
@@ -290,13 +279,6 @@ void GameModel::UpdateProjectiles(float deltaTimeMs) {
             projectile->Update(deltaTimeMs);
         }
     }
-
-    // TODO:
-    // 之後這裡可以加入：
-    // - 命中特效物件
-    // - 子彈生命週期
-    // - 穿透
-    // - 爆炸半徑
 }
 
 void GameModel::CleanupObjects() {
@@ -315,7 +297,6 @@ void GameModel::CleanupObjects() {
             } else {
                 m_Gold += enemy->GetReward();
             }
-
             it = m_Enemies.erase(it);
         } else {
             ++it;
@@ -356,17 +337,12 @@ void GameModel::CheckEndState() {
         m_RoundRunning = false;
         m_Message = "Defeat.";
     }
-
-    // TODO:
-    // 若未來加入基地血條、額外生命、護盾等系統，
-    // 可在這裡集中處理勝敗判定
 }
-//cheatmode for test
+
 void GameModel::ForceWin() {
     if (m_Lose) {
         return;
     }
-
     m_Win = true;
     m_RoundRunning = false;
     m_Message = "Debug: Force Win";
@@ -376,7 +352,6 @@ void GameModel::ForceLose() {
     if (m_Win) {
         return;
     }
-
     m_Lose = true;
     m_RoundRunning = false;
     m_HP = 0;
