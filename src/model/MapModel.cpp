@@ -1,32 +1,59 @@
 //
 // Created by polyunicorn on 2026/3/13.
 //
+
 #include "model/MapModel.h"
+#include "model/MapFactory.h"
 
-MapModel::MapModel() {
-    m_PathPoints = {
-        {70.0f, 360.0f},
-        {250.0f, 360.0f},
-        {250.0f, 180.0f},
-        {520.0f, 180.0f},
-        {520.0f, 520.0f},
-        {840.0f, 520.0f},
-        {840.0f, 290.0f},
-        {1130.0f, 290.0f}
-    };
+MapModel::MapModel(DifficultyType difficulty)
+    : m_Data(MapFactory::CreateByDifficulty(difficulty)) {
+}
 
-    m_TowerSlots = {
-        {160.0f, 220.0f},
-        {360.0f, 300.0f},
-        {410.0f, 590.0f},
-        {650.0f, 340.0f},
-        {720.0f, 120.0f},
-        {980.0f, 460.0f}
-    };
+float MapModel::DistancePointToSegment(
+    const glm::vec2& point,
+    const glm::vec2& segStart,
+    const glm::vec2& segEnd
+) {
+    const glm::vec2 seg = segEnd - segStart;
+    const glm::vec2 toPoint = point - segStart;
 
-    // TODO:
-    // 之後不同難度若要使用不同地圖路徑，可改成：
-    // 1. MapModel 接受 difficulty 或 map id
-    // 2. 每個地圖各自有 tower slots / path points
-    // 3. 再把這些資料抽成 json / txt / csv
+    const float segLenSq = seg.x * seg.x + seg.y * seg.y;
+    if (segLenSq <= 0.0001f) {
+        const glm::vec2 delta = point - segStart;
+        return std::sqrt(delta.x * delta.x + delta.y * delta.y);
+    }
+
+    float t = (toPoint.x * seg.x + toPoint.y * seg.y) / segLenSq;
+    t = std::clamp(t, 0.0f, 1.0f);
+
+    const glm::vec2 closest = segStart + seg * t;
+    const glm::vec2 delta = point - closest;
+    return std::sqrt(delta.x * delta.x + delta.y * delta.y);
+}
+
+bool MapModel::IsCircleOverlappingPath(const glm::vec2& center, float radius, size_t pathIndex) const {
+    const auto& path = m_Data.paths.at(pathIndex);
+    if (path.size() < 2) {
+        return false;
+    }
+
+    const float collisionDistance = (m_Data.pathWidth * 0.5f) + radius;
+
+    for (size_t i = 0; i + 1 < path.size(); ++i) {
+        const float distance = DistancePointToSegment(center, path[i], path[i + 1]);
+        if (distance <= collisionDistance) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool MapModel::IsCircleOverlappingAnyPath(const glm::vec2& center, float radius) const {
+    for (size_t i = 0; i < m_Data.paths.size(); ++i) {
+        if (IsCircleOverlappingPath(center, radius, i)) {
+            return true;
+        }
+    }
+    return false;
 }

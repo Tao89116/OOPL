@@ -5,8 +5,10 @@
 
 #include <cmath>
 
-EnemyModel::EnemyModel(EnemyType type, const glm::vec2& startPos)
-    : m_Type(type), m_Position(startPos) {
+EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex)
+    : m_Type(type),
+      m_Position(spawnPosition),
+      m_PathBranchIndex(pathBranchIndex) {
     SetupStatsByType();
 }
 
@@ -44,6 +46,7 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
         return;
     }
 
+    // 如果目前已經在最後一段之後，直接視為到終點
     if (m_PathIndex >= static_cast<int>(path.size()) - 1) {
         m_ReachedGoal = true;
         m_Alive = false;
@@ -54,7 +57,8 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
     const glm::vec2 direction = target - m_Position;
     const float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
-    if (distance < 1.0f) {
+    // 保險：如果已經非常接近目標點，直接吸附
+    if (distance <= 0.001f) {
         m_Position = target;
         ++m_PathIndex;
 
@@ -65,8 +69,23 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
         return;
     }
 
+    const float moveDistance = m_Speed * deltaTimeMs;
+
+    // 這一幀如果會超過 target，就直接吸附到 target，避免來回震盪
+    if (moveDistance >= distance) {
+        m_Position = target;
+        ++m_PathIndex;
+
+        // 如果吸附後已經到最後一個 path 點，立刻消失
+        if (m_PathIndex >= static_cast<int>(path.size()) - 1) {
+            m_ReachedGoal = true;
+            m_Alive = false;
+        }
+        return;
+    }
+
     const glm::vec2 normalized = direction / distance;
-    m_Position += normalized * m_Speed * deltaTimeMs;
+    m_Position += normalized * moveDistance;
 }
 
 void EnemyModel::TakeDamage(int damage) {
