@@ -7,11 +7,12 @@
 
 #include "pch.hpp"
 #include "SceneType.h"
+#include "model/BuildableRegistry.h"
 #include "model/EnemyModel.h"
 #include "model/MapModel.h"
 #include "model/PlacementModel.h"
 #include "model/ProjectileModel.h"
-#include "model/TowerModel.h"
+#include "model/TowerBase.h"
 
 class GameModel {
 public:
@@ -20,16 +21,15 @@ public:
     void Reset();
     void Update(float deltaTimeMs);
 
-    void SelectTower(TowerType type);
-    //test 座標
+    void SelectBuildable(const std::shared_ptr<IBuildableDefinition>& definition);
     void SetMessage(const std::string& message) { m_Message = message; }
-    // placement system
-    void BeginPlacement(TowerType type);
+
+    void BeginPlacement(const std::shared_ptr<IBuildableDefinition>& definition);
     void CancelPlacement();
     void UpdatePlacementPreview(const glm::vec2& worldPos);
     bool ConfirmPlacement();
 
-    bool CanPlaceTower(TowerType type, const glm::vec2& position) const;
+    bool CanPlaceBuildable(const std::shared_ptr<IBuildableDefinition>& definition, const glm::vec2& position) const;
 
     void StartRound();
     void TogglePause();
@@ -49,17 +49,27 @@ public:
     bool IsLose() const { return m_Lose; }
 
     DifficultyType GetDifficulty() const { return m_Difficulty; }
-    TowerType GetSelectedTowerType() const { return m_SelectedTowerType; }
+    const std::shared_ptr<IBuildableDefinition>& GetSelectedBuildableDefinition() const { return m_SelectedBuildableDefinition; }
     const std::string& GetMessage() const { return m_Message; }
 
     const MapModel& GetMap() const { return m_Map; }
     const PlacementModel& GetPlacement() const { return m_Placement; }
 
-    const std::vector<std::shared_ptr<TowerModel>>& GetTowers() const { return m_Towers; }
+    const std::vector<std::shared_ptr<TowerBase>>& GetTowers() const { return m_Towers; }
     const std::vector<std::shared_ptr<EnemyModel>>& GetEnemies() const { return m_Enemies; }
     const std::vector<std::shared_ptr<ProjectileModel>>& GetProjectiles() const { return m_Projectiles; }
 
 private:
+    struct PlacementCheckResult {
+        bool valid = false;
+        std::string hintText;
+    };
+
+    PlacementCheckResult EvaluatePlacement(
+        const std::shared_ptr<IBuildableDefinition>& definition,
+        const glm::vec2& position
+    ) const;
+
     void SetupDifficulty();
     void SetupWave();
     void SpawnEnemy();
@@ -84,10 +94,10 @@ private:
     bool m_Win = false;
     bool m_Lose = false;
 
-    TowerType m_SelectedTowerType = TowerType::Dart;
+    std::shared_ptr<IBuildableDefinition> m_SelectedBuildableDefinition = nullptr;
     std::string m_Message = "Press 1/2/3 to choose tower, click to place.";
 
-    std::vector<std::shared_ptr<TowerModel>> m_Towers;
+    std::vector<std::shared_ptr<TowerBase>> m_Towers;
     std::vector<std::shared_ptr<EnemyModel>> m_Enemies;
     std::vector<std::shared_ptr<ProjectileModel>> m_Projectiles;
 
@@ -95,11 +105,6 @@ private:
     int m_SpawnedCount = 0;
     float m_SpawnTimerMs = 0.0f;
     float m_SpawnIntervalMs = 900.0f;
-
-    // TODO: 之後若要做更完整的建塔限制，可加：
-    // 1. 地圖邊界判斷
-    // 2. UI panel 區域禁放
-    // 3. 與裝飾物 / 障礙物碰撞
 };
 
 #endif

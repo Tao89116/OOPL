@@ -5,6 +5,7 @@
 #include "view/GameView.h"
 #include "GameConfig.h"
 #include <unordered_set>
+
 GameView::GameView(DifficultyType difficulty)
     : m_Difficulty(difficulty), m_UIView(m_Renderer) {
 }
@@ -20,8 +21,6 @@ void GameView::Initialize(const GameModel& model) {
 }
 
 void GameView::InitializeStaticObjects(const GameModel& model) {
-    // 背景圖直接從目前地圖資料取得
-    // 這樣 difficulty 和 map path 會保持一致
     const std::string bgKey = model.GetMap().GetBackgroundKey();
 
     auto image = m_Resources.GetImage(bgKey);
@@ -48,14 +47,14 @@ void GameView::Render(const GameModel& model) {
 }
 
 void GameView::SyncTowers(const GameModel& model) {
-    std::unordered_set<const TowerModel*> live;
+    std::unordered_set<const TowerBase*> live;
 
     for (const auto& tower : model.GetTowers()) {
         if (!tower) {
             continue;
         }
 
-        const TowerModel* key = tower.get();
+        const TowerBase* key = tower.get();
         live.insert(key);
 
         auto found = m_TowerObjects.find(key);
@@ -161,32 +160,66 @@ void GameView::SyncProjectiles(const GameModel& model) {
 void GameView::SyncPlacementPreview(const GameModel& model) {
     const PlacementModel& placement = model.GetPlacement();
 
-    if (!placement.IsActive()) {
+    if (!placement.IsActive() || !placement.GetDefinition()) {
         if (m_PreviewTowerObject) {
             m_Renderer.RemoveChild(m_PreviewTowerObject);
             m_PreviewTowerObject = nullptr;
         }
+        if (m_PreviewRangeObject) {
+            m_Renderer.RemoveChild(m_PreviewRangeObject);
+            m_PreviewRangeObject = nullptr;
+        }
+        m_LastPreviewDefinitionId.clear();
         return;
     }
 
-    // 如果還沒建立 preview 物件，就建立一個
-    if (!m_PreviewTowerObject) {
+    const auto& definition = placement.GetDefinition();
+    const std::string definitionId = definition->GetId();
+
+    if (!m_PreviewTowerObject || m_LastPreviewDefinitionId != definitionId) {
+        if (m_PreviewTowerObject) {
+            m_Renderer.RemoveChild(m_PreviewTowerObject);
+        }
+
         auto previewTower = std::make_shared<Util::GameObject>(
-            m_Resources.GetImage("tower_basic"),
+            m_Resources.GetImage(definition->GetPreviewSpriteKey()),
             50.0f
         );
-
         previewTower->m_Transform.scale *= 0.8f;
         m_Renderer.AddChild(previewTower);
         m_PreviewTowerObject = previewTower;
+        m_LastPreviewDefinitionId = definitionId;
     }
 
-    // 目前先共用 tower_basic 當 preview 圖
-    // 如果之後不同塔型有不同外觀，可改成依 towerType 切 sprite key
     m_PreviewTowerObject->m_Transform.translation = placement.GetPreviewPosition();
 
-    // TODO:
-    // 1. 之後可依 placement.GetTowerType() 切換 preview 圖
-    // 2. 之後可依 placement.IsValid() 顯示綠色 / 紅色效果
-    // 3. 之後在這裡加 range circle
+    if (definition->ShowRangePreview() && definition->GetPreviewRange() > 0.0f) {
+        const bool nowValid = placement.IsValid();
+        const std::string rangeKey = nowValid ? "range_circle_valid" : "range_circle_invalid";
+
+        if (!m_PreviewRangeObject || nowValid != m_LastPreviewValid) {
+            if (m_PreviewRangeObject) {
+                m_Renderer.RemoveChild(m_PreviewRangeObject);
+            }
+
+            m_PreviewRangeObject = std::make_shared<Util::GameObject>(
+                m_Resources.GetImage(rangeKey),
+                45.0f
+            );
+            m_Renderer.AddChild(m_PreviewRangeObject);
+            m_LastPreviewValid = nowValid;
+        }
+
+        m_PreviewRangeObject->m_Transform.translation = placement.GetPreviewPosition();
+
+        auto circleImage = m_Resources.GetImage(rangeKey);
+        const float textureRadius = circleImage->GetSize().x * 0.5f;
+        const float scale = definition->GetPreviewRange() / textureRadius;
+        m_PreviewRangeObject->m_Transform.scale = {scale, scale};
+    } else {
+        if (m_PreviewRangeObject) {
+            m_Renderer.RemoveChild(m_PreviewRangeObject);
+            m_PreviewRangeObject = nullptr;
+        }
+    }
 }

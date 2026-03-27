@@ -36,18 +36,18 @@ private:
 
     std::shared_ptr<Util::GameObject> m_Background = nullptr;
 
-    std::unordered_map<const TowerModel*, std::shared_ptr<Util::GameObject>> m_TowerObjects;
+    std::unordered_map<const TowerBase*, std::shared_ptr<Util::GameObject>> m_TowerObjects;
     std::unordered_map<const EnemyModel*, std::shared_ptr<Util::GameObject>> m_EnemyObjects;
     std::unordered_map<const ProjectileModel*, std::shared_ptr<Util::GameObject>> m_ProjectileObjects;
 
-    // placement preview
     std::shared_ptr<Util::GameObject> m_PreviewTowerObject = nullptr;
+    std::shared_ptr<Util::GameObject> m_PreviewRangeObject = nullptr;
+
+    std::string m_LastPreviewDefinitionId;
+    bool m_LastPreviewValid = true;
 
     // TODO:
-    // 之後接 ShapeRenderer 時，可再加入：
-    // 1. path debug overlay
-    // 2. range circle overlay
-    // 3. placement valid / invalid 顏色提示
+    // 之後若要畫 path debug，可在這裡加 path overlay objects。
 };
 
 #endif

@@ -9,8 +9,8 @@
 
 enum class TowerType {
     Dart,
-    Rapid,
-    Heavy
+    Track,
+    IceBall
 };
 
 class TowerModel {

@@ -27,6 +27,14 @@ void ResourceManager::Initialize() {
     // Buttons
     m_ImagePaths["btn_tower_1"] = root + "/button-0.png";
     m_ImagePaths["btn_tower_2"] = root + "/button-1.png";
+    m_ImagePaths["btn_tower_3"] = root + "/button-2.png";
+    m_ImagePaths["btn_tower_4"] = root + "/button-3.png";
+    m_ImagePaths["btn_tower_5"] = root + "/button-4.png";
+    m_ImagePaths["btn_tower_6"] = root + "/button-5.png";
+    //trap btn
+    m_ImagePaths["btn_tower_7"] = root + "/button-6.png";
+    m_ImagePaths["btn_tower_8"] = root + "/button-7.png";
+
     m_ImagePaths["btn_start"]   = root + "/button-3.png";
     m_ImagePaths["btn_action"]  = root + "/button-4.png";
 
@@ -50,7 +58,20 @@ void ResourceManager::Initialize() {
 
     // Towers / slots
     m_ImagePaths["tower_basic"] = root + "/tower-0.png";
+    m_ImagePaths["tower_dart"] = root + "/tower-0.png";
+    m_ImagePaths["tower_track"] = root + "/tower-1.png";
+    m_ImagePaths["tower_ice"] = root + "/tower-2.png";
+    m_ImagePaths["tower_cannon"] = root + "/tower-3.png";
+    m_ImagePaths["tower_boom"] = root + "/tower-4.png";
+    m_ImagePaths["tower_super"] = root + "/tower-5.png";
+    m_ImagePaths["tower_spikes"] = root + "/tower-6.png";
+    m_ImagePaths["tower_glues"] = root + "/tower-7.png";
+
+
     m_ImagePaths["tower_slot"]  = root + "/slot.png";
+    // Placement preview
+    m_ImagePaths["range_circle_valid"]   = root + "/range-circle-valid.png";
+    m_ImagePaths["range_circle_invalid"] = root + "/range-circle-invalid.png";
 
     // Fonts
     m_FontPaths["default"] = root + "/font.ttf";

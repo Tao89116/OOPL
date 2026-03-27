@@ -83,6 +83,19 @@ add_executable(${PROJECT_NAME}
         include/model/PlacementModel.h
         src/model/MapFactory.cpp
         src/model/PlacementModel.cpp
+        include/model/IBuildableDefinition.h
+        include/model/BuildableRegistry.h
+        include/model/TowerBase.h
+        include/model/AttackTowerBase.h
+        include/model/TrapBase.h
+        src/model/BuildableRegistry.cpp
+        src/model/TowerBase.cpp
+        src/model/AttackTowerBase.cpp
+        src/model/TrapBase.cpp
+        include/model/ConcreteTowers.h
+        src/model/ConcreteTowers.cpp
+        include/model/DifficultyModel.h
+        src/model/DifficultyModel.cpp
 )
 
 if(MSVC)
