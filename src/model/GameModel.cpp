@@ -4,27 +4,29 @@
 
 #include "model/GameModel.h"
 #include "GameConfig.h"
+#include "model/DifficultyModel.h"
 
 GameModel::GameModel(DifficultyType difficulty)
     : m_Difficulty(difficulty), m_Map(difficulty) {
+    BuildableRegistry::GetInstance().RegisterDefaults();
     Reset();
 }
 
 void GameModel::SetupDifficulty() {
     switch (m_Difficulty) {
         case DifficultyType::Easy:
-            m_HP = 30;
-            m_Gold = 400;
+            m_HP = 100;
+            m_Gold = 650;
             m_SpawnIntervalMs = 1100.0f;
             break;
         case DifficultyType::Normal:
-            m_HP = 20;
-            m_Gold = 300;
+            m_HP = 75;
+            m_Gold = 650;
             m_SpawnIntervalMs = 900.0f;
             break;
         case DifficultyType::Hard:
-            m_HP = 12;
-            m_Gold = 220;
+            m_HP = 50;
+            m_Gold = 650;
             m_SpawnIntervalMs = 720.0f;
             break;
     }
@@ -38,7 +40,7 @@ void GameModel::Reset() {
     m_Win = false;
     m_Lose = false;
 
-    m_SelectedTowerType = TowerType::Dart;
+    m_SelectedBuildableDefinition = BuildableRegistry::GetInstance().GetByIndex(0);
     m_Message = "Press 1/2/3 to choose tower, click to place.";
 
     m_Placement.Cancel();
@@ -54,24 +56,96 @@ void GameModel::Reset() {
     SetupDifficulty();
 }
 
-void GameModel::SelectTower(TowerType type) {
-    m_SelectedTowerType = type;
-    BeginPlacement(type);
-}
-
-void GameModel::BeginPlacement(TowerType type) {
-    if (m_Win || m_Lose) {
+void GameModel::SelectBuildable(const std::shared_ptr<IBuildableDefinition>& definition) {
+    if (!definition) {
         return;
     }
 
-    m_SelectedTowerType = type;
-    m_Placement.Begin(type);
-    m_Message = "Placing: " + TowerModel::GetDisplayName(type);
+    m_SelectedBuildableDefinition = definition;
+    BeginPlacement(definition);
+}
+
+void GameModel::BeginPlacement(const std::shared_ptr<IBuildableDefinition>& definition) {
+    if (!definition || m_Win || m_Lose) {
+        return;
+    }
+
+    m_SelectedBuildableDefinition = definition;
+    m_Placement.Begin(definition);
+    m_Message = "Placing: " + definition->GetDisplayName();
 }
 
 void GameModel::CancelPlacement() {
     m_Placement.Cancel();
     m_Message = "Placement cancelled.";
+}
+
+GameModel::PlacementCheckResult GameModel::EvaluatePlacement(
+    const std::shared_ptr<IBuildableDefinition>& definition,
+    const glm::vec2& position
+) const {
+    PlacementCheckResult result;
+
+    if (!definition) {
+        result.valid = false;
+        result.hintText = "No buildable selected.";
+        return result;
+    }
+
+    const int buildCost = DifficultyModel::GetBuildCost(
+        m_Difficulty,
+        definition->GetId()
+    );
+
+    if (m_Gold < buildCost) {
+        result.valid = false;
+        result.hintText = "Not enough gold.";
+        return result;
+    }
+
+    const float halfWidth = GameConfig::WindowWidth * 0.5f;
+    const float halfHeight = GameConfig::WindowHeight * 0.5f;
+
+    if (position.x < -halfWidth || position.x > halfWidth ||
+        position.y < -halfHeight || position.y > halfHeight) {
+        result.valid = false;
+        result.hintText = "Out of map bounds.";
+        return result;
+    }
+
+    const float worldRightPanelX = GameConfig::RightPanelX - GameConfig::CenterX;
+    if (position.x >= worldRightPanelX - 70.0f) {
+        result.valid = false;
+        result.hintText = "Cannot place on UI panel.";
+        return result;
+    }
+
+    if (!definition->CanPlaceOnPath() &&
+        m_Map.IsCircleOverlappingAnyPath(position, definition->GetFootprintRadius())) {
+        result.valid = false;
+        result.hintText = "Blocked by path.";
+        return result;
+    }
+
+    for (const auto& tower : m_Towers) {
+        if (!tower) {
+            continue;
+        }
+
+        const glm::vec2 delta = tower->GetPosition() - position;
+        const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+        const float minDistance = tower->GetFootprintRadius() + definition->GetFootprintRadius();
+
+        if (distance < minDistance) {
+            result.valid = false;
+            result.hintText = "Too close to another tower.";
+            return result;
+        }
+    }
+
+    result.valid = true;
+    result.hintText = "Valid placement.";
+    return result;
 }
 
 void GameModel::UpdatePlacementPreview(const glm::vec2& worldPos) {
@@ -80,41 +154,17 @@ void GameModel::UpdatePlacementPreview(const glm::vec2& worldPos) {
     }
 
     m_Placement.UpdatePreviewPosition(worldPos);
-    m_Placement.SetValid(CanPlaceTower(m_Placement.GetTowerType(), worldPos));
+
+    const auto& definition = m_Placement.GetDefinition();
+    const PlacementCheckResult check = EvaluatePlacement(definition, worldPos);
+    m_Placement.SetPreviewFeedback(check.valid, check.hintText);
 }
 
-bool GameModel::CanPlaceTower(TowerType type, const glm::vec2& position) const {
-    const int cost = TowerModel::GetCostByType(type);
-    if (m_Gold < cost) {
-        return false;
-    }
-
-    const float radius = TowerModel::GetRadiusByType(type);
-    const bool canPlaceOnPath = TowerModel::GetCanPlaceOnPathByType(type);
-
-    // 1. 若該塔不能放在 path 上，就做 path 碰撞判斷
-    if (!canPlaceOnPath && m_Map.IsCircleOverlappingAnyPath(position, radius)) {
-        return false;
-    }
-
-    // 2. 不可和其他塔重疊
-    for (const auto& tower : m_Towers) {
-        if (!tower) {
-            continue;
-        }
-
-        const glm::vec2 delta = tower->GetPosition() - position;
-        const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-        const float minDistance = tower->GetRadius() + radius;
-
-        if (distance < minDistance) {
-            return false;
-        }
-    }
-
-    // TODO: 之後補地圖邊界判斷 / 右側 UI 區域禁放
-
-    return true;
+bool GameModel::CanPlaceBuildable(
+    const std::shared_ptr<IBuildableDefinition>& definition,
+    const glm::vec2& position
+) const {
+    return EvaluatePlacement(definition, position).valid;
 }
 
 bool GameModel::ConfirmPlacement() {
@@ -122,25 +172,32 @@ bool GameModel::ConfirmPlacement() {
         return false;
     }
 
-    const TowerType type = m_Placement.GetTowerType();
+    const auto& definition = m_Placement.GetDefinition();
     const glm::vec2 position = m_Placement.GetPreviewPosition();
 
-    if (!CanPlaceTower(type, position)) {
-        m_Placement.SetValid(false);
-        m_Message = "Cannot place tower here.";
+    const PlacementCheckResult check = EvaluatePlacement(definition, position);
+    m_Placement.SetPreviewFeedback(check.valid, check.hintText);
+
+    if (!check.valid) {
+        m_Message = check.hintText;
         return false;
     }
 
-    const int cost = TowerModel::GetCostByType(type);
-    auto tower = std::make_shared<TowerModel>(type, position);
+    auto tower = definition->CreateInstance(position);
+    if (!tower) {
+        m_Message = "Failed to build.";
+        return false;
+    }
+
+    const int buildCost = DifficultyModel::GetBuildCost(
+        m_Difficulty,
+        definition->GetId()
+    );
 
     m_Towers.push_back(tower);
-    m_Gold -= cost;
+    m_Gold -= buildCost;
 
-    // 放完後保留建塔模式，方便連續建造同類塔
-    m_Placement.SetValid(false);
-    m_Message = "Built " + TowerModel::GetDisplayName(type);
-
+    m_Message = "Built " + definition->GetDisplayName();
     return true;
 }
 
@@ -229,39 +286,7 @@ void GameModel::UpdateTowers(float deltaTimeMs) {
             continue;
         }
 
-        tower->UpdateCooldown(deltaTimeMs);
-
-        if (!tower->CanFire()) {
-            continue;
-        }
-
-        std::shared_ptr<EnemyModel> target = nullptr;
-        float nearestDistance = 999999.0f;
-
-        for (const auto& enemy : m_Enemies) {
-            if (!enemy || !enemy->CanBeTargeted()) {
-                continue;
-            }
-
-            const glm::vec2 delta = enemy->GetPosition() - tower->GetPosition();
-            const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-
-            if (distance <= tower->GetRange() && distance < nearestDistance) {
-                nearestDistance = distance;
-                target = enemy;
-            }
-        }
-
-        if (target) {
-            auto projectile = std::make_shared<ProjectileModel>(
-                tower->GetPosition(),
-                tower->GetDamage(),
-                tower->GetProjectileKey(),
-                target
-            );
-            m_Projectiles.push_back(projectile);
-            tower->ResetCooldown();
-        }
+        tower->Update(deltaTimeMs, m_Enemies, m_Projectiles);
     }
 }
 
@@ -312,6 +337,17 @@ void GameModel::CleanupObjects() {
             }
         ),
         m_Projectiles.end()
+    );
+
+    m_Towers.erase(
+        std::remove_if(
+            m_Towers.begin(),
+            m_Towers.end(),
+            [](const std::shared_ptr<TowerBase>& tower) {
+                return !tower || tower->ShouldRemove();
+            }
+        ),
+        m_Towers.end()
     );
 
     if (m_RoundRunning &&
