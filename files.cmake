@@ -3,7 +3,6 @@ set(SRC_FILES
         ResourceManager.cpp
 
         model/EnemyModel.cpp
-        model/TowerModel.cpp
         model/ProjectileModel.cpp
         model/MapModel.cpp
         model/GameModel.cpp

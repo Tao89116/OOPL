@@ -1,7 +1,3 @@
-//
-// Created by polyunicorn on 2026/3/26.
-//
-
 #ifndef CONCRETE_TOWERS_H
 #define CONCRETE_TOWERS_H
 
@@ -11,16 +7,41 @@
 class DartTower : public AttackTowerBase {
 public:
     explicit DartTower(const glm::vec2& position);
+
+protected:
+    std::shared_ptr<ProjectileModel> CreateProjectile(
+        const std::shared_ptr<EnemyModel>& target
+    ) override;
 };
 
 class TrackTower : public AttackTowerBase {
 public:
     explicit TrackTower(const glm::vec2& position);
+
+protected:
+    std::shared_ptr<ProjectileModel> CreateProjectile(
+        const std::shared_ptr<EnemyModel>& target
+    ) override;
 };
 
 class IceBallTower : public AttackTowerBase {
 public:
     explicit IceBallTower(const glm::vec2& position);
+
+protected:
+    std::shared_ptr<ProjectileModel> CreateProjectile(
+        const std::shared_ptr<EnemyModel>& target
+    ) override;
+};
+
+class CannonTower : public AttackTowerBase {
+public:
+    explicit CannonTower(const glm::vec2& position);
+
+protected:
+    std::shared_ptr<ProjectileModel> CreateProjectile(
+        const std::shared_ptr<EnemyModel>& target
+    ) override;
 };
 
 class SpikeTrap : public TrapBase {

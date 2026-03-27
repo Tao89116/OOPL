@@ -19,7 +19,9 @@ void GameController::HandleInput(GameModel& model) {
     if (Util::Input::IsKeyUp(Util::Keycode::NUM_3)) {
         model.SelectBuildable(registry.GetByIndex(2));
     }
-
+    if (Util::Input::IsKeyUp(Util::Keycode::NUM_4)) {
+        model.SelectBuildable(registry.GetByIndex(4));
+    }
     if (Util::Input::IsKeyUp(Util::Keycode::SPACE)) {
         model.StartRound();
     }

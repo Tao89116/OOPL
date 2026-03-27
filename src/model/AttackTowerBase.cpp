@@ -1,7 +1,3 @@
-//
-// Created by polyunicorn on 2026/3/26.
-//
-
 #include "model/AttackTowerBase.h"
 
 AttackTowerBase::AttackTowerBase(const glm::vec2& position)
@@ -13,55 +9,48 @@ void AttackTowerBase::Update(
     std::vector<std::shared_ptr<EnemyModel>>& enemies,
     std::vector<std::shared_ptr<ProjectileModel>>& projectiles
 ) {
-    if (m_CooldownMs > 0.0f) {
-        m_CooldownMs -= deltaTimeMs;
-    }
+    UpdateCooldown(deltaTimeMs);
 
-    if (m_CooldownMs > 0.0f) {
-        return;
-    }
-
-    const auto target = SelectTarget(enemies);
+    auto target = FindTarget(enemies);
     if (!target) {
         return;
     }
 
-    FireAt(target, projectiles);
-    m_CooldownMs = m_AttackIntervalMs;
+    if (m_CooldownMs <= 0.0f) {
+        Attack(target, projectiles);
+        m_CooldownMs = m_AttackIntervalMs;
+    }
 }
 
-std::shared_ptr<EnemyModel> AttackTowerBase::SelectTarget(
-    const std::vector<std::shared_ptr<EnemyModel>>& enemies
-) const {
-    std::shared_ptr<EnemyModel> target = nullptr;
-    float nearestDistance = 999999.0f;
+void AttackTowerBase::UpdateCooldown(float deltaTimeMs) {
+    if (m_CooldownMs > 0.0f) {
+        m_CooldownMs -= deltaTimeMs;
+    }
+}
 
+std::shared_ptr<EnemyModel> AttackTowerBase::FindTarget(
+    const std::vector<std::shared_ptr<EnemyModel>>& enemies
+) {
     for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->CanBeTargeted()) {
+        if (!enemy || !enemy->IsAlive()) {
             continue;
         }
 
-        const glm::vec2 delta = enemy->GetPosition() - m_Position;
-        const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-
-        if (distance <= m_Range && distance < nearestDistance) {
-            nearestDistance = distance;
-            target = enemy;
+        const float dist = glm::distance(enemy->GetPosition(), m_Position);
+        if (dist <= m_Range) {
+            return enemy;
         }
     }
 
-    return target;
+    return nullptr;
 }
 
-void AttackTowerBase::FireAt(
+void AttackTowerBase::Attack(
     const std::shared_ptr<EnemyModel>& target,
     std::vector<std::shared_ptr<ProjectileModel>>& projectiles
 ) {
-    auto projectile = std::make_shared<ProjectileModel>(
-        m_Position,
-        m_Damage,
-        m_ProjectileKey,
-        target
-    );
-    projectiles.push_back(projectile);
+    auto projectile = CreateProjectile(target);
+    if (projectile) {
+        projectiles.push_back(projectile);
+    }
 }

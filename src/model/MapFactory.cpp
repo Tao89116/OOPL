@@ -1,119 +1,69 @@
-//
-// Created by polyunicorn on 2026/3/20.
-//
-
 #include "model/MapFactory.h"
 
-MapData MapFactory::CreateByDifficulty(DifficultyType difficulty) {
+#include "ResourceManager.h"
+#include <stdexcept>
+
+namespace {
+    glm::vec2 ParsePoint(const nlohmann::json& pointJson) {
+        if (!pointJson.is_array() || pointJson.size() != 2) {
+            throw std::runtime_error("Invalid point format in map json.");
+        }
+
+        return {
+            pointJson[0].get<float>(),
+            pointJson[1].get<float>()
+        };
+    }
+}
+
+const char* MapFactory::DifficultyToJsonKey(DifficultyType difficulty) {
     switch (difficulty) {
         case DifficultyType::Easy:
-            return {
-                "bg_easy",
-                {
-                            {
-                                //1280,720,55
-                                {-640.0f, 0.0f},
-                                {-315.0f, 0.0f},
-                                {-282.0f, 37.0f},
-                                {-282.0f, 134.0f},
-                                {-282.0f, 180.0f},
-                                {-327.0f, 194.0f},
-                                {-413.0f, 194.0f},
-                                {-427.0f, 227.0f},
-                                {-428.0f, 277.0f},
-                                {-390.0f, 302.0f},
-                                {-258.0f, 307.0f},
-                                {-124.0f, 306.0f},
-                                {   8.0f, 306.0f},
-                                { 142.0f, 307.0f},
-                                { 190.0f, 280.0f},
-                                { 181.0f, 188.0f},
-                                { -58.0f, 182.0f},
-                                { -59.0f,  54.0f},
-                                { 189.0f,  52.0f},
-                                { 195.0f, -83.0f},
-                                {-414.0f, -94.0f},
-                                {-410.0f, -288.0f},
-                                {-182.0f, -292.0f},
-                                {-174.0f, -167.0f},
-                                {  48.0f, -167.0f},
-                                {  53.0f, -356.0f}
-                            }
-                },
-                55.0f
-            };
-
+            return "easy";
         case DifficultyType::Normal:
-            return {
-                "bg_normal",
-                {
-                            {
-                                {-493.0f,  360.0f},
-                                {-497.0f,   74.0f},
-                                {-317.0f,   69.0f},
-                                {-318.0f,  -76.0f},
-                                {-510.0f,  -85.0f},
-                                {-514.0f, -224.0f},
-                                {-154.0f, -227.0f},
-                                {-142.0f,  215.0f},
-                                { 209.0f,  215.0f},
-                                { 210.0f,   80.0f},
-                                {  32.0f,   72.0f},
-                                {  29.0f,  -74.0f},
-                                { 190.0f,  -85.0f},
-                                { 189.0f, -360.0f}
-                            }
-                },
-                55.0f
-            };
-
+            return "normal";
         case DifficultyType::Hard:
-            return {
-                "bg_hard",
-{
-        {
-            // Path A
-            {
-                {-543.0f,  358.0f},
-                {-522.0f,   -7.0f},
-                {-118.0f,  -14.0f},
-                { -98.0f, -139.0f},
-                {  42.0f, -136.0f},
-                {  52.0f,  -17.0f},
-                { 190.0f,  -14.0f},
-                { 190.0f, -290.0f},
-                {-199.0f, -290.0f},
-                {-199.0f, -352.0f}
-            },
-            {
-                // Path B
-                { -57.0f,  357.0f},
-                { -48.0f,  256.0f},
-                { 153.0f,  249.0f},
-                { 152.0f,   90.0f},
-                {-165.0f,  102.0f},
-                {-171.0f,  247.0f},
-                {-346.0f,  243.0f},
-                {-351.0f, -115.0f},
-                {-498.0f, -126.0f},
-                {-495.0f, -227.0f},
-                {-369.0f, -238.0f},
-                {-364.0f, -352.0f}
-            }
-        }
-    },
-                55.0f
-            };
+            return "hard";
+    }
+    return "easy";
+}
+
+MapData MapFactory::CreateByDifficulty(DifficultyType difficulty) {
+    ResourceManager& resources = ResourceManager::GetInstance();
+    const auto& root = resources.GetJson("map_paths");
+
+    const std::string difficultyKey = DifficultyToJsonKey(difficulty);
+
+    if (!root.contains(difficultyKey)) {
+        throw std::runtime_error("Difficulty key not found in map_paths.json: " + difficultyKey);
     }
 
-    return {
-        "bg_easy",
-        {
-                {
-                    {70.0f, 360.0f},
-                    {1130.0f, 360.0f}
-                }
-        },
-        90.0f
-    };
+    const auto& mapJson = root.at(difficultyKey);
+
+    MapData data;
+
+    if (!mapJson.contains("background")) {
+        throw std::runtime_error("Missing background in map json.");
+    }
+    data.backgroundKey = mapJson.at("background").get<std::string>();
+
+    if (!mapJson.contains("paths") || !mapJson.at("paths").is_array()) {
+        throw std::runtime_error("Missing or invalid paths in map json.");
+    }
+
+    for (const auto& pathJson : mapJson.at("paths")) {
+        std::vector<glm::vec2> pathPoints;
+
+        if (!pathJson.is_array()) {
+            throw std::runtime_error("Invalid path format in map json.");
+        }
+
+        for (const auto& pointJson : pathJson) {
+            pathPoints.push_back(ParsePoint(pointJson));
+        }
+
+        data.paths.push_back(pathPoints);
+    }
+
+    return data;
 }

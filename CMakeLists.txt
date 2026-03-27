@@ -40,8 +40,6 @@ add_executable(${PROJECT_NAME}
         include/GameConfig.h
         include/model/EnemyModel.h
         src/model/EnemyModel.cpp
-        include/model/TowerModel.h
-        src/model/TowerModel.cpp
         include/model/ProjectileModel.h
         src/model/ProjectileModel.cpp
         include/model/MapModel.h
@@ -83,7 +81,6 @@ add_executable(${PROJECT_NAME}
         include/model/PlacementModel.h
         src/model/MapFactory.cpp
         src/model/PlacementModel.cpp
-        include/model/IBuildableDefinition.h
         include/model/BuildableRegistry.h
         include/model/TowerBase.h
         include/model/AttackTowerBase.h
@@ -96,6 +93,7 @@ add_executable(${PROJECT_NAME}
         src/model/ConcreteTowers.cpp
         include/model/DifficultyModel.h
         src/model/DifficultyModel.cpp
+        include/model/IBuildable.h
 )
 
 if(MSVC)

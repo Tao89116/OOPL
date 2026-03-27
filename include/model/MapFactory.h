@@ -11,6 +11,8 @@
 class MapFactory {
 public:
     static MapData CreateByDifficulty(DifficultyType difficulty);
+private:
+    static const char* DifficultyToJsonKey(DifficultyType difficulty);
 };
 
 #endif
