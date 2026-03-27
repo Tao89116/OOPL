@@ -5,6 +5,7 @@
 #include "Util/Color.hpp"
 #include "Util/Image.hpp"
 #include "Util/Text.hpp"
+#include <nlohmann/json.hpp>
 
 class ResourceManager {
 public:
@@ -23,15 +24,23 @@ public:
 
     std::string GetFontPath(const std::string& key) const;
 
+    void RegisterJson(const std::string& key, const std::string& relativePath);
+    const nlohmann::json& GetJson(const std::string& key);
+
 private:
     ResourceManager() = default;
     ResourceManager(const ResourceManager&) = delete;
     ResourceManager& operator=(const ResourceManager&) = delete;
 
+    nlohmann::json LoadJsonFromFile(const std::string& fullPath) const;
+
 private:
     std::unordered_map<std::string, std::string> m_ImagePaths;
     std::unordered_map<std::string, std::string> m_FontPaths;
+    std::unordered_map<std::string, std::string> m_JsonPaths;
+
     std::unordered_map<std::string, std::shared_ptr<Util::Image>> m_ImageCache;
+    std::unordered_map<std::string, nlohmann::json> m_JsonCache;
 };
 
 #endif

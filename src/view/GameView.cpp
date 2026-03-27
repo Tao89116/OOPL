@@ -3,6 +3,7 @@
 //
 
 #include "view/GameView.h"
+
 #include "GameConfig.h"
 #include <unordered_set>
 
@@ -15,12 +16,12 @@ void GameView::Initialize(const GameModel& model) {
         return;
     }
 
-    InitializeStaticObjects(model);
+    InitializeBackground(model);
     m_UIView.Initialize();
     m_Initialized = true;
 }
 
-void GameView::InitializeStaticObjects(const GameModel& model) {
+void GameView::InitializeBackground(const GameModel& model) {
     const std::string bgKey = model.GetMap().GetBackgroundKey();
 
     auto image = m_Resources.GetImage(bgKey);
@@ -28,6 +29,7 @@ void GameView::InitializeStaticObjects(const GameModel& model) {
 
     const float scaleX = static_cast<float>(GameConfig::WindowWidth) / image->GetSize().x;
     const float scaleY = static_cast<float>(GameConfig::WindowHeight) / image->GetSize().y;
+
     m_Background->m_Transform.translation = {0.0f, 0.0f};
     m_Background->m_Transform.scale = {scaleX, scaleY};
 
@@ -37,24 +39,24 @@ void GameView::InitializeStaticObjects(const GameModel& model) {
 void GameView::Render(const GameModel& model) {
     Initialize(model);
 
-    SyncTowers(model);
-    SyncEnemies(model);
-    SyncProjectiles(model);
-    SyncPlacementPreview(model);
+    SyncTowerObjects(model);
+    SyncEnemyObjects(model);
+    SyncProjectileObjects(model);
+    SyncPlacementPreviewObjects(model);
 
     m_UIView.Sync(model);
     m_Renderer.Update();
 }
 
-void GameView::SyncTowers(const GameModel& model) {
-    std::unordered_set<const TowerBase*> live;
+void GameView::SyncTowerObjects(const GameModel& model) {
+    std::unordered_set<const IBuildable*> live;
 
     for (const auto& tower : model.GetTowers()) {
         if (!tower) {
             continue;
         }
 
-        const TowerBase* key = tower.get();
+        const IBuildable* key = tower.get();
         live.insert(key);
 
         auto found = m_TowerObjects.find(key);
@@ -83,7 +85,7 @@ void GameView::SyncTowers(const GameModel& model) {
     }
 }
 
-void GameView::SyncEnemies(const GameModel& model) {
+void GameView::SyncEnemyObjects(const GameModel& model) {
     std::unordered_set<const EnemyModel*> live;
 
     for (const auto& enemy : model.GetEnemies()) {
@@ -120,7 +122,7 @@ void GameView::SyncEnemies(const GameModel& model) {
     }
 }
 
-void GameView::SyncProjectiles(const GameModel& model) {
+void GameView::SyncProjectileObjects(const GameModel& model) {
     std::unordered_set<const ProjectileModel*> live;
 
     for (const auto& projectile : model.GetProjectiles()) {
@@ -157,69 +159,98 @@ void GameView::SyncProjectiles(const GameModel& model) {
     }
 }
 
-void GameView::SyncPlacementPreview(const GameModel& model) {
-    const PlacementModel& placement = model.GetPlacement();
+void GameView::SyncPlacementPreviewObjects(const GameModel& model) {
+    ClearPreviewObjectsIfInactive(model);
 
-    if (!placement.IsActive() || !placement.GetDefinition()) {
-        if (m_PreviewTowerObject) {
-            m_Renderer.RemoveChild(m_PreviewTowerObject);
-            m_PreviewTowerObject = nullptr;
-        }
-        if (m_PreviewRangeObject) {
-            m_Renderer.RemoveChild(m_PreviewRangeObject);
-            m_PreviewRangeObject = nullptr;
-        }
-        m_LastPreviewDefinitionId.clear();
+    if (!model.GetPlacement().IsActive() || !model.GetPlacement().GetPreviewBuildable()) {
         return;
     }
 
-    const auto& definition = placement.GetDefinition();
-    const std::string definitionId = definition->GetId();
+    CreateOrUpdatePreviewTower(model);
+    CreateOrUpdatePreviewRange(model);
+}
 
-    if (!m_PreviewTowerObject || m_LastPreviewDefinitionId != definitionId) {
+void GameView::ClearPreviewObjectsIfInactive(const GameModel& model) {
+    const auto& preview = model.GetPlacement().GetPreviewBuildable();
+
+    if (model.GetPlacement().IsActive() && preview) {
+        return;
+    }
+
+    if (m_PreviewTowerObject) {
+        m_Renderer.RemoveChild(m_PreviewTowerObject);
+        m_PreviewTowerObject = nullptr;
+    }
+
+    if (m_PreviewRangeObject) {
+        m_Renderer.RemoveChild(m_PreviewRangeObject);
+        m_PreviewRangeObject = nullptr;
+    }
+
+    m_LastPreviewBuildableId.clear();
+}
+
+void GameView::CreateOrUpdatePreviewTower(const GameModel& model) {
+    const auto& preview = model.GetPlacement().GetPreviewBuildable();
+    const std::string buildableId = preview->GetId();
+
+    if (!m_PreviewTowerObject || m_LastPreviewBuildableId != buildableId) {
         if (m_PreviewTowerObject) {
             m_Renderer.RemoveChild(m_PreviewTowerObject);
         }
 
         auto previewTower = std::make_shared<Util::GameObject>(
-            m_Resources.GetImage(definition->GetPreviewSpriteKey()),
+            m_Resources.GetImage(preview->GetPreviewSpriteKey()),
             50.0f
         );
         previewTower->m_Transform.scale *= 0.8f;
         m_Renderer.AddChild(previewTower);
+
         m_PreviewTowerObject = previewTower;
-        m_LastPreviewDefinitionId = definitionId;
+        m_LastPreviewBuildableId = buildableId;
     }
 
-    m_PreviewTowerObject->m_Transform.translation = placement.GetPreviewPosition();
+    m_PreviewTowerObject->m_Transform.translation = preview->GetPosition();
+}
 
-    if (definition->ShowRangePreview() && definition->GetPreviewRange() > 0.0f) {
-        const bool nowValid = placement.IsValid();
-        const std::string rangeKey = nowValid ? "range_circle_valid" : "range_circle_invalid";
+void GameView::CreateOrUpdatePreviewRange(const GameModel& model) {
+    const auto& preview = model.GetPlacement().GetPreviewBuildable();
 
-        if (!m_PreviewRangeObject || nowValid != m_LastPreviewValid) {
-            if (m_PreviewRangeObject) {
-                m_Renderer.RemoveChild(m_PreviewRangeObject);
-            }
-
-            m_PreviewRangeObject = std::make_shared<Util::GameObject>(
-                m_Resources.GetImage(rangeKey),
-                45.0f
-            );
-            m_Renderer.AddChild(m_PreviewRangeObject);
-            m_LastPreviewValid = nowValid;
-        }
-
-        m_PreviewRangeObject->m_Transform.translation = placement.GetPreviewPosition();
-
-        auto circleImage = m_Resources.GetImage(rangeKey);
-        const float textureRadius = circleImage->GetSize().x * 0.5f;
-        const float scale = definition->GetPreviewRange() / textureRadius;
-        m_PreviewRangeObject->m_Transform.scale = {scale, scale};
-    } else {
+    if (!preview->ShowRangePreview() || preview->GetPreviewRange() <= 0.0f) {
         if (m_PreviewRangeObject) {
             m_Renderer.RemoveChild(m_PreviewRangeObject);
             m_PreviewRangeObject = nullptr;
         }
+        return;
     }
+
+    const bool nowValid = model.GetPlacement().IsValid();
+    const std::string rangeKey = nowValid ? "range_circle_valid" : "range_circle_invalid";
+
+    if (!m_PreviewRangeObject || nowValid != m_LastPreviewValid) {
+        if (m_PreviewRangeObject) {
+            m_Renderer.RemoveChild(m_PreviewRangeObject);
+        }
+
+        m_PreviewRangeObject = std::make_shared<Util::GameObject>(
+            m_Resources.GetImage(rangeKey),
+            45.0f
+        );
+        m_Renderer.AddChild(m_PreviewRangeObject);
+        m_LastPreviewValid = nowValid;
+    }
+
+    m_PreviewRangeObject->m_Transform.translation = preview->GetPosition();
+
+    auto circleImage = m_Resources.GetImage(rangeKey);
+    const float textureRadius = circleImage->GetSize().x * 0.5f;
+    const float scale = preview->GetPreviewRange() / textureRadius;
+    m_PreviewRangeObject->m_Transform.scale = {scale, scale};
+
+    // TODO:
+    // 之後若有特殊 preview：
+    // - Cannon 爆炸半徑
+    // - Trap 觸發範圍
+    // - Support Tower buff 範圍
+    // 可以在這裡依 buildable type 顯示不同 preview
 }

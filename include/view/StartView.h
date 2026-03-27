@@ -18,6 +18,12 @@ public:
     void Render();
 
 private:
+    void InitializeBackground();
+    void InitializeTitle();
+    void InitializeInfoText();
+    void RegisterToRenderer();
+
+private:
     Util::Renderer m_Renderer;
     ResourceManager& m_Resources = ResourceManager::GetInstance();
 

@@ -1,7 +1,3 @@
-//
-// Created by polyunicorn on 2026/3/13.
-//
-
 #include "model/GameModel.h"
 #include "GameConfig.h"
 #include "model/DifficultyModel.h"
@@ -40,7 +36,7 @@ void GameModel::Reset() {
     m_Win = false;
     m_Lose = false;
 
-    m_SelectedBuildableDefinition = BuildableRegistry::GetInstance().GetByIndex(0);
+    m_SelectedBuildableEntry = BuildableRegistry::GetInstance().GetByIndex(0);
     m_Message = "Press 1/2/3 to choose tower, click to place.";
 
     m_Placement.Cancel();
@@ -56,23 +52,28 @@ void GameModel::Reset() {
     SetupDifficulty();
 }
 
-void GameModel::SelectBuildable(const std::shared_ptr<IBuildableDefinition>& definition) {
-    if (!definition) {
+void GameModel::SelectBuildable(const BuildableRegistry::Entry* entry) {
+    if (!entry) {
         return;
     }
 
-    m_SelectedBuildableDefinition = definition;
-    BeginPlacement(definition);
+    m_SelectedBuildableEntry = entry;
+    BeginPlacement(entry);
 }
 
-void GameModel::BeginPlacement(const std::shared_ptr<IBuildableDefinition>& definition) {
-    if (!definition || m_Win || m_Lose) {
+void GameModel::BeginPlacement(const BuildableRegistry::Entry* entry) {
+    if (!entry || m_Win || m_Lose) {
         return;
     }
 
-    m_SelectedBuildableDefinition = definition;
-    m_Placement.Begin(definition);
-    m_Message = "Placing: " + definition->GetDisplayName();
+    m_SelectedBuildableEntry = entry;
+    m_Placement.Begin(entry);
+
+    if (m_Placement.GetPreviewBuildable()) {
+        m_Message = "Placing: " + m_Placement.GetPreviewBuildable()->GetDisplayName();
+    } else {
+        m_Message = "Placing...";
+    }
 }
 
 void GameModel::CancelPlacement() {
@@ -81,12 +82,12 @@ void GameModel::CancelPlacement() {
 }
 
 GameModel::PlacementCheckResult GameModel::EvaluatePlacement(
-    const std::shared_ptr<IBuildableDefinition>& definition,
+    const std::shared_ptr<IBuildable>& buildable,
     const glm::vec2& position
 ) const {
     PlacementCheckResult result;
 
-    if (!definition) {
+    if (!buildable) {
         result.valid = false;
         result.hintText = "No buildable selected.";
         return result;
@@ -94,7 +95,7 @@ GameModel::PlacementCheckResult GameModel::EvaluatePlacement(
 
     const int buildCost = DifficultyModel::GetBuildCost(
         m_Difficulty,
-        definition->GetId()
+        buildable->GetId()
     );
 
     if (m_Gold < buildCost) {
@@ -120,8 +121,8 @@ GameModel::PlacementCheckResult GameModel::EvaluatePlacement(
         return result;
     }
 
-    if (!definition->CanPlaceOnPath() &&
-        m_Map.IsCircleOverlappingAnyPath(position, definition->GetFootprintRadius())) {
+    if (!buildable->CanPlaceOnPath() &&
+        m_Map.IsCircleOverlappingAnyPath(position, buildable->GetFootprintRadius())) {
         result.valid = false;
         result.hintText = "Blocked by path.";
         return result;
@@ -134,7 +135,7 @@ GameModel::PlacementCheckResult GameModel::EvaluatePlacement(
 
         const glm::vec2 delta = tower->GetPosition() - position;
         const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-        const float minDistance = tower->GetFootprintRadius() + definition->GetFootprintRadius();
+        const float minDistance = tower->GetFootprintRadius() + buildable->GetFootprintRadius();
 
         if (distance < minDistance) {
             result.valid = false;
@@ -155,16 +156,16 @@ void GameModel::UpdatePlacementPreview(const glm::vec2& worldPos) {
 
     m_Placement.UpdatePreviewPosition(worldPos);
 
-    const auto& definition = m_Placement.GetDefinition();
-    const PlacementCheckResult check = EvaluatePlacement(definition, worldPos);
+    const auto& preview = m_Placement.GetPreviewBuildable();
+    const PlacementCheckResult check = EvaluatePlacement(preview, worldPos);
     m_Placement.SetPreviewFeedback(check.valid, check.hintText);
 }
 
 bool GameModel::CanPlaceBuildable(
-    const std::shared_ptr<IBuildableDefinition>& definition,
+    const std::shared_ptr<IBuildable>& buildable,
     const glm::vec2& position
 ) const {
-    return EvaluatePlacement(definition, position).valid;
+    return EvaluatePlacement(buildable, position).valid;
 }
 
 bool GameModel::ConfirmPlacement() {
@@ -172,10 +173,10 @@ bool GameModel::ConfirmPlacement() {
         return false;
     }
 
-    const auto& definition = m_Placement.GetDefinition();
+    const auto& preview = m_Placement.GetPreviewBuildable();
     const glm::vec2 position = m_Placement.GetPreviewPosition();
 
-    const PlacementCheckResult check = EvaluatePlacement(definition, position);
+    const PlacementCheckResult check = EvaluatePlacement(preview, position);
     m_Placement.SetPreviewFeedback(check.valid, check.hintText);
 
     if (!check.valid) {
@@ -183,21 +184,26 @@ bool GameModel::ConfirmPlacement() {
         return false;
     }
 
-    auto tower = definition->CreateInstance(position);
-    if (!tower) {
+    if (!m_SelectedBuildableEntry) {
+        m_Message = "No selected buildable.";
+        return false;
+    }
+
+    auto buildable = m_SelectedBuildableEntry->factory(position);
+    if (!buildable) {
         m_Message = "Failed to build.";
         return false;
     }
 
     const int buildCost = DifficultyModel::GetBuildCost(
         m_Difficulty,
-        definition->GetId()
+        buildable->GetId()
     );
 
-    m_Towers.push_back(tower);
+    m_Towers.push_back(buildable);
     m_Gold -= buildCost;
 
-    m_Message = "Built " + definition->GetDisplayName();
+    m_Message = "Built " + buildable->GetDisplayName();
     return true;
 }
 
@@ -301,7 +307,7 @@ void GameModel::UpdateEnemies(float deltaTimeMs) {
 void GameModel::UpdateProjectiles(float deltaTimeMs) {
     for (const auto& projectile : m_Projectiles) {
         if (projectile) {
-            projectile->Update(deltaTimeMs);
+            projectile->Update(deltaTimeMs, m_Enemies);
         }
     }
 }
@@ -343,7 +349,7 @@ void GameModel::CleanupObjects() {
         std::remove_if(
             m_Towers.begin(),
             m_Towers.end(),
-            [](const std::shared_ptr<TowerBase>& tower) {
+            [](const std::shared_ptr<IBuildable>& tower) {
                 return !tower || tower->ShouldRemove();
             }
         ),

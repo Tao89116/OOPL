@@ -1,24 +1,28 @@
-//
-// Created by polyunicorn on 2026/3/26.
-//
-
 #ifndef BUILDABLE_REGISTRY_H
 #define BUILDABLE_REGISTRY_H
 
 #include "pch.hpp"
-#include "model/IBuildableDefinition.h"
+#include <functional>
+#include "model/IBuildable.h"
 
 class BuildableRegistry {
 public:
+    using FactoryFn = std::function<std::shared_ptr<IBuildable>(const glm::vec2&)>;
+
+    struct Entry {
+        std::string id;
+        FactoryFn factory;
+    };
+
+public:
     static BuildableRegistry& GetInstance();
 
-    void Register(const std::shared_ptr<IBuildableDefinition>& definition);
+    void Register(const std::string& id, FactoryFn factory);
     void RegisterDefaults();
 
-    const std::vector<std::shared_ptr<IBuildableDefinition>>& GetAll() const { return m_Definitions; }
-
-    std::shared_ptr<IBuildableDefinition> FindById(const std::string& id) const;
-    std::shared_ptr<IBuildableDefinition> GetByIndex(size_t index) const;
+    const std::vector<Entry>& GetAll() const;
+    const Entry* FindById(const std::string& id) const;
+    const Entry* GetByIndex(size_t index) const;
 
 private:
     BuildableRegistry() = default;
@@ -26,7 +30,7 @@ private:
     BuildableRegistry& operator=(const BuildableRegistry&) = delete;
 
 private:
-    std::vector<std::shared_ptr<IBuildableDefinition>> m_Definitions;
+    std::vector<Entry> m_Entries;
     bool m_DefaultsRegistered = false;
 };
 

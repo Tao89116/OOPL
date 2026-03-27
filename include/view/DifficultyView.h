@@ -2,25 +2,28 @@
 // Created by polyunicorn on 2026/3/13.
 //
 
-#ifndef RESULT_VIEW_H
-#define RESULT_VIEW_H
+#ifndef DIFFICULTY_VIEW_H
+#define DIFFICULTY_VIEW_H
 
 #include "pch.hpp"
-#include "SceneType.h"
 #include "ResourceManager.h"
 #include "Util/GameObject.hpp"
 #include "Util/Renderer.hpp"
 #include "Util/Text.hpp"
 
-class ResultView {
+class DifficultyView {
 public:
-    explicit ResultView(ResultType result);
+    DifficultyView();
     void Initialize();
     void Render();
 
 private:
-    ResultType m_Result;
+    void InitializeBackground();
+    void InitializeTitle();
+    void InitializeInfoText();
+    void RegisterToRenderer();
 
+private:
     Util::Renderer m_Renderer;
     ResourceManager& m_Resources = ResourceManager::GetInstance();
 

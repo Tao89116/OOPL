@@ -1,7 +1,3 @@
-//
-// Created by polyunicorn on 2026/3/26.
-//
-
 #include "model/TrapBase.h"
 
 TrapBase::TrapBase(const glm::vec2& position)
@@ -9,37 +5,18 @@ TrapBase::TrapBase(const glm::vec2& position)
 }
 
 void TrapBase::Update(
-    float deltaTimeMs,
+    float,
     std::vector<std::shared_ptr<EnemyModel>>& enemies,
-    std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+    std::vector<std::shared_ptr<ProjectileModel>>&
 ) {
-    (void)deltaTimeMs;
-    (void)projectiles;
-
-    if (m_Expired) {
-        return;
-    }
-
     for (const auto& enemy : enemies) {
-        if (!CanTriggerOn(enemy)) {
+        if (!enemy || !enemy->IsAlive()) {
             continue;
         }
 
-        TriggerOn(enemy);
-
-        if (m_Expired) {
-            return;
+        const float dist = glm::distance(enemy->GetPosition(), m_Position);
+        if (dist <= m_TriggerRadius) {
+            TriggerOn(enemy);
         }
     }
-}
-
-bool TrapBase::CanTriggerOn(const std::shared_ptr<EnemyModel>& enemy) const {
-    if (!enemy || !enemy->CanBeTargeted()) {
-        return false;
-    }
-
-    const glm::vec2 delta = enemy->GetPosition() - m_Position;
-    const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
-
-    return distance <= m_TriggerRadius;
 }

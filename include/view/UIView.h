@@ -2,6 +2,10 @@
 // Created by polyunicorn on 2026/3/13.
 //
 
+//
+// Created by polyunicorn on 2026/3/13.
+//
+
 #ifndef UI_VIEW_H
 #define UI_VIEW_H
 
@@ -20,8 +24,23 @@ public:
     void Sync(const GameModel& model);
 
 private:
+    void InitializeHud();
+    void InitializeSelectedInfo();
+    void InitializeHelpText();
+    void InitializeMessageText();
+    void InitializeButtons();
+    void InitializeButtonLabels();
+    void RegisterObjectsToRenderer();
+
+    void SyncHudText(const GameModel& model);
+    void SyncSelectedInfoText(const GameModel& model);
+    void SyncMessageText(const GameModel& model);
+
+private:
     Util::Renderer& m_Renderer;
     ResourceManager& m_Resources = ResourceManager::GetInstance();
+
+    bool m_Initialized = false;
 
     std::shared_ptr<Util::Text> m_HudText = nullptr;
     std::shared_ptr<Util::GameObject> m_HudObject = nullptr;
