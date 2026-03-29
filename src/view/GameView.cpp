@@ -201,7 +201,7 @@ void GameView::CreateOrUpdatePreviewTower(const GameModel& model) {
 
         auto previewTower = std::make_shared<Util::GameObject>(
             m_Resources.GetImage(preview->GetPreviewSpriteKey()),
-            50.0f
+            100.0f
         );
         previewTower->m_Transform.scale *= 0.8f;
         m_Renderer.AddChild(previewTower);
