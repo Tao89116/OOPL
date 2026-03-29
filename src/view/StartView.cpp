@@ -16,25 +16,25 @@ void StartView::InitializeBackground() {
     m_Background->m_Transform.scale = {scaleX, scaleY};
 }
 
-void StartView::InitializeTitle() {
-    m_TitleText = m_Resources.CreateText(
-        "default", 36, "Bloons Tower Defense Prototype", Util::Color(0, 0, 0));
-    m_TitleObj = std::make_shared<Util::GameObject>(m_TitleText, 100.0f);
-    m_TitleObj->m_Transform.translation = {420.0f, 120.0f};
-}
+// void StartView::InitializeTitle() {
+//     m_TitleText = m_Resources.CreateText(
+//         "default", 36, "Bloons Tower Defense 2", Util::Color(0, 0, 0));
+//     m_TitleObj = std::make_shared<Util::GameObject>(m_TitleText, 100.0f);
+//     m_TitleObj->m_Transform.translation = {0.0f, 0.0f};
+// }
 
 void StartView::InitializeInfoText() {
     m_InfoText = m_Resources.CreateText(
-        "default", 24,
-        "Press ENTER to Start\nPress ESC to Exit",
-        Util::Color(255, 240, 180));
-    m_InfoObj = std::make_shared<Util::GameObject>(m_InfoText, 101.0f);
-    m_InfoObj->m_Transform.translation = {500.0f, 260.0f};
+        "default", 40,
+        "Press ENTER to Start",
+        Util::Color(0, 0, 0));
+    m_InfoObj = std::make_shared<Util::GameObject>(m_InfoText, 100.0f);
+    m_InfoObj->m_Transform.translation = {0.0f, -200.0f};
 }
 
 void StartView::RegisterToRenderer() {
     m_Renderer.AddChild(m_Background);
-    m_Renderer.AddChild(m_TitleObj);
+    //m_Renderer.AddChild(m_TitleObj);
     m_Renderer.AddChild(m_InfoObj);
 }
 
@@ -44,7 +44,7 @@ void StartView::Initialize() {
     }
 
     InitializeBackground();
-    InitializeTitle();
+    //InitializeTitle();
     InitializeInfoText();
     RegisterToRenderer();
 

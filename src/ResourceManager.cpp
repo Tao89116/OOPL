@@ -68,7 +68,8 @@ void ResourceManager::Initialize() {
     m_ImagePaths["tower_glues"]  = root + "/tower-7.png";
 
     m_ImagePaths["tower_slot"] = root + "/slot.png";
-
+    //UI
+    m_ImagePaths["hud"] = root + "/hud.png";
     // Placement preview
     m_ImagePaths["range_circle_valid"]   = root + "/range-circle-valid.png";
     m_ImagePaths["range_circle_invalid"] = root + "/range-circle-invalid.png";

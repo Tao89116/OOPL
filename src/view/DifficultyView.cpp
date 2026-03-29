@@ -32,7 +32,7 @@ void DifficultyView::InitializeInfoText() {
         "default", 24,
         "[1] Easy\n[2] Normal\n[3] Hard\n\nPress BACKSPACE to return",
         Util::Color(255, 240, 180));
-    m_InfoObj = std::make_shared<Util::GameObject>(m_InfoText, 101.0f);
+    m_InfoObj = std::make_shared<Util::GameObject>(m_InfoText, 100.0f);
     m_InfoObj->m_Transform.translation = {540.0f, 240.0f};
 }
 
