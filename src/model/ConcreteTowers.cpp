@@ -174,7 +174,6 @@ void SpikeTrap::TriggerOn(const std::shared_ptr<EnemyModel>& enemy) {
     }
 
     // TODO:
-    // 新陷阱特殊效果放這裡：
-    // - GlueTrap -> enemy->AddStatusEffect(...)
-    // - BombTrap -> 範圍傷害
+    // GlueTrap -> enemy->AddStatusEffect(...)
+    // BombTrap -> 範圍傷害
 }

@@ -24,12 +24,10 @@ protected:
     bool m_Expired = false;
 
     // TODO:
-    // 新陷阱的特殊效果放在 TriggerOn()：
-    // - SpikeTrap: 直接傷害
-    // - GlueTrap : 套 SlowEffect
-    // - BombTrap : 範圍傷害
-    //
-    // ❌ 不要把陷阱效果塞進 GameModel
+    // TriggerOn()：
+    // SpikeTrap: 直接傷害
+    // GlueTrap : 套 SlowEffect
+    // BombTrap : 範圍傷害
 };
 
 #endif

@@ -2,7 +2,8 @@
 
 #include "ResourceManager.h"
 #include <stdexcept>
-
+//路徑為座標
+//導入json
 namespace {
     glm::vec2 ParsePoint(const nlohmann::json& pointJson) {
         if (!pointJson.is_array() || pointJson.size() != 2) {

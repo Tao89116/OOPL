@@ -4,7 +4,7 @@
 
 #include "model/MapModel.h"
 #include "model/MapFactory.h"
-
+//地圖和路徑的model
 MapModel::MapModel(DifficultyType difficulty)
     : m_Data(MapFactory::CreateByDifficulty(difficulty)) {
 }
@@ -48,7 +48,7 @@ bool MapModel::IsCircleOverlappingPath(const glm::vec2& center, float radius, si
 
     return false;
 }
-
+//多路徑
 bool MapModel::IsCircleOverlappingAnyPath(const glm::vec2& center, float radius) const {
     for (size_t i = 0; i < m_Data.paths.size(); ++i) {
         if (IsCircleOverlappingPath(center, radius, i)) {

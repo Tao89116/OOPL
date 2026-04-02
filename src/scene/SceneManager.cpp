@@ -51,7 +51,3 @@ void SceneManager::Update() {
         ChangeScene(m_PendingSceneType);
     }
 }
-// IMPORTANT:
-// Do not switch scene immediately during a scene's Update(),
-// because the current scene object may still be executing.
-// Use RequestSceneChange() and apply it after Update() finishes.

@@ -301,9 +301,4 @@ void UIView::Sync(const GameModel& model) {
     SyncSelectedInfoText(model);
     // SyncMessageText(model);
 
-    // TODO:
-    // 後續 UI 可擴充：
-    // - SyncUpgradePanel()
-    // - SyncTrapInfo()
-    // - SyncWavePreview()
 }

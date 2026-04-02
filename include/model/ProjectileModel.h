@@ -58,7 +58,6 @@ protected:
     ) override;
 
     // TODO:
-    // 之後如果你做狀態系統：
     // target->AddStatusEffect(std::make_shared<FreezeEffect>(freezeDurationMs));
 private:
     float m_FreezeDurationMs = 1200.0f;
