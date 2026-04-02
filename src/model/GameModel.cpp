@@ -7,7 +7,9 @@ GameModel::GameModel(DifficultyType difficulty)
     BuildableRegistry::GetInstance().RegisterDefaults();
     Reset();
 }
-
+//難易度決定初始資源
+//m_message for debug
+//interval後期調整
 void GameModel::SetupDifficulty() {
     switch (m_Difficulty) {
         case DifficultyType::Easy:
@@ -380,14 +382,13 @@ void GameModel::CheckEndState() {
         m_Message = "Defeat.";
     }
 }
-
+//debugmode
 void GameModel::ForceWin() {
     if (m_Lose) {
         return;
     }
     m_Win = true;
     m_RoundRunning = false;
-    m_Message = "Debug: Force Win";
 }
 
 void GameModel::ForceLose() {
@@ -397,5 +398,4 @@ void GameModel::ForceLose() {
     m_Lose = true;
     m_RoundRunning = false;
     m_HP = 0;
-    m_Message = "Debug: Force Lose";
 }

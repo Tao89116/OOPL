@@ -23,10 +23,8 @@ public:
     );
 
     // TODO:
-    // 之後若要做更完整的平衡表，可再補：
-    // - Sell refund ratio
-    // - Income multiplier
-    // - Special mode modifiers
+    // Sell refund ratio
+    // Income multiplier
 };
 
 #endif

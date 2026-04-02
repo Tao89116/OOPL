@@ -41,15 +41,12 @@ protected:
     int m_Damage = 1;
 
     // TODO:
-    // 新攻擊塔若有特殊攻擊，優先放在：
+    // 新攻擊塔若有特殊攻擊放在：
     // 1. Attack() override
     // 2. 或 CreateProjectile() 建立特殊 Projectile
-    //
-    // 例如：
-    // - IceBallTower -> 建立 IceBallProjectile，命中後凍結
-    // - CannonTower  -> 建立 CannonProjectile，命中後範圍爆炸
-    //
-    // ❌ 不要把特殊攻擊塞進 GameModel
+    // 預計:
+    // IceBallTower -> 建立 IceBallProjectile，命中後凍結
+    // CannonTower  -> 建立 CannonProjectile，命中後範圍爆炸
 };
 
 #endif

@@ -248,9 +248,9 @@ void GameView::CreateOrUpdatePreviewRange(const GameModel& model) {
     m_PreviewRangeObject->m_Transform.scale = {scale, scale};
 
     // TODO:
-    // 之後若有特殊 preview：
-    // - Cannon 爆炸半徑
-    // - Trap 觸發範圍
-    // - Support Tower buff 範圍
-    // 可以在這裡依 buildable type 顯示不同 preview
+    // 其他 preview：
+    // Cannon 爆炸半徑
+    // Trap 觸發範圍
+    // Support Tower buff 範圍
+    // 可能?依 buildable type 顯示不同 preview
 }

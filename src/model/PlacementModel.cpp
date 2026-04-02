@@ -1,5 +1,5 @@
 #include "model/PlacementModel.h"
-
+//建塔model
 void PlacementModel::Begin(const BuildableRegistry::Entry* entry) {
     m_IsActive = (entry != nullptr);
     m_SelectedEntry = entry;
