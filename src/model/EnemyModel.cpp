@@ -129,7 +129,6 @@ void EnemyModel::ApplyFreeze(float durationMs) {
     }
 
     m_FreezeRemainMs = std::max(m_FreezeRemainMs, durationMs);
-    m_SpeedMultiplier = 0.0f;
 }
 
 void EnemyModel::ApplySlow(float speedMultiplier, float durationMs) {
