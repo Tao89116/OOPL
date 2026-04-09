@@ -3,6 +3,7 @@
 //
 #include "model/EnemyModel.h"
 
+#include <algorithm>
 #include <cmath>
 
 EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex)
@@ -16,25 +17,25 @@ void EnemyModel::SetupStatsByType() {
     switch (m_Type) {
         case EnemyType::Red:
             m_HP = 1;
-            m_Speed = 0.12f;
+            m_BaseSpeed = 0.12f;
             m_Reward = 15;
             m_SpriteKey = "bloon_0";
             break;
         case EnemyType::Blue:
             m_HP = 2;
-            m_Speed = 0.14f;
+            m_BaseSpeed = 0.14f;
             m_Reward = 20;
             m_SpriteKey = "bloon_1";
             break;
         case EnemyType::Green:
             m_HP = 3;
-            m_Speed = 0.16f;
+            m_BaseSpeed = 0.16f;
             m_Reward = 25;
             m_SpriteKey = "bloon_2";
             break;
         case EnemyType::Yellow:
             m_HP = 4;
-            m_Speed = 0.20f;
+            m_BaseSpeed = 0.20f;
             m_Reward = 30;
             m_SpriteKey = "bloon_3";
             break;
@@ -44,6 +45,14 @@ void EnemyModel::SetupStatsByType() {
 void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
     if (!m_Alive || m_ReachedGoal || path.size() < 2) {
         return;
+    }
+
+    if (m_SlowRemainingMs > 0.0f) {
+        m_SlowRemainingMs -= deltaTimeMs;
+        if (m_SlowRemainingMs <= 0.0f) {
+            m_SlowRemainingMs = 0.0f;
+            m_SlowMultiplier = 1.0f;
+        }
     }
 
     // 如果目前已經在最後一段之後，直接視為到終點
@@ -69,7 +78,7 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
         return;
     }
 
-    const float moveDistance = m_Speed * deltaTimeMs;
+    const float moveDistance = (m_BaseSpeed * m_SlowMultiplier) * deltaTimeMs;
 
     // 這一幀如果會超過 target，就直接吸附到 target，避免來回震盪
     if (moveDistance >= distance) {
@@ -98,4 +107,14 @@ void EnemyModel::TakeDamage(int damage) {
         m_HP = 0;
         m_Alive = false;
     }
+}
+
+void EnemyModel::ApplySlow(float speedMultiplier, float durationMs) {
+    if (!m_Alive || durationMs <= 0.0f) {
+        return;
+    }
+
+    const float clampedMultiplier = std::clamp(speedMultiplier, 0.1f, 1.0f);
+    m_SlowMultiplier = std::min(m_SlowMultiplier, clampedMultiplier);
+    m_SlowRemainingMs = std::max(m_SlowRemainingMs, durationMs);
 }

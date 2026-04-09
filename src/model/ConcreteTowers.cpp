@@ -74,7 +74,7 @@ std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
 IceBallTower::IceBallTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "iceball_tower";
-    m_DisplayName = "IceBall Tower";
+    m_DisplayName = "Ice Ball Tower";
 
     m_SpriteKey = "tower_ice";
     m_PreviewSpriteKey = "tower_ice";
@@ -86,7 +86,7 @@ IceBallTower::IceBallTower(const glm::vec2& position)
     m_ShowRangePreview = true;
     m_PreviewRange = 165.0f;
 
-    m_Range = 165.0f;
+    m_Range = 170.0f;
     m_AttackIntervalMs = 900.0f;
     m_Damage = 2;
 }
@@ -121,7 +121,7 @@ CannonTower::CannonTower(const glm::vec2& position)
     m_ShowRangePreview = true;
     m_PreviewRange = 180.0f;
 
-    m_Range = 180.0f;
+    m_Range = 175.0f;
     m_AttackIntervalMs = 1200.0f;
     m_Damage = 3;
 }
@@ -141,6 +141,76 @@ std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
     );
 }
 
+GlueTower::GlueTower(const glm::vec2& position)
+    : AttackTowerBase(position) {
+    m_Id = "glue_tower";
+    m_DisplayName = "Glue Tower";
+
+    m_SpriteKey = "tower_glues";
+    m_PreviewSpriteKey = "tower_glues";
+
+    m_Cost = 190;
+    m_FootprintRadius = 28.0f;
+    m_CanPlaceOnPath = false;
+
+    m_ShowRangePreview = true;
+    m_PreviewRange = 150.0f;
+
+    m_Range = 150.0f;
+    m_AttackIntervalMs = 700.0f;
+    m_Damage = 1;
+}
+
+std::shared_ptr<ProjectileModel> GlueTower::CreateProjectile(
+    const std::shared_ptr<EnemyModel>& target
+) {
+    if (!target) {
+        return nullptr;
+    }
+
+    return std::make_shared<GlueProjectile>(
+        m_Position,
+        m_Damage,
+        "projectile_1",
+        target
+    );
+}
+
+SuperTower::SuperTower(const glm::vec2& position)
+    : AttackTowerBase(position) {
+    m_Id = "super_tower";
+    m_DisplayName = "Super Tower";
+
+    m_SpriteKey = "tower_super";
+    m_PreviewSpriteKey = "tower_super";
+
+    m_Cost = 420;
+    m_FootprintRadius = 28.0f;
+    m_CanPlaceOnPath = false;
+
+    m_ShowRangePreview = true;
+    m_PreviewRange = 230.0f;
+
+    m_Range = 230.0f;
+    m_AttackIntervalMs = 120.0f;
+    m_Damage = 2;
+}
+
+std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
+    const std::shared_ptr<EnemyModel>& target
+) {
+    if (!target) {
+        return nullptr;
+    }
+
+    return std::make_shared<ProjectileModel>(
+        m_Position,
+        m_Damage,
+        "projectile_0",
+        target
+    );
+}
+
 SpikeTrap::SpikeTrap(const glm::vec2& position)
     : TrapBase(position) {
     m_Id = "spike_trap";
@@ -149,7 +219,7 @@ SpikeTrap::SpikeTrap(const glm::vec2& position)
     m_SpriteKey = "tower_spikes";
     m_PreviewSpriteKey = "tower_spikes";
 
-    //m_Cost = 80;
+    m_Cost = 80;
     m_FootprintRadius = 18.0f;
     m_CanPlaceOnPath = true;
 

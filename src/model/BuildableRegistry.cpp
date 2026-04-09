@@ -29,12 +29,20 @@ void BuildableRegistry::RegisterDefaults() {
         return std::make_shared<TrackTower>(position);
     });
 
-    Register("iceball_tower", [](const glm::vec2& position) -> std::shared_ptr<IBuildable> {
-        return std::make_shared<IceBallTower>(position);
-    });
-
     Register("cannon_tower", [](const glm::vec2& position) -> std::shared_ptr<IBuildable> {
         return std::make_shared<CannonTower>(position);
+    });
+
+    Register("glue_tower", [](const glm::vec2& position) -> std::shared_ptr<IBuildable> {
+        return std::make_shared<GlueTower>(position);
+    });
+
+    Register("super_tower", [](const glm::vec2& position) -> std::shared_ptr<IBuildable> {
+        return std::make_shared<SuperTower>(position);
+    });
+
+    Register("iceball_tower", [](const glm::vec2& position) -> std::shared_ptr<IBuildable> {
+        return std::make_shared<IceBallTower>(position);
     });
 
     Register("spike_trap", [](const glm::vec2& position) -> std::shared_ptr<IBuildable> {

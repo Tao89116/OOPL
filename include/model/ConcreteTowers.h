@@ -44,6 +44,26 @@ protected:
     ) override;
 };
 
+class GlueTower : public AttackTowerBase {
+public:
+    explicit GlueTower(const glm::vec2& position);
+
+protected:
+    std::shared_ptr<ProjectileModel> CreateProjectile(
+        const std::shared_ptr<EnemyModel>& target
+    ) override;
+};
+
+class SuperTower : public AttackTowerBase {
+public:
+    explicit SuperTower(const glm::vec2& position);
+
+protected:
+    std::shared_ptr<ProjectileModel> CreateProjectile(
+        const std::shared_ptr<EnemyModel>& target
+    ) override;
+};
+
 class SpikeTrap : public TrapBase {
 public:
     explicit SpikeTrap(const glm::vec2& position);
