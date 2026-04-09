@@ -20,6 +20,7 @@ public:
 
     void Update(float deltaTimeMs, const std::vector<glm::vec2>& path);
     void TakeDamage(int damage);
+    void ApplyFreeze(float durationMs);
     void ApplySlow(float speedMultiplier, float durationMs);
 
     bool IsAlive() const { return m_Alive; }
@@ -43,8 +44,10 @@ private:
     int m_PathBranchIndex = 0;    // 這隻敵人屬於哪一條 path
     int m_HP = 1;
     float m_BaseSpeed = 0.12f;
+    float m_SpeedMultiplier = 1.0f;
     float m_SlowMultiplier = 1.0f;
-    float m_SlowRemainingMs = 0.0f;
+    float m_FreezeRemainMs = 0.0f;
+    float m_SlowRemainMs = 0.0f;
     int m_Reward = 15;
 
     bool m_Alive = true;

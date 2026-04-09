@@ -47,12 +47,21 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
         return;
     }
 
-    if (m_SlowRemainingMs > 0.0f) {
-        m_SlowRemainingMs -= deltaTimeMs;
-        if (m_SlowRemainingMs <= 0.0f) {
-            m_SlowRemainingMs = 0.0f;
-            m_SlowMultiplier = 1.0f;
+    // 每幀先更新狀態時間，並套用速度倍率
+    m_SpeedMultiplier = 1.0f;
+
+    if (m_FreezeRemainMs > 0.0f) {
+        m_FreezeRemainMs = std::max(0.0f, m_FreezeRemainMs - deltaTimeMs);
+        m_SpeedMultiplier = 0.0f;
+    }
+
+    if (m_SlowRemainMs > 0.0f) {
+        m_SlowRemainMs = std::max(0.0f, m_SlowRemainMs - deltaTimeMs);
+        if (m_SpeedMultiplier > 0.0f) {
+            m_SpeedMultiplier = std::min(m_SpeedMultiplier, m_SlowMultiplier);
         }
+    } else {
+        m_SlowMultiplier = 1.0f;
     }
 
     // 如果目前已經在最後一段之後，直接視為到終點
@@ -78,7 +87,12 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
         return;
     }
 
-    const float moveDistance = (m_BaseSpeed * m_SlowMultiplier) * deltaTimeMs;
+    // 凍結中：本幀不移動，但狀態時間仍會在上面被遞減
+    if (m_SpeedMultiplier <= 0.0f) {
+        return;
+    }
+
+    const float moveDistance = (m_BaseSpeed * m_SpeedMultiplier) * deltaTimeMs;
 
     // 這一幀如果會超過 target，就直接吸附到 target，避免來回震盪
     if (moveDistance >= distance) {
@@ -109,6 +123,15 @@ void EnemyModel::TakeDamage(int damage) {
     }
 }
 
+void EnemyModel::ApplyFreeze(float durationMs) {
+    if (!m_Alive || durationMs <= 0.0f) {
+        return;
+    }
+
+    m_FreezeRemainMs = std::max(m_FreezeRemainMs, durationMs);
+    m_SpeedMultiplier = 0.0f;
+}
+
 void EnemyModel::ApplySlow(float speedMultiplier, float durationMs) {
     if (!m_Alive || durationMs <= 0.0f) {
         return;
@@ -116,5 +139,5 @@ void EnemyModel::ApplySlow(float speedMultiplier, float durationMs) {
 
     const float clampedMultiplier = std::clamp(speedMultiplier, 0.1f, 1.0f);
     m_SlowMultiplier = std::min(m_SlowMultiplier, clampedMultiplier);
-    m_SlowRemainingMs = std::max(m_SlowRemainingMs, durationMs);
+    m_SlowRemainMs = std::max(m_SlowRemainMs, durationMs);
 }
