@@ -88,7 +88,7 @@ IceBallTower::IceBallTower(const glm::vec2& position)
 
     m_Range = 170.0f;
     m_AttackIntervalMs = 900.0f;
-    m_Damage = 2;
+    m_Damage = 0;
 }
 
 std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
@@ -123,7 +123,7 @@ CannonTower::CannonTower(const glm::vec2& position)
 
     m_Range = 175.0f;
     m_AttackIntervalMs = 1200.0f;
-    m_Damage = 3;
+    m_Damage = 1;
 }
 
 std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
@@ -140,6 +140,8 @@ std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
         target
     );
 }
+
+
 
 GlueTower::GlueTower(const glm::vec2& position)
     : AttackTowerBase(position) {
@@ -193,7 +195,7 @@ SuperTower::SuperTower(const glm::vec2& position)
 
     m_Range = 230.0f;
     m_AttackIntervalMs = 120.0f;
-    m_Damage = 2;
+    m_Damage = 1;
 }
 
 std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
@@ -223,10 +225,10 @@ SpikeTrap::SpikeTrap(const glm::vec2& position)
     m_FootprintRadius = 18.0f;
     m_CanPlaceOnPath = true;
 
-    m_ShowRangePreview = false;
-    m_PreviewRange = 0.0f;
-
-    m_TriggerRadius = 18.0f;
+    m_ShowRangePreview = true;
+    m_PreviewRange = 25.0f;
+    //調整氣球的hitbox
+    m_TriggerRadius = 25.0f;
     m_RemainingCharges = 8;
     m_Damage = 1;
 }
