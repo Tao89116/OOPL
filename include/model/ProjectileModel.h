@@ -56,9 +56,6 @@ protected:
         const std::shared_ptr<EnemyModel>& target,
         std::vector<std::shared_ptr<EnemyModel>>& enemies
     ) override;
-
-    // TODO:
-    // target->AddStatusEffect(std::make_shared<FreezeEffect>(freezeDurationMs));
 private:
     float m_FreezeDurationMs = 1200.0f;
 };
