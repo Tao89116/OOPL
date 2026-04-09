@@ -83,4 +83,25 @@ private:
     float m_ExplosionRadius = 75.0f;
 };
 
+// ===================== Glue Projectile =====================
+class GlueProjectile : public ProjectileModel {
+public:
+    GlueProjectile(
+        const glm::vec2& startPos,
+        int damage,
+        const std::string& spriteKey,
+        const std::shared_ptr<EnemyModel>& target
+    );
+
+protected:
+    void OnHit(
+        const std::shared_ptr<EnemyModel>& target,
+        std::vector<std::shared_ptr<EnemyModel>>& enemies
+    ) override;
+
+private:
+    float m_SlowMultiplier = 0.6f;
+    float m_SlowDurationMs = 1600.0f;
+};
+
 #endif

@@ -113,3 +113,27 @@ void CannonProjectile::OnHit(
         }
     }
 }
+
+// ===================== GlueProjectile =====================
+
+GlueProjectile::GlueProjectile(
+    const glm::vec2& startPos,
+    int damage,
+    const std::string& spriteKey,
+    const std::shared_ptr<EnemyModel>& target
+)
+    : ProjectileModel(startPos, damage, spriteKey, target) {
+}
+
+void GlueProjectile::OnHit(
+    const std::shared_ptr<EnemyModel>& target,
+    std::vector<std::shared_ptr<EnemyModel>>& enemies
+) {
+    ProjectileModel::OnHit(target, enemies);
+
+    if (target) {
+        target->ApplySlow(m_SlowMultiplier, m_SlowDurationMs);
+    }
+
+    (void)enemies;
+}
