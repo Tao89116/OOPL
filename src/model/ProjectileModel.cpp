@@ -74,11 +74,9 @@ void IceBallProjectile::OnHit(
 ) {
     ProjectileModel::OnHit(target, enemies);
 
-    // TODO:
-    // 後期 EnemyModel ，把凍結效果放這裡。
-    // 例如：
-    // target->AddStatusEffect(std::make_shared<FreezeEffect>(m_FreezeDurationMs));
-    (void)m_FreezeDurationMs;
+    if (target) {
+        target->ApplyFreeze(m_FreezeDurationMs);
+    }
 }
 
 // ===================== CannonProjectile =====================
