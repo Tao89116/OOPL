@@ -20,6 +20,30 @@ int DifficultyModel::GetBuildCost(
         }
     }
 
+    if (buildableId == "cannon_tower" || buildableId == "bomb_tower") {
+        switch (difficulty) {
+            case DifficultyType::Easy:   return 235;
+            case DifficultyType::Normal: return 260;
+            case DifficultyType::Hard:   return 300;
+        }
+    }
+
+    if (buildableId == "glue_tower") {
+        switch (difficulty) {
+            case DifficultyType::Easy:   return 170;
+            case DifficultyType::Normal: return 190;
+            case DifficultyType::Hard:   return 220;
+        }
+    }
+
+    if (buildableId == "super_tower") {
+        switch (difficulty) {
+            case DifficultyType::Easy:   return 380;
+            case DifficultyType::Normal: return 420;
+            case DifficultyType::Hard:   return 500;
+        }
+    }
+
     if (buildableId == "iceball_tower") {
         switch (difficulty) {
             case DifficultyType::Easy:   return 160;

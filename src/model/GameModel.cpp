@@ -38,8 +38,8 @@ void GameModel::Reset() {
     m_Win = false;
     m_Lose = false;
 
-    m_SelectedBuildableEntry = BuildableRegistry::GetInstance().GetByIndex(0);
-    m_Message = "Press 1/2/3 to choose tower, click to place.";
+    m_SelectedBuildableEntry = BuildableRegistry::GetInstance().FindById("dart_tower");
+    m_Message = "Click tower button (button-0~7) or press 1~7, then click map to place.";
 
     m_Placement.Cancel();
 
