@@ -90,7 +90,7 @@ private:
     bool m_Lose = false;
 
     const BuildableRegistry::Entry* m_SelectedBuildableEntry = nullptr;
-    std::string m_Message = "Press 1/2/3 to choose tower, click to place.";
+    std::string m_Message = "Click tower button (button-0~7) or press 1~7, then click map to place.";
 
     std::vector<std::shared_ptr<IBuildable>> m_Towers;
     std::vector<std::shared_ptr<EnemyModel>> m_Enemies;
