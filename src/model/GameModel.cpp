@@ -315,6 +315,8 @@ void GameModel::UpdateProjectiles(float deltaTimeMs) {
 }
 
 void GameModel::CleanupObjects() {
+    std::vector<std::shared_ptr<EnemyModel>> spawnedChildren;
+
     for (auto it = m_Enemies.begin(); it != m_Enemies.end();) {
         const auto& enemy = *it;
 
@@ -324,16 +326,36 @@ void GameModel::CleanupObjects() {
         }
 
         if (!enemy->IsAlive()) {
-            if (enemy->HasReachedGoal()) {
+            const std::optional<EnemyModel::DeathEvent> deathEvent = enemy->ConsumeDeathEvent();
+            if (!deathEvent.has_value()) {
+                it = m_Enemies.erase(it);
+                continue;
+            }
+
+            if (deathEvent->reachedGoal) {
                 --m_HP;
                 m_Message = "A bloon leaked through!";
             } else {
-                m_Gold += enemy->GetReward();
+                m_Gold += deathEvent->reward;
+
+                for (EnemyType childType : deathEvent->childrenToSpawn) {
+                    auto child = std::make_shared<EnemyModel>(
+                        childType,
+                        enemy->GetPosition(),
+                        enemy->GetPathBranchIndex(),
+                        enemy->GetPathIndex()
+                    );
+                    spawnedChildren.push_back(child);
+                }
             }
             it = m_Enemies.erase(it);
         } else {
             ++it;
         }
+    }
+
+    if (!spawnedChildren.empty()) {
+        m_Enemies.insert(m_Enemies.end(), spawnedChildren.begin(), spawnedChildren.end());
     }
 
     m_Projectiles.erase(
