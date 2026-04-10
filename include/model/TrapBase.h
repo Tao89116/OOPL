@@ -10,6 +10,7 @@ class TrapBase : public TowerBase {
 public:
     explicit TrapBase(const glm::vec2& position);
     ~TrapBase() override = default;
+    bool OnRoundEnded() override;
 
     void Update(
         float deltaTimeMs,

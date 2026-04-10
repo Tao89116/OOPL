@@ -369,6 +369,24 @@ void GameModel::CleanupObjects() {
         m_Projectiles.end()
     );
 
+    const bool roundEndedThisCleanup =
+        m_RoundRunning &&
+        m_SpawnedCount >= static_cast<int>(m_CurrentWave.size()) &&
+        m_Enemies.empty() &&
+        m_Projectiles.empty();
+
+    bool trapsExpiredAtRoundEnd = false;
+    if (roundEndedThisCleanup) {
+        m_RoundRunning = false;
+
+        for (const auto& tower : m_Towers) {
+            if (!tower) {
+                continue;
+            }
+            trapsExpiredAtRoundEnd = tower->OnRoundEnded() || trapsExpiredAtRoundEnd;
+        }
+    }
+
     m_Towers.erase(
         std::remove_if(
             m_Towers.begin(),
@@ -380,18 +398,15 @@ void GameModel::CleanupObjects() {
         m_Towers.end()
     );
 
-    if (m_RoundRunning &&
-        m_SpawnedCount >= static_cast<int>(m_CurrentWave.size()) &&
-        m_Enemies.empty() &&
-        m_Projectiles.empty()) {
-        m_RoundRunning = false;
-
+    if (roundEndedThisCleanup) {
         if (m_Round >= m_TotalRounds) {
             m_Win = true;
-            m_Message = "Victory!";
+            m_Message = trapsExpiredAtRoundEnd ? "Victory! Traps expired." : "Victory!";
         } else {
             ++m_Round;
-            m_Message = "Round cleared. Press SPACE for next round.";
+            m_Message = trapsExpiredAtRoundEnd
+                            ? "Round cleared. Traps expired. Press SPACE for next round."
+                            : "Round cleared. Press SPACE for next round.";
         }
     }
 }
