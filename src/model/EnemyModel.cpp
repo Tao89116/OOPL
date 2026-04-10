@@ -13,6 +13,14 @@ EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathB
     SetupStatsByType();
 }
 
+EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex, int pathIndex)
+    : m_Type(type),
+      m_Position(spawnPosition),
+      m_PathIndex(std::max(0, pathIndex)),
+      m_PathBranchIndex(pathBranchIndex) {
+    SetupStatsByType();
+}
+
 void EnemyModel::SetupStatsByType() {
     switch (m_Type) {
         case EnemyType::Red:
@@ -22,19 +30,19 @@ void EnemyModel::SetupStatsByType() {
             m_SpriteKey = "bloon_0";
             break;
         case EnemyType::Blue:
-            m_HP = 2;
+            m_HP = 1;
             m_BaseSpeed = 0.14f;
             m_Reward = 20;
             m_SpriteKey = "bloon_1";
             break;
         case EnemyType::Green:
-            m_HP = 3;
+            m_HP = 1;
             m_BaseSpeed = 0.16f;
             m_Reward = 25;
             m_SpriteKey = "bloon_2";
             break;
         case EnemyType::Yellow:
-            m_HP = 4;
+            m_HP = 1;
             m_BaseSpeed = 0.20f;
             m_Reward = 30;
             m_SpriteKey = "bloon_3";
@@ -68,6 +76,7 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
     if (m_PathIndex >= static_cast<int>(path.size()) - 1) {
         m_ReachedGoal = true;
         m_Alive = false;
+        m_ChildrenToSpawn.clear();
         return;
     }
 
@@ -83,6 +92,7 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
         if (m_PathIndex >= static_cast<int>(path.size()) - 1) {
             m_ReachedGoal = true;
             m_Alive = false;
+            m_ChildrenToSpawn.clear();
         }
         return;
     }
@@ -103,6 +113,7 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
         if (m_PathIndex >= static_cast<int>(path.size()) - 1) {
             m_ReachedGoal = true;
             m_Alive = false;
+            m_ChildrenToSpawn.clear();
         }
         return;
     }
@@ -112,7 +123,7 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
 }
 
 void EnemyModel::TakeDamage(int damage) {
-    if (!m_Alive) {
+    if (!m_Alive || damage <= 0) {
         return;
     }
 
@@ -120,7 +131,38 @@ void EnemyModel::TakeDamage(int damage) {
     if (m_HP <= 0) {
         m_HP = 0;
         m_Alive = false;
+        m_ReachedGoal = false;
+        m_ChildrenToSpawn = GetChildrenByType(m_Type);
     }
+}
+
+std::optional<EnemyModel::DeathEvent> EnemyModel::ConsumeDeathEvent() {
+    if (m_Alive || m_DeathEventConsumed) {
+        return std::nullopt;
+    }
+
+    m_DeathEventConsumed = true;
+
+    DeathEvent event;
+    event.reachedGoal = m_ReachedGoal;
+    event.reward = m_ReachedGoal ? 0 : m_Reward;
+    event.childrenToSpawn = m_ChildrenToSpawn;
+    m_ChildrenToSpawn.clear();
+    return event;
+}
+
+std::vector<EnemyType> EnemyModel::GetChildrenByType(EnemyType type) {
+    switch (type) {
+        case EnemyType::Red:
+            return {};
+        case EnemyType::Blue:
+            return {EnemyType::Red};
+        case EnemyType::Green:
+            return {EnemyType::Blue};
+        case EnemyType::Yellow:
+            return {EnemyType::Green};
+    }
+    return {};
 }
 
 void EnemyModel::ApplyFreeze(float durationMs) {

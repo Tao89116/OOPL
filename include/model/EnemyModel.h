@@ -6,6 +6,7 @@
 #define ENEMY_MODEL_H
 
 #include "pch.hpp"
+#include <optional>
 
 enum class EnemyType {
     Red,
@@ -16,7 +17,14 @@ enum class EnemyType {
 
 class EnemyModel {
 public:
+    struct DeathEvent {
+        bool reachedGoal = false;
+        int reward = 0;
+        std::vector<EnemyType> childrenToSpawn;
+    };
+
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex);
+    EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex, int pathIndex);
 
     void Update(float deltaTimeMs, const std::vector<glm::vec2>& path);
     void TakeDamage(int damage);
@@ -34,8 +42,11 @@ public:
     const std::string& GetSpriteKey() const { return m_SpriteKey; }
 
     int GetPathBranchIndex() const { return m_PathBranchIndex; }
+    int GetPathIndex() const { return m_PathIndex; }
+    std::optional<DeathEvent> ConsumeDeathEvent();
 private:
     void SetupStatsByType();
+    static std::vector<EnemyType> GetChildrenByType(EnemyType type);
 
 private:
     EnemyType m_Type;
@@ -53,6 +64,8 @@ private:
     bool m_Alive = true;
     bool m_ReachedGoal = false;
     bool m_isSlowed = false;
+    bool m_DeathEventConsumed = false;
+    std::vector<EnemyType> m_ChildrenToSpawn;
 
     std::string m_SpriteKey;
 
