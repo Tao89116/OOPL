@@ -5,6 +5,14 @@ TrapBase::TrapBase(const glm::vec2& position)
     : TowerBase(position) {
 }
 
+bool TrapBase::OnRoundEnded() {
+    if (m_ShouldRemove) {
+        return false;
+    }
+    m_ShouldRemove = true;
+    return true;
+}
+
 void TrapBase::Update(
     float,
     std::vector<std::shared_ptr<EnemyModel>>& enemies,

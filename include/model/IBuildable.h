@@ -40,6 +40,7 @@ public:
 
     // Lifecycle
     virtual bool ShouldRemove() const = 0;
+    virtual bool OnRoundEnded() { return false; }
 };
 
 #endif
