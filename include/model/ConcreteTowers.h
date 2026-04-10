@@ -44,16 +44,6 @@ protected:
     ) override;
 };
 
-class GlueTower : public AttackTowerBase {
-public:
-    explicit GlueTower(const glm::vec2& position);
-
-protected:
-    std::shared_ptr<ProjectileModel> CreateProjectile(
-        const std::shared_ptr<EnemyModel>& target
-    ) override;
-};
-
 class GlueTrap : public TrapBase {//被緩速之後切成"已緩速"狀態
 public:
     explicit GlueTrap(const glm::vec2& position);

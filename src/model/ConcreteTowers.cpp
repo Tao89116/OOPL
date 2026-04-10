@@ -141,43 +141,6 @@ std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
     );
 }
 
-
-
-GlueTower::GlueTower(const glm::vec2& position)
-    : AttackTowerBase(position) {
-    m_Id = "glue_tower";
-    m_DisplayName = "Glue Tower";
-
-    m_SpriteKey = "tower_glues";
-    m_PreviewSpriteKey = "tower_glues";
-
-    m_Cost = 190;
-    m_FootprintRadius = 28.0f;
-    m_CanPlaceOnPath = false;
-
-    m_ShowRangePreview = true;
-    m_PreviewRange = 150.0f;
-
-    m_Range = 150.0f;
-    m_AttackIntervalMs = 700.0f;
-    m_Damage = 1;
-}
-
-std::shared_ptr<ProjectileModel> GlueTower::CreateProjectile(
-    const std::shared_ptr<EnemyModel>& target
-) {
-    if (!target) {
-        return nullptr;
-    }
-
-    return std::make_shared<GlueProjectile>(
-        m_Position,
-        m_Damage,
-        "projectile_1",
-        target
-    );
-}
-
 SuperTower::SuperTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "super_tower";
@@ -284,4 +247,3 @@ void GlueTrap::TriggerOn(const std::shared_ptr<EnemyModel>& enemy) {
     }
 
 }
-
