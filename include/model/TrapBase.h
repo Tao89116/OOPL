@@ -4,6 +4,7 @@
 #include "model/TowerBase.h"
 #include "model/EnemyModel.h"
 #include "model/ProjectileModel.h"
+#include <unordered_set>
 
 class TrapBase : public TowerBase {
 public:
@@ -22,6 +23,7 @@ protected:
 protected:
     float m_TriggerRadius = 40.0f;
     bool m_Expired = false;
+    std::unordered_set<const EnemyModel*> m_TriggeredEnemies;
 
     // TODO:
     // TriggerOn()：
