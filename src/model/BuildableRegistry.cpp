@@ -49,6 +49,10 @@ void BuildableRegistry::RegisterDefaults() {
         return std::make_shared<SpikeTrap>(position);
     });
 
+    Register("boomerang_tower", [](const glm::vec2& position) -> std::shared_ptr<IBuildable> {
+        return std::make_shared<BoomerangTower>(position);
+    });
+
     // TODO:
     // 新塔新增時，只要在這裡註冊 factory 即可
 

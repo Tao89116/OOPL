@@ -26,7 +26,7 @@ const std::array<TowerButtonBinding, 8> kTowerButtons = {{
     {{kVerticalPos + kVerticalInterval,   2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "track_tower",   Util::Keycode::NUM_2},
     {{kVerticalPos + 2 * kVerticalInterval, 2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "iceball_tower",  Util::Keycode::NUM_3},
     {{kVerticalPos + 3 * kVerticalInterval, 2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "cannon_tower",    Util::Keycode::NUM_4},
-    {{kVerticalPos,                       1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "",   Util::Keycode::NUM_5},//boomerang
+    {{kVerticalPos,                       1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "boomerang_tower",   Util::Keycode::NUM_5},
     {{kVerticalPos + kVerticalInterval,   1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "super_tower", Util::Keycode::NUM_6},
     {{kVerticalPos + 2 * kVerticalInterval, 1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "spike_trap",    Util::Keycode::NUM_7},
     {{kVerticalPos + 3 * kVerticalInterval, 1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "glue_trap",              Util::Keycode::NUM_8}

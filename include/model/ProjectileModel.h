@@ -3,6 +3,7 @@
 
 #include "pch.hpp"
 #include "model/EnemyModel.h"
+#include <unordered_set>
 
 class ProjectileModel {
 public:
@@ -23,6 +24,8 @@ public:
     bool IsActive() const { return m_Active; }
     const glm::vec2& GetPosition() const { return m_Position; }
     const std::string& GetSpriteKey() const { return m_SpriteKey; }
+    virtual float GetRotation() const { return m_Rotation; }
+    virtual float GetRenderScale() const { return m_RenderScale; }
 
 protected:
     virtual void OnHit(
@@ -39,6 +42,88 @@ protected:
     bool m_Active = true;
     std::string m_SpriteKey;
     std::weak_ptr<EnemyModel> m_Target;
+    float m_Rotation = 0.0f;
+    float m_RenderScale = 1.0f;
+};
+
+class DirectionalProjectile : public ProjectileModel {
+public:
+    DirectionalProjectile(
+        const glm::vec2& startPos,
+        int damage,
+        const std::string& spriteKey,
+        const glm::vec2& direction,
+        float maxDistance,
+        float speed = 0.7f
+    );
+
+    void Update(
+        float deltaTimeMs,
+        std::vector<std::shared_ptr<EnemyModel>>& enemies
+    ) override;
+
+protected:
+    glm::vec2 m_Direction = {1.0f, 0.0f};
+    float m_MaxDistance = 80.0f;
+    float m_TraveledDistance = 0.0f;
+    float m_HitRadius = 10.0f;
+};
+
+class ExpandingAoEProjectile : public ProjectileModel {
+public:
+    ExpandingAoEProjectile(
+        const glm::vec2& centerPos,
+        int damage,
+        const std::string& spriteKey,
+        float maxRadius,
+        float expandDurationMs,
+        float freezeDurationMs
+    );
+
+    void Update(
+        float deltaTimeMs,
+        std::vector<std::shared_ptr<EnemyModel>>& enemies
+    ) override;
+
+protected:
+    glm::vec2 m_Center;
+    float m_MaxRadius = 90.0f;
+    float m_CurrentRadius = 0.0f;
+    float m_ExpandDurationMs = 350.0f;
+    float m_ElapsedMs = 0.0f;
+    float m_FreezeDurationMs = 1200.0f;
+    std::unordered_set<const EnemyModel*> m_AffectedEnemies;
+};
+
+class BoomerangProjectile : public ProjectileModel {
+public:
+    BoomerangProjectile(
+        const glm::vec2& startPos,
+        int damage,
+        const std::string& spriteKey,
+        const glm::vec2& direction,
+        float maxRange,
+        float lifetimeMs,
+        float arcHeight,
+        int maxPierce
+    );
+
+    void Update(
+        float deltaTimeMs,
+        std::vector<std::shared_ptr<EnemyModel>>& enemies
+    ) override;
+
+private:
+    glm::vec2 m_Origin;
+    glm::vec2 m_Direction = {1.0f, 0.0f};
+    glm::vec2 m_Perpendicular = {0.0f, 1.0f};
+    float m_MaxRange = 130.0f;
+    float m_LifetimeMs = 700.0f;
+    float m_ElapsedMs = 0.0f;
+    float m_ArcHeight = 38.0f;
+    float m_HitRadius = 12.0f;
+    int m_MaxPierce = 5;
+    std::unordered_set<const EnemyModel*> m_HitEnemies;
 };
 
 // ===================== IceBall Projectile =====================

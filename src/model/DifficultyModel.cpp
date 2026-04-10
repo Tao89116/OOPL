@@ -60,6 +60,14 @@ int DifficultyModel::GetBuildCost(
         }
     }
 
+    if (buildableId == "boomerang_tower") {
+        switch (difficulty) {
+            case DifficultyType::Easy:   return 200;
+            case DifficultyType::Normal: return 220;
+            case DifficultyType::Hard:   return 260;
+        }
+    }
+
     return 999999;
 }
 
