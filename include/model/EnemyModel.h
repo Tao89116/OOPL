@@ -52,6 +52,7 @@ private:
 
     bool m_Alive = true;
     bool m_ReachedGoal = false;
+    bool m_isSlowed = false;
 
     std::string m_SpriteKey;
 
