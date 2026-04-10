@@ -19,6 +19,17 @@ public:
     explicit TrackTower(const glm::vec2& position);
 
 protected:
+    void Update(
+        float deltaTimeMs,
+        std::vector<std::shared_ptr<EnemyModel>>& enemies,
+        std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+    ) override;
+
+    void Attack(
+        const std::shared_ptr<EnemyModel>& target,
+        std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+    ) override;
+
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;
@@ -61,6 +72,16 @@ private:
 class SuperTower : public AttackTowerBase {
 public:
     explicit SuperTower(const glm::vec2& position);
+
+protected:
+    std::shared_ptr<ProjectileModel> CreateProjectile(
+        const std::shared_ptr<EnemyModel>& target
+    ) override;
+};
+
+class BoomerangTower : public AttackTowerBase {
+public:
+    explicit BoomerangTower(const glm::vec2& position);
 
 protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(

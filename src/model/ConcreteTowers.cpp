@@ -1,5 +1,6 @@
 #include "model/ConcreteTowers.h"
 #include "model/ProjectileModel.h"
+#include <array>
 
 DartTower::DartTower(const glm::vec2& position)
     : AttackTowerBase(position) {
@@ -59,16 +60,68 @@ TrackTower::TrackTower(const glm::vec2& position)
 std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
-    if (!target) {
-        return nullptr;
-    }
-
-    return std::make_shared<ProjectileModel>(
+    (void)target;
+    return std::make_shared<DirectionalProjectile>(
         m_Position,
         m_Damage,
         "projectile_1",
-        target
+        glm::vec2(1.0f, 0.0f),
+        72.0f,
+        0.9f
     );
+}
+
+void TrackTower::Update(
+    float deltaTimeMs,
+    std::vector<std::shared_ptr<EnemyModel>>& enemies,
+    std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+) {
+    UpdateCooldown(deltaTimeMs);
+
+    bool hasEnemyInRange = false;
+    for (const auto& enemy : enemies) {
+        if (!enemy || !enemy->IsAlive()) {
+            continue;
+        }
+
+        if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
+            hasEnemyInRange = true;
+            break;
+        }
+    }
+
+    if (hasEnemyInRange && m_CooldownMs <= 0.0f) {
+        Attack(nullptr, projectiles);
+        m_CooldownMs = m_AttackIntervalMs;
+    }
+}
+
+void TrackTower::Attack(
+    const std::shared_ptr<EnemyModel>& target,
+    std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+) {
+    (void)target;
+    static const std::array<glm::vec2, 8> kDirections = {{
+        {0.0f, 1.0f},
+        {0.7071f, 0.7071f},
+        {1.0f, 0.0f},
+        {0.7071f, -0.7071f},
+        {0.0f, -1.0f},
+        {-0.7071f, -0.7071f},
+        {-1.0f, 0.0f},
+        {-0.7071f, 0.7071f}
+    }};
+
+    for (const auto& direction : kDirections) {
+        projectiles.push_back(std::make_shared<DirectionalProjectile>(
+            m_Position,
+            m_Damage,
+            "projectile_1",
+            direction,
+            72.0f,
+            0.9f
+        ));
+    }
 }
 
 IceBallTower::IceBallTower(const glm::vec2& position)
@@ -94,15 +147,15 @@ IceBallTower::IceBallTower(const glm::vec2& position)
 std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
-    if (!target) {
-        return nullptr;
-    }
+    (void)target;
 
-    return std::make_shared<IceBallProjectile>(
+    return std::make_shared<ExpandingAoEProjectile>(
         m_Position,
         m_Damage,
         "projectile_2",
-        target
+        92.0f,
+        380.0f,
+        1200.0f
     );
 }
 
@@ -173,6 +226,49 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
         m_Damage,
         "projectile_5",
         target
+    );
+}
+
+BoomerangTower::BoomerangTower(const glm::vec2& position)
+    : AttackTowerBase(position) {
+    m_Id = "boomerang_tower";
+    m_DisplayName = "Boomerang Tower";
+
+    m_SpriteKey = "tower_boom";
+    m_PreviewSpriteKey = "tower_boom";
+
+    m_Cost = 220;
+    m_FootprintRadius = 28.0f;
+    m_CanPlaceOnPath = false;
+
+    m_ShowRangePreview = true;
+    m_PreviewRange = 160.0f;
+
+    m_Range = 160.0f;
+    m_AttackIntervalMs = 700.0f;
+    m_Damage = 1;
+}
+
+std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
+    const std::shared_ptr<EnemyModel>& target
+) {
+    if (!target) {
+        return nullptr;
+    }
+
+    const glm::vec2 toEnemy = target->GetPosition() - m_Position;
+    const float len = glm::length(toEnemy);
+    const glm::vec2 direction = (len > 0.0001f) ? toEnemy / len : glm::vec2(1.0f, 0.0f);
+
+    return std::make_shared<BoomerangProjectile>(
+        m_Position,
+        m_Damage,
+        "projectile_4",
+        direction,
+        130.0f,
+        760.0f,
+        36.0f,
+        6
     );
 }
 

@@ -147,6 +147,9 @@ void GameView::SyncProjectileObjects(const GameModel& model) {
         }
 
         found->second->m_Transform.translation = projectile->GetPosition();
+        found->second->m_Transform.rotation = projectile->GetRotation();
+        const float projectileScale = 0.8f * projectile->GetRenderScale();
+        found->second->m_Transform.scale = {projectileScale, projectileScale};
     }
 
     for (auto it = m_ProjectileObjects.begin(); it != m_ProjectileObjects.end();) {
