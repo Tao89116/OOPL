@@ -12,7 +12,11 @@ enum class EnemyType {
     Red,
     Blue,
     Green,
-    Yellow
+    Yellow,
+    Black,
+    White,
+    Lead,
+    Rainbow
 };
 
 class EnemyModel {
@@ -45,7 +49,7 @@ public:
     int GetPathIndex() const { return m_PathIndex; }
     std::optional<DeathEvent> ConsumeDeathEvent();
 private:
-    void SetupStatsByType();
+    void SetupStatsByType(EnemyType type);
     static std::vector<EnemyType> GetChildrenByType(EnemyType type);
 
 private:
