@@ -133,10 +133,15 @@ void EnemyModel::ApplyFreeze(float durationMs) {
 
 void EnemyModel::ApplySlow(float speedMultiplier, float durationMs) {
     if (!m_Alive || durationMs <= 0.0f) {
+        m_isSlowed = false;
+        return;
+    }
+    if (durationMs > 0.0f && m_isSlowed == true) {
         return;
     }
 
     const float clampedMultiplier = std::clamp(speedMultiplier, 0.1f, 1.0f);
     m_SlowMultiplier = std::min(m_SlowMultiplier, clampedMultiplier);
     m_SlowRemainMs = std::max(m_SlowRemainMs, durationMs);
+    m_isSlowed = true;
 }

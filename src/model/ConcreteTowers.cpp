@@ -208,7 +208,7 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
     return std::make_shared<ProjectileModel>(
         m_Position,
         m_Damage,
-        "projectile_0",
+        "projectile_5",
         target
     );
 }
@@ -249,3 +249,39 @@ void SpikeTrap::TriggerOn(const std::shared_ptr<EnemyModel>& enemy) {
     // GlueTrap -> enemy->AddStatusEffect(...)
     // BombTrap -> 範圍傷害
 }
+
+GlueTrap::GlueTrap(const glm::vec2& position)
+    : TrapBase(position) {
+    m_Id = "glue_trap";
+    m_DisplayName = "Glue Trap";
+
+    m_SpriteKey = "tower_glues";
+    m_PreviewSpriteKey = "tower_glues";
+
+    m_Cost = 80;
+    m_FootprintRadius = 18.0f;
+    m_CanPlaceOnPath = true;
+
+    m_ShowRangePreview = true;
+    m_PreviewRange = 25.0f;
+    //調整氣球的hitbox
+    m_TriggerRadius = 25.0f;
+    m_RemainingCharges = 20;
+    m_Damage = 0;
+}
+
+void GlueTrap::TriggerOn(const std::shared_ptr<EnemyModel>& enemy) {
+    if (!enemy) {
+        return;
+    }
+
+    enemy->TakeDamage(m_Damage);
+    enemy->ApplySlow(m_SlowMultiplier,m_SlowDurationMs);
+    --m_RemainingCharges;
+
+    if (m_RemainingCharges <= 0) {
+        m_ShouldRemove = true;
+    }
+
+}
+

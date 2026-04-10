@@ -53,7 +53,7 @@ void UIView::InitializeHelpText() {
     m_HelpText = m_Resources.CreateText(
         "default",
         20,
-        "Click Tower Button / 1~7 Select \n Left Click Build \n Right Click Cancel \n SPACE Start \n P Pause",
+        "Click Tower Button \n Left Click Build \n Right Click Cancel \n SPACE Start \n P Pause",
         Util::Color(255, 255, 255)
     );
 

@@ -28,7 +28,7 @@ int DifficultyModel::GetBuildCost(
         }
     }
 
-    if (buildableId == "glue_tower") {
+    if (buildableId == "glue_trap") {
         switch (difficulty) {
             case DifficultyType::Easy:   return 170;
             case DifficultyType::Normal: return 190;
