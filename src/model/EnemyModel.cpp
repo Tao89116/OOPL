@@ -5,12 +5,108 @@
 
 #include <algorithm>
 #include <cmath>
+#include <unordered_map>
+
+namespace {
+struct EnemyProfile {
+    int hp;
+    float speed;
+    int reward;
+    const char* sprite;
+    std::vector<EnemyType> childrenOnPop;
+};
+
+template <typename TTag>
+struct EnemyProfileTraits;
+
+struct RedTag {};
+struct BlueTag {};
+struct GreenTag {};
+struct YellowTag {};
+struct BlackTag {};
+struct WhiteTag {};
+struct LeadTag {};
+struct RainbowTag {};
+
+template <>
+struct EnemyProfileTraits<RedTag> {
+    static constexpr EnemyType Type = EnemyType::Red;
+    static EnemyProfile Build() { return {1, 0.12f, 15, "bloon_0", {}}; }
+};
+
+template <>
+struct EnemyProfileTraits<BlueTag> {
+    static constexpr EnemyType Type = EnemyType::Blue;
+    static EnemyProfile Build() { return {1, 0.14f, 20, "bloon_1", {EnemyType::Red}}; }
+};
+
+template <>
+struct EnemyProfileTraits<GreenTag> {
+    static constexpr EnemyType Type = EnemyType::Green;
+    static EnemyProfile Build() { return {1, 0.16f, 25, "bloon_2", {EnemyType::Blue}}; }
+};
+
+template <>
+struct EnemyProfileTraits<YellowTag> {
+    static constexpr EnemyType Type = EnemyType::Yellow;
+    static EnemyProfile Build() { return {1, 0.20f, 30, "bloon_3", {EnemyType::Green}}; }
+};
+
+template <>
+struct EnemyProfileTraits<BlackTag> {
+    static constexpr EnemyType Type = EnemyType::Black;
+    static EnemyProfile Build() { return {1, 0.21f, 35, "bloon_4", {EnemyType::Yellow, EnemyType::Yellow}}; }
+};
+
+template <>
+struct EnemyProfileTraits<WhiteTag> {
+    static constexpr EnemyType Type = EnemyType::White;
+    static EnemyProfile Build() { return {1, 0.21f, 35, "bloon_5", {EnemyType::Yellow, EnemyType::Yellow}}; }
+};
+
+template <>
+struct EnemyProfileTraits<LeadTag> {
+    static constexpr EnemyType Type = EnemyType::Lead;
+    static EnemyProfile Build() { return {2, 0.10f, 45, "bloon_6", {EnemyType::Black, EnemyType::Black}}; }
+};
+
+template <>
+struct EnemyProfileTraits<RainbowTag> {
+    static constexpr EnemyType Type = EnemyType::Rainbow;
+    static EnemyProfile Build() {
+        return {1, 0.22f, 60, "bloon_7", {EnemyType::Black, EnemyType::Black, EnemyType::White, EnemyType::White}};
+    }
+};
+
+template <typename TTag>
+void RegisterEnemyProfile(std::unordered_map<EnemyType, EnemyProfile>& profiles) {
+    profiles.emplace(EnemyProfileTraits<TTag>::Type, EnemyProfileTraits<TTag>::Build());
+}
+
+template <typename... TTags>
+std::unordered_map<EnemyType, EnemyProfile> BuildEnemyProfiles() {
+    std::unordered_map<EnemyType, EnemyProfile> profiles;
+    (RegisterEnemyProfile<TTags>(profiles), ...);
+    return profiles;
+}
+
+const EnemyProfile& GetProfile(EnemyType type) {
+    static const std::unordered_map<EnemyType, EnemyProfile> kProfiles =
+        BuildEnemyProfiles<RedTag, BlueTag, GreenTag, YellowTag, BlackTag, WhiteTag, LeadTag, RainbowTag>();
+
+    const auto it = kProfiles.find(type);
+    if (it == kProfiles.end()) {
+        return kProfiles.at(EnemyType::Red);
+    }
+    return it->second;
+}
+}
 
 EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex)
     : m_Type(type),
       m_Position(spawnPosition),
       m_PathBranchIndex(pathBranchIndex) {
-    SetupStatsByType();
+    SetupStatsByType(type);
 }
 
 EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex, int pathIndex)
@@ -18,36 +114,15 @@ EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathB
       m_Position(spawnPosition),
       m_PathIndex(std::max(0, pathIndex)),
       m_PathBranchIndex(pathBranchIndex) {
-    SetupStatsByType();
+    SetupStatsByType(type);
 }
 
-void EnemyModel::SetupStatsByType() {
-    switch (m_Type) {
-        case EnemyType::Red:
-            m_HP = 1;
-            m_BaseSpeed = 0.12f;
-            m_Reward = 15;
-            m_SpriteKey = "bloon_0";
-            break;
-        case EnemyType::Blue:
-            m_HP = 1;
-            m_BaseSpeed = 0.14f;
-            m_Reward = 20;
-            m_SpriteKey = "bloon_1";
-            break;
-        case EnemyType::Green:
-            m_HP = 1;
-            m_BaseSpeed = 0.16f;
-            m_Reward = 25;
-            m_SpriteKey = "bloon_2";
-            break;
-        case EnemyType::Yellow:
-            m_HP = 1;
-            m_BaseSpeed = 0.20f;
-            m_Reward = 30;
-            m_SpriteKey = "bloon_3";
-            break;
-    }
+void EnemyModel::SetupStatsByType(EnemyType type) {
+    const EnemyProfile& profile = GetProfile(type);
+    m_HP = profile.hp;
+    m_BaseSpeed = profile.speed;
+    m_Reward = profile.reward;
+    m_SpriteKey = profile.sprite;
 }
 
 void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
@@ -152,17 +227,7 @@ std::optional<EnemyModel::DeathEvent> EnemyModel::ConsumeDeathEvent() {
 }
 
 std::vector<EnemyType> EnemyModel::GetChildrenByType(EnemyType type) {
-    switch (type) {
-        case EnemyType::Red:
-            return {};
-        case EnemyType::Blue:
-            return {EnemyType::Red};
-        case EnemyType::Green:
-            return {EnemyType::Blue};
-        case EnemyType::Yellow:
-            return {EnemyType::Green};
-    }
-    return {};
+    return GetProfile(type).childrenOnPop;
 }
 
 void EnemyModel::ApplyFreeze(float durationMs) {

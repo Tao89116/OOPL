@@ -244,9 +244,9 @@ void GameModel::SetupWave() {
     } else if (m_Round == 3) {
         m_CurrentWave = {EnemyType::Blue, EnemyType::Blue, EnemyType::Green, EnemyType::Green, EnemyType::Yellow, EnemyType::Blue};
     } else if (m_Round == 4) {
-        m_CurrentWave = {EnemyType::Green, EnemyType::Green, EnemyType::Yellow, EnemyType::Yellow, EnemyType::Blue, EnemyType::Green};
+        m_CurrentWave = {EnemyType::Green, EnemyType::Green, EnemyType::Yellow, EnemyType::Yellow, EnemyType::Black, EnemyType::White};
     } else {
-        m_CurrentWave = {EnemyType::Yellow, EnemyType::Yellow, EnemyType::Yellow, EnemyType::Green, EnemyType::Green, EnemyType::Blue, EnemyType::Yellow};
+        m_CurrentWave = {EnemyType::Lead, EnemyType::Yellow, EnemyType::Green, EnemyType::Black, EnemyType::White, EnemyType::Rainbow};
     }
 }
 
