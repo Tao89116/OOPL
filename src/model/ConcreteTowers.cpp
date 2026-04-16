@@ -153,7 +153,7 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
         m_Position,
         m_Damage,
         "projectile_2",
-        92.0f,
+        165.0f,
         380.0f,
         1200.0f
     );

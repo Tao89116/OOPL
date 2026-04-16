@@ -13,7 +13,7 @@ struct EnemyProfile {
     float speed;
     int reward;
     const char* sprite;
-    std::vector<EnemyType> childrenOnPop;
+    std::vector<EnemyType> childrenOnPop;//氣球破掉邏輯 高級氣球會分裂成更多氣球
 };
 
 template <typename TTag>
