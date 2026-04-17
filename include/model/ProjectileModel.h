@@ -26,6 +26,7 @@ public:
     const std::string& GetSpriteKey() const { return m_SpriteKey; }
     virtual float GetRotation() const { return m_Rotation; }
     virtual float GetRenderScale() const { return m_RenderScale; }
+    virtual float GetVisualRadius() const { return -1.0f; }
 
 protected:
     virtual void OnHit(
@@ -84,6 +85,7 @@ public:
         float deltaTimeMs,
         std::vector<std::shared_ptr<EnemyModel>>& enemies
     ) override;
+    float GetVisualRadius() const override { return m_CurrentRadius; }
 
 protected:
     glm::vec2 m_Center;

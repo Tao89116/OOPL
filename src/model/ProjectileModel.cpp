@@ -135,7 +135,7 @@ void ExpandingAoEProjectile::Update(
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_ExpandDurationMs, 1.0f), 0.0f, 1.0f);
     m_CurrentRadius = m_MaxRadius * t;
-    m_RenderScale = std::max(t, 0.01f);
+    m_RenderScale = t;
 
     for (const auto& enemy : enemies) {
         if (!enemy || !enemy->CanBeTargeted()) {

@@ -5,6 +5,7 @@
 #include "view/GameView.h"
 
 #include "GameConfig.h"
+#include <algorithm>
 #include <unordered_set>
 
 GameView::GameView(DifficultyType difficulty)
@@ -73,6 +74,7 @@ void GameView::SyncTowerObjects(const GameModel& model) {
         }
 
         found->second->m_Transform.translation = tower->GetPosition();
+        found->second->m_Transform.rotation = tower->GetRotation();
     }
 
     for (auto it = m_TowerObjects.begin(); it != m_TowerObjects.end();) {
@@ -135,12 +137,16 @@ void GameView::SyncProjectileObjects(const GameModel& model) {
 
         auto found = m_ProjectileObjects.find(key);
         if (found == m_ProjectileObjects.end()) {
+            auto projectileImage = m_Resources.GetImage(projectile->GetSpriteKey());
             auto obj = std::make_shared<Util::GameObject>(
-                m_Resources.GetImage(projectile->GetSpriteKey()),
+                projectileImage,
                 40.0f
             );
 
             obj->m_Transform.scale *= 0.8f;
+            if (projectile->GetVisualRadius() >= 0.0f) {
+                obj->SetPivot(projectileImage->GetSize() * 0.5f);
+            }
             m_Renderer.AddChild(obj);
             m_ProjectileObjects[key] = obj;
             found = m_ProjectileObjects.find(key);
@@ -148,7 +154,13 @@ void GameView::SyncProjectileObjects(const GameModel& model) {
 
         found->second->m_Transform.translation = projectile->GetPosition();
         found->second->m_Transform.rotation = projectile->GetRotation();
-        const float projectileScale = 0.8f * projectile->GetRenderScale();
+        float projectileScale = 0.8f * projectile->GetRenderScale();
+        const float visualRadius = projectile->GetVisualRadius();
+        if (visualRadius >= 0.0f) {
+            auto projectileImage = m_Resources.GetImage(projectile->GetSpriteKey());
+            const float textureRadius = std::max(projectileImage->GetSize().x * 0.5f, 1.0f);
+            projectileScale = visualRadius / textureRadius;
+        }
         found->second->m_Transform.scale = {projectileScale, projectileScale};
     }
 

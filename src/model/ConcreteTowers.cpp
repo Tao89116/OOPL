@@ -1,6 +1,7 @@
 #include "model/ConcreteTowers.h"
 #include "model/ProjectileModel.h"
 #include <array>
+#include <cmath>
 
 DartTower::DartTower(const glm::vec2& position)
     : AttackTowerBase(position) {
@@ -79,6 +80,7 @@ void TrackTower::Update(
     UpdateCooldown(deltaTimeMs);
 
     bool hasEnemyInRange = false;
+    glm::vec2 faceDirection = {0.0f, 0.0f};
     for (const auto& enemy : enemies) {
         if (!enemy || !enemy->IsAlive()) {
             continue;
@@ -86,8 +88,13 @@ void TrackTower::Update(
 
         if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
             hasEnemyInRange = true;
+            faceDirection = enemy->GetPosition() - m_Position;
             break;
         }
+    }
+
+    if (glm::length(faceDirection) > 0.0001f) {
+        SetRotation(std::atan2(faceDirection.y, faceDirection.x));
     }
 
     if (hasEnemyInRange && m_CooldownMs <= 0.0f) {
@@ -136,10 +143,10 @@ IceBallTower::IceBallTower(const glm::vec2& position)
     m_FootprintRadius = 30.0f;
     m_CanPlaceOnPath = false;
 
-    m_ShowRangePreview = true;
-    m_PreviewRange = 165.0f;
-
     m_Range = 170.0f;
+
+    m_ShowRangePreview = true;
+    m_PreviewRange = m_Range;
     m_AttackIntervalMs = 900.0f;
     m_Damage = 0;
 }
@@ -152,8 +159,8 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
     return std::make_shared<ExpandingAoEProjectile>(
         m_Position,
         m_Damage,
-        "projectile_2",
-        165.0f,
+        "range_circle_valid",
+        m_Range,
         380.0f,
         1200.0f
     );
