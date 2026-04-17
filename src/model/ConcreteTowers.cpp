@@ -155,8 +155,49 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
         "projectile_2",
         m_Range,
         380.0f,
-        1200.0f
+        0.0f
     );
+}
+
+void IceBallTower::Update(
+    float deltaTimeMs,
+    std::vector<std::shared_ptr<EnemyModel>>& enemies,
+    std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+) {
+    UpdateCooldown(deltaTimeMs);
+
+    bool hasEnemyInRange = false;
+    for (const auto& enemy : enemies) {
+        if (!enemy || !enemy->CanBeTargeted()) {
+            continue;
+        }
+
+        if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
+            hasEnemyInRange = true;
+            break;
+        }
+    }
+
+    if (!hasEnemyInRange || m_CooldownMs > 0.0f) {
+        return;
+    }
+
+    for (const auto& enemy : enemies) {
+        if (!enemy || !enemy->CanBeTargeted()) {
+            continue;
+        }
+
+        if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
+            enemy->ApplyFreeze(m_FreezeDurationMs);
+        }
+    }
+
+    auto effect = CreateProjectile(nullptr);
+    if (effect) {
+        projectiles.push_back(effect);
+    }
+
+    m_CooldownMs = m_AttackIntervalMs;
 }
 
 CannonTower::CannonTower(const glm::vec2& position)
