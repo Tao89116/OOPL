@@ -155,7 +155,7 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
         "projectile_2",
         m_Range,
         380.0f,
-        0.0f
+        m_FreezeDurationMs
     );
 }
 
@@ -180,16 +180,6 @@ void IceBallTower::Update(
 
     if (!hasEnemyInRange || m_CooldownMs > 0.0f) {
         return;
-    }
-
-    for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->CanBeTargeted()) {
-            continue;
-        }
-
-        if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
-            enemy->ApplyFreeze(m_FreezeDurationMs);
-        }
     }
 
     auto effect = CreateProjectile(nullptr);
