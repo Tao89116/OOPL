@@ -23,8 +23,12 @@ public:
 
     glm::vec2 GetPosition() const override { return m_Position; }
     void SetPosition(const glm::vec2& position) override { m_Position = position; }
+    float GetRotation() const override { return m_Rotation; }
 
     bool ShouldRemove() const override { return m_ShouldRemove; }
+
+protected:
+    void SetRotation(float rotation) { m_Rotation = rotation; }
 
 protected:
     std::string m_Id;
@@ -41,6 +45,7 @@ protected:
     float m_PreviewRange = 0.0f;
 
     glm::vec2 m_Position = {0.0f, 0.0f};
+    float m_Rotation = 0.0f;
     bool m_ShouldRemove = false;
 };
 

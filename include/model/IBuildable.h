@@ -37,6 +37,7 @@ public:
     // Transform
     virtual glm::vec2 GetPosition() const = 0;
     virtual void SetPosition(const glm::vec2& position) = 0;
+    virtual float GetRotation() const = 0;
 
     // Lifecycle
     virtual bool ShouldRemove() const = 0;

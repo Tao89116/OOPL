@@ -1,4 +1,5 @@
 #include "model/AttackTowerBase.h"
+#include <cmath>
 
 AttackTowerBase::AttackTowerBase(const glm::vec2& position)
     : TowerBase(position) {
@@ -14,6 +15,11 @@ void AttackTowerBase::Update(
     auto target = FindTarget(enemies);
     if (!target) {
         return;
+    }
+
+    const glm::vec2 direction = target->GetPosition() - m_Position;
+    if (glm::length(direction) > 0.0001f) {
+        SetRotation(std::atan2(direction.y, direction.x));
     }
 
     if (m_CooldownMs <= 0.0f) {
