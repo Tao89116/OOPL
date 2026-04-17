@@ -144,7 +144,6 @@ void GameView::SyncProjectileObjects(const GameModel& model) {
             );
 
             obj->m_Transform.scale *= 0.8f;
-            obj->SetPivot(projectileImage->GetSize() * 0.5f);
             m_Renderer.AddChild(obj);
             m_ProjectileObjects[key] = obj;
             found = m_ProjectileObjects.find(key);
