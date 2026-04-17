@@ -123,7 +123,6 @@ ExpandingAoEProjectile::ExpandingAoEProjectile(
     m_Position = centerPos;
     m_Speed = 0.0f; // 固定在塔中心，不做飛行投射
     m_CurrentRadius = m_InitialRadius;
-    m_PreviousRadius = m_InitialRadius;
     m_RenderScale = 0.0f;
 }
 
@@ -137,31 +136,30 @@ void ExpandingAoEProjectile::Update(
 
     // 保持特效錨定在中心點，避免任何「被丟出去」的位移感
     m_Position = m_Center;
-    m_PreviousRadius = m_CurrentRadius;
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_ExpandDurationMs, 1.0f), 0.0f, 1.0f);
     m_CurrentRadius = m_InitialRadius + (m_MaxRadius - m_InitialRadius) * t;
     m_RenderScale = t;
-    const float halfThickness = m_WaveThickness * 0.5f;
-    const float waveInner = std::max(0.0f, m_PreviousRadius - halfThickness);
-    const float waveOuter = m_CurrentRadius + halfThickness;
 
-    for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->CanBeTargeted()) {
-            continue;
-        }
+    if (!m_HasAppliedEffect) {
+        for (const auto& enemy : enemies) {
+            if (!enemy || !enemy->CanBeTargeted()) {
+                continue;
+            }
 
-        const EnemyModel* key = enemy.get();
-        if (m_AffectedEnemies.find(key) != m_AffectedEnemies.end()) {
-            continue;
-        }
+            const EnemyModel* key = enemy.get();
+            if (m_AffectedEnemies.find(key) != m_AffectedEnemies.end()) {
+                continue;
+            }
 
-        const float dist = glm::distance(enemy->GetPosition(), m_Center);
-        if (dist >= waveInner && dist <= waveOuter) {
-            enemy->TakeDamage(m_Damage);
-            enemy->ApplyFreeze(m_FreezeDurationMs);
-            m_AffectedEnemies.insert(key);
+            const float dist = glm::distance(enemy->GetPosition(), m_Center);
+            if (dist <= m_MaxRadius) {
+                enemy->TakeDamage(m_Damage);
+                enemy->ApplyFreeze(m_FreezeDurationMs);
+                m_AffectedEnemies.insert(key);
+            }
         }
+        m_HasAppliedEffect = true;
     }
 
     if (m_ElapsedMs >= m_ExpandDurationMs) {
