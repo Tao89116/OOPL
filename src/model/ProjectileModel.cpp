@@ -121,6 +121,7 @@ ExpandingAoEProjectile::ExpandingAoEProjectile(
       m_ExpandDurationMs(expandDurationMs),
       m_FreezeDurationMs(freezeDurationMs) {
     m_Position = centerPos;
+    m_Speed = 0.0f; // 固定在塔中心，不做飛行投射
     m_CurrentRadius = m_InitialRadius;
     m_PreviousRadius = m_InitialRadius;
     m_RenderScale = 0.0f;
@@ -134,6 +135,8 @@ void ExpandingAoEProjectile::Update(
         return;
     }
 
+    // 保持特效錨定在中心點，避免任何「被丟出去」的位移感
+    m_Position = m_Center;
     m_PreviousRadius = m_CurrentRadius;
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_ExpandDurationMs, 1.0f), 0.0f, 1.0f);
