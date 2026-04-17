@@ -148,9 +148,10 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
     (void)target;
+    const glm::vec2 auraCenter = m_Position + glm::vec2(m_FootprintRadius, m_FootprintRadius);
 
     return std::make_shared<ExpandingAoEProjectile>(
-        m_Position,
+        auraCenter,
         m_Damage,
         "range_circle_valid",
         m_Range,
