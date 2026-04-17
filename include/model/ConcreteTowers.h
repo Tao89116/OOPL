@@ -49,6 +49,9 @@ protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;
+
+private:
+    float m_FreezeDurationMs = 1200.0f;
 };
 
 class CannonTower : public AttackTowerBase {
