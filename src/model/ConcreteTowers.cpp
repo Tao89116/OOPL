@@ -159,7 +159,7 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
     return std::make_shared<ExpandingAoEProjectile>(
         m_Position,
         m_Damage,
-        "range_circle_valid",
+        "projectile_2",
         m_Range,
         380.0f,
         1200.0f
