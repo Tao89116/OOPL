@@ -121,7 +121,9 @@ ExpandingAoEProjectile::ExpandingAoEProjectile(
       m_ExpandDurationMs(expandDurationMs),
       m_FreezeDurationMs(freezeDurationMs) {
     m_Position = centerPos;
-    m_RenderScale = 0.0f;
+    m_CurrentRadius = m_InitialRadius;
+    m_PreviousRadius = m_InitialRadius;
+    m_RenderScale = 1.0f;
 }
 
 void ExpandingAoEProjectile::Update(
@@ -132,10 +134,13 @@ void ExpandingAoEProjectile::Update(
         return;
     }
 
+    m_PreviousRadius = m_CurrentRadius;
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_ExpandDurationMs, 1.0f), 0.0f, 1.0f);
-    m_CurrentRadius = m_MaxRadius * t;
-    m_RenderScale = t;
+    m_CurrentRadius = m_InitialRadius + (m_MaxRadius - m_InitialRadius) * t;
+    m_RenderScale = 1.0f;
+    const float waveInner = std::max(0.0f, m_PreviousRadius - m_WaveThickness);
+    const float waveOuter = m_CurrentRadius + m_WaveThickness;
 
     for (const auto& enemy : enemies) {
         if (!enemy || !enemy->CanBeTargeted()) {
@@ -148,7 +153,7 @@ void ExpandingAoEProjectile::Update(
         }
 
         const float dist = glm::distance(enemy->GetPosition(), m_Center);
-        if (dist <= m_CurrentRadius) {
+        if (dist >= waveInner && dist <= waveOuter) {
             enemy->TakeDamage(m_Damage);
             enemy->ApplyFreeze(m_FreezeDurationMs);
             m_AffectedEnemies.insert(key);
