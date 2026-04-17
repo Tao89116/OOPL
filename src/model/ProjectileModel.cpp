@@ -123,7 +123,7 @@ ExpandingAoEProjectile::ExpandingAoEProjectile(
     m_Position = centerPos;
     m_CurrentRadius = m_InitialRadius;
     m_PreviousRadius = m_InitialRadius;
-    m_RenderScale = 1.0f;
+    m_RenderScale = 0.0f;
 }
 
 void ExpandingAoEProjectile::Update(
@@ -138,9 +138,10 @@ void ExpandingAoEProjectile::Update(
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_ExpandDurationMs, 1.0f), 0.0f, 1.0f);
     m_CurrentRadius = m_InitialRadius + (m_MaxRadius - m_InitialRadius) * t;
-    m_RenderScale = 1.0f;
-    const float waveInner = std::max(0.0f, m_PreviousRadius - m_WaveThickness);
-    const float waveOuter = m_CurrentRadius + m_WaveThickness;
+    m_RenderScale = t;
+    const float halfThickness = m_WaveThickness * 0.5f;
+    const float waveInner = std::max(0.0f, m_PreviousRadius - halfThickness);
+    const float waveOuter = m_CurrentRadius + halfThickness;
 
     for (const auto& enemy : enemies) {
         if (!enemy || !enemy->CanBeTargeted()) {

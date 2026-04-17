@@ -92,8 +92,8 @@ protected:
     float m_MaxRadius = 90.0f;
     float m_CurrentRadius = 0.0f;
     float m_PreviousRadius = 0.0f;
-    float m_InitialRadius = 10.0f;
-    float m_WaveThickness = 18.0f;
+    float m_InitialRadius = 0.0f;
+    float m_WaveThickness = 8.0f;
     float m_ExpandDurationMs = 350.0f;
     float m_ElapsedMs = 0.0f;
     float m_FreezeDurationMs = 1200.0f;
