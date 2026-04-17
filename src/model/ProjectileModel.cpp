@@ -232,6 +232,7 @@ void BoomerangProjectile::Update(
 
 // ===================== IceBallProjectile =====================
 
+
 IceBallProjectile::IceBallProjectile(
     const glm::vec2& startPos,
     int damage,
