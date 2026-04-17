@@ -1,7 +1,6 @@
 #include "model/ConcreteTowers.h"
 #include "model/ProjectileModel.h"
 #include <array>
-#include <cmath>
 
 DartTower::DartTower(const glm::vec2& position)
     : AttackTowerBase(position) {
@@ -80,7 +79,6 @@ void TrackTower::Update(
     UpdateCooldown(deltaTimeMs);
 
     bool hasEnemyInRange = false;
-    glm::vec2 faceDirection = {0.0f, 0.0f};
     for (const auto& enemy : enemies) {
         if (!enemy || !enemy->IsAlive()) {
             continue;
@@ -88,13 +86,8 @@ void TrackTower::Update(
 
         if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
             hasEnemyInRange = true;
-            faceDirection = enemy->GetPosition() - m_Position;
             break;
         }
-    }
-
-    if (glm::length(faceDirection) > 0.0001f) {
-        SetRotation(std::atan2(faceDirection.y, faceDirection.x));
     }
 
     if (hasEnemyInRange && m_CooldownMs <= 0.0f) {
