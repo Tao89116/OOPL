@@ -40,6 +40,12 @@ public:
     explicit IceBallTower(const glm::vec2& position);
 
 protected:
+    void Update(
+        float deltaTimeMs,
+        std::vector<std::shared_ptr<EnemyModel>>& enemies,
+        std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+    ) override;
+
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;

@@ -147,16 +147,34 @@ IceBallTower::IceBallTower(const glm::vec2& position)
 std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
-    if (!target) {
-        return nullptr;
-    }
+    (void)target;
 
-    return std::make_shared<IceBallProjectile>(
+    return std::make_shared<ExpandingAoEProjectile>(
         m_Position,
         m_Damage,
-        "projectile_2",
-        target
+        "range_circle_valid",
+        m_Range,
+        380.0f,
+        1200.0f
     );
+}
+
+void IceBallTower::Update(
+    float deltaTimeMs,
+    std::vector<std::shared_ptr<EnemyModel>>& enemies,
+    std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+) {
+    UpdateCooldown(deltaTimeMs);
+
+    auto target = FindTarget(enemies);
+    if (!target) {
+        return;
+    }
+
+    if (m_CooldownMs <= 0.0f) {
+        Attack(target, projectiles);
+        m_CooldownMs = m_AttackIntervalMs;
+    }
 }
 
 CannonTower::CannonTower(const glm::vec2& position)
