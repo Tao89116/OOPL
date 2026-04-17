@@ -62,12 +62,14 @@ void GameView::SyncTowerObjects(const GameModel& model) {
 
         auto found = m_TowerObjects.find(key);
         if (found == m_TowerObjects.end()) {
+            auto towerImage = m_Resources.GetImage(tower->GetSpriteKey());
             auto obj = std::make_shared<Util::GameObject>(
-                m_Resources.GetImage(tower->GetSpriteKey()),
+                towerImage,
                 20.0f
             );
 
             obj->m_Transform.scale *= 0.8f;
+            obj->SetPivot(towerImage->GetSize() * 0.5f);
             m_Renderer.AddChild(obj);
             m_TowerObjects[key] = obj;
             found = m_TowerObjects.find(key);

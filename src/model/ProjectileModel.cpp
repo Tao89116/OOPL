@@ -134,6 +134,8 @@ void ExpandingAoEProjectile::Update(
 
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_ExpandDurationMs, 1.0f), 0.0f, 1.0f);
+    m_Position = m_Center;
+    m_Rotation = 0.0f;
     m_CurrentRadius = m_MaxRadius * t;
     m_RenderScale = t;
 
