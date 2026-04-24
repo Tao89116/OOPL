@@ -53,6 +53,7 @@ void ResourceManager::Initialize() {
     m_ImagePaths["projectile_0"] = root + "/projectile-0.png";
     m_ImagePaths["projectile_1"] = root + "/projectile-1.png";
     m_ImagePaths["projectile_2"] = root + "/projectile-2.png";
+    m_ImagePaths["projectile_2_test"] = root + "/projectile-2-test.png";
     m_ImagePaths["projectile_3"] = root + "/projectile-3.png";
     m_ImagePaths["projectile_4"] = root + "/projectile-4.png";
     m_ImagePaths["projectile_5"] = root + "/projectile-5.png";

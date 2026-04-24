@@ -38,7 +38,7 @@ protected:
 
 protected:
     glm::vec2 m_Position;
-    float m_Speed = 0.55f;
+    float m_Speed = 1.0f;
     int m_Damage = 1;
     bool m_Active = true;
     std::string m_SpriteKey;
