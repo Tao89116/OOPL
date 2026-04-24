@@ -74,6 +74,15 @@ void GameController::HandleInput(GameModel& model) {
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) {
         model.CancelPlacement();
     }
+    if (Util::Input::IsKeyUp(Util::Keycode::X)) {
+        model.SellSelectedTower();
+    }
+
+    if (isMouseLeftUp && !consumedByTowerButton) {
+        if (model.SelectPlacedTowerAt(mousePos)) {
+            consumedByTowerButton = true;
+        }
+    }
 
     if (model.GetPlacement().IsActive()) {
         model.UpdatePlacementPreview(mousePos);

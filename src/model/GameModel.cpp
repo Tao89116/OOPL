@@ -1,6 +1,7 @@
 #include "model/GameModel.h"
 #include "GameConfig.h"
 #include "model/DifficultyModel.h"
+#include <limits>
 
 GameModel::GameModel(DifficultyType difficulty)
     : m_Difficulty(difficulty), m_Map(difficulty) {
@@ -40,6 +41,7 @@ void GameModel::Reset() {
 
     m_SelectedBuildableEntry = BuildableRegistry::GetInstance().FindById("dart_tower");
     m_Message = "Click tower button (button-0~7) or press 1~7, then click map to place.";
+    m_SelectedPlacedTower.reset();
 
     m_Placement.Cancel();
 
@@ -81,6 +83,65 @@ void GameModel::BeginPlacement(const BuildableRegistry::Entry* entry) {
 void GameModel::CancelPlacement() {
     m_Placement.Cancel();
     m_Message = "Placement cancelled.";
+}
+
+bool GameModel::SelectPlacedTowerAt(const glm::vec2& worldPos) {
+    std::shared_ptr<IBuildable> bestTower;
+    float bestDistance = std::numeric_limits<float>::max();
+
+    for (const auto& tower : m_Towers) {
+        if (!tower) {
+            continue;
+        }
+
+        const glm::vec2 delta = tower->GetPosition() - worldPos;
+        const float distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+        if (distance <= tower->GetFootprintRadius() && distance < bestDistance) {
+            bestDistance = distance;
+            bestTower = tower;
+        }
+    }
+
+    if (!bestTower) {
+        m_SelectedPlacedTower.reset();
+        return false;
+    }
+
+    m_SelectedPlacedTower = bestTower;
+    const int refund = DifficultyModel::GetBuildCost(m_Difficulty, bestTower->GetId()) / 2;
+    m_Message = "Selected " + bestTower->GetDisplayName() +
+                " (press X to sell, refund " + std::to_string(refund) + ")";
+    return true;
+}
+
+bool GameModel::SellSelectedTower() {
+    if (!m_SelectedPlacedTower) {
+        m_Message = "No tower selected. Click a tower first.";
+        return false;
+    }
+
+    const auto target = m_SelectedPlacedTower;
+    const int refund = DifficultyModel::GetBuildCost(m_Difficulty, target->GetId()) / 2;
+
+    const auto eraseBegin = std::remove_if(
+        m_Towers.begin(),
+        m_Towers.end(),
+        [&](const std::shared_ptr<IBuildable>& tower) {
+            return tower == target;
+        }
+    );
+
+    if (eraseBegin == m_Towers.end()) {
+        m_SelectedPlacedTower.reset();
+        m_Message = "Selected tower no longer exists.";
+        return false;
+    }
+
+    m_Towers.erase(eraseBegin, m_Towers.end());
+    m_Gold += refund;
+    m_SelectedPlacedTower.reset();
+    m_Message = "Tower sold. +" + std::to_string(refund) + " gold.";
+    return true;
 }
 
 GameModel::PlacementCheckResult GameModel::EvaluatePlacement(
@@ -391,8 +452,12 @@ void GameModel::CleanupObjects() {
         std::remove_if(
             m_Towers.begin(),
             m_Towers.end(),
-            [](const std::shared_ptr<IBuildable>& tower) {
-                return !tower || tower->ShouldRemove();
+            [this](const std::shared_ptr<IBuildable>& tower) {
+                const bool shouldRemove = !tower || tower->ShouldRemove();
+                if (shouldRemove && tower == m_SelectedPlacedTower) {
+                    m_SelectedPlacedTower.reset();
+                }
+                return shouldRemove;
             }
         ),
         m_Towers.end()

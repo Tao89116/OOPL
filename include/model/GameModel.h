@@ -24,6 +24,8 @@ public:
     void CancelPlacement();
     void UpdatePlacementPreview(const glm::vec2& worldPos);
     bool ConfirmPlacement();
+    bool SelectPlacedTowerAt(const glm::vec2& worldPos);
+    bool SellSelectedTower();
 
     bool CanPlaceBuildable(const std::shared_ptr<IBuildable>& buildable, const glm::vec2& position) const;
 
@@ -46,6 +48,7 @@ public:
     DifficultyType GetDifficulty() const { return m_Difficulty; }
     const BuildableRegistry::Entry* GetSelectedBuildableEntry() const { return m_SelectedBuildableEntry; }
     const std::string& GetMessage() const { return m_Message; }
+    const std::shared_ptr<IBuildable>& GetSelectedPlacedTower() const { return m_SelectedPlacedTower; }
 
     const MapModel& GetMap() const { return m_Map; }
     const PlacementModel& GetPlacement() const { return m_Placement; }
@@ -91,6 +94,7 @@ private:
 
     const BuildableRegistry::Entry* m_SelectedBuildableEntry = nullptr;
     std::string m_Message = "Click tower button (button-0~7) or press 1~7, then click map to place.";
+    std::shared_ptr<IBuildable> m_SelectedPlacedTower;
 
     std::vector<std::shared_ptr<IBuildable>> m_Towers;
     std::vector<std::shared_ptr<EnemyModel>> m_Enemies;
