@@ -38,7 +38,7 @@ protected:
 
 protected:
     glm::vec2 m_Position;
-    float m_Speed = 0.55f;
+    float m_Speed = 1.0f;
     int m_Damage = 1;
     bool m_Active = true;
     std::string m_SpriteKey;
@@ -91,9 +91,11 @@ protected:
     glm::vec2 m_Center;
     float m_MaxRadius = 90.0f;
     float m_CurrentRadius = 0.0f;
+    float m_InitialRadius = 0.0f;
     float m_ExpandDurationMs = 350.0f;
     float m_ElapsedMs = 0.0f;
     float m_FreezeDurationMs = 1200.0f;
+    bool m_HasAppliedEffect = false;
     std::unordered_set<const EnemyModel*> m_AffectedEnemies;
 };
 

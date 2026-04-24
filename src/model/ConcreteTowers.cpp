@@ -136,11 +136,11 @@ IceBallTower::IceBallTower(const glm::vec2& position)
     m_FootprintRadius = 30.0f;
     m_CanPlaceOnPath = false;
 
-    m_Range = 170.0f;
+    m_Range = 110.0f;
 
     m_ShowRangePreview = true;
     m_PreviewRange = m_Range;
-    m_AttackIntervalMs = 900.0f;
+    m_AttackIntervalMs = 2000.0f;
     m_Damage = 0;
 }
 
@@ -152,10 +152,10 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
     return std::make_shared<ExpandingAoEProjectile>(
         m_Position,
         m_Damage,
-        "projectile_2",
+        "projectile_2_test",
         m_Range,
         380.0f,
-        0.0f
+        m_FreezeDurationMs
     );
 }
 
@@ -182,17 +182,14 @@ void IceBallTower::Update(
         return;
     }
 
-    for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->CanBeTargeted()) {
-            continue;
-        }
-
-        if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
-            enemy->ApplyFreeze(m_FreezeDurationMs);
-        }
-    }
-
-    auto effect = CreateProjectile(nullptr);
+    auto effect = std::make_shared<ExpandingAoEProjectile>(
+        m_Position,
+        m_Damage,
+        "projectile_2_test",
+        m_Range,
+        380.0f,
+        m_FreezeDurationMs
+    );
     if (effect) {
         projectiles.push_back(effect);
     }
