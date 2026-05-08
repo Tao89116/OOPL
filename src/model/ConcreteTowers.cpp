@@ -284,7 +284,7 @@ BoomerangTower::BoomerangTower(const glm::vec2& position)
     m_PreviewRange = 160.0f;
 
     m_Range = 160.0f;
-    m_AttackIntervalMs = 700.0f;
+    m_AttackIntervalMs = 1000.0f;
     m_Damage = 1;
 }
 
@@ -306,7 +306,7 @@ std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
         "projectile_4",
         direction,
         diameter,
-        760.0f,
+        300.0f,
         2
     );
 }
