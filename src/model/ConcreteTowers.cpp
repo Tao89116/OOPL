@@ -307,7 +307,7 @@ std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
         direction,
         diameter,
         760.0f,
-        6
+        2
     );
 }
 

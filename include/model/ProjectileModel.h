@@ -125,7 +125,7 @@ private:
     float m_LifetimeMs = 700.0f;
     float m_ElapsedMs = 0.0f;
     float m_HitRadius = 12.0f;
-    int m_MaxPierce = 5;
+    int m_MaxPierce = 2;
     std::unordered_set<const EnemyModel*> m_HitEnemies;
 };
 

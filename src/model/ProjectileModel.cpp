@@ -180,7 +180,7 @@ BoomerangProjectile::BoomerangProjectile(
       m_Origin(startPos),
       m_Radius(diameter * 0.5f),
       m_LifetimeMs(lifetimeMs),
-      m_MaxPierce(maxPierce) {
+      m_MaxPierce(std::clamp(maxPierce, 1, 2)) {
     const float len = glm::length(direction);
     if (len > 0.0001f) {
         m_Direction = direction / len;
