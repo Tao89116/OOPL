@@ -1,5 +1,6 @@
 #include "model/ConcreteTowers.h"
 #include "model/ProjectileModel.h"
+#include <algorithm>
 #include <array>
 
 DartTower::DartTower(const glm::vec2& position)
@@ -297,16 +298,16 @@ std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
     const glm::vec2 toEnemy = target->GetPosition() - m_Position;
     const float len = glm::length(toEnemy);
     const glm::vec2 direction = (len > 0.0001f) ? toEnemy / len : glm::vec2(1.0f, 0.0f);
+    const float diameter = std::max(len, 1.0f);
 
     return std::make_shared<BoomerangProjectile>(
         m_Position,
         m_Damage,
         "projectile_4",
         direction,
-        130.0f,
+        diameter,
         760.0f,
-        36.0f,
-        6
+        2
     );
 }
 

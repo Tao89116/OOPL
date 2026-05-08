@@ -172,21 +172,20 @@ BoomerangProjectile::BoomerangProjectile(
     int damage,
     const std::string& spriteKey,
     const glm::vec2& direction,
-    float maxRange,
+    float diameter,
     float lifetimeMs,
-    float arcHeight,
     int maxPierce
 )
     : ProjectileModel(startPos, damage, spriteKey, nullptr),
       m_Origin(startPos),
-      m_MaxRange(maxRange),
+      m_Radius(diameter * 0.5f),
       m_LifetimeMs(lifetimeMs),
-      m_ArcHeight(arcHeight),
-      m_MaxPierce(maxPierce) {
+      m_MaxPierce(std::clamp(maxPierce, 1, 2)) {
     const float len = glm::length(direction);
     if (len > 0.0001f) {
         m_Direction = direction / len;
     }
+    m_CircleCenter = m_Origin + m_Direction * m_Radius;
     m_Perpendicular = {-m_Direction.y, m_Direction.x};
 }
 
@@ -202,10 +201,11 @@ void BoomerangProjectile::Update(
 
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_LifetimeMs, 1.0f), 0.0f, 1.0f);
-    const float outward = (t <= 0.5f) ? (t * 2.0f) : ((1.0f - t) * 2.0f);
-    const float sideOffset = m_ArcHeight * std::sin(glm::pi<float>() * t);
+    const float angle = glm::two_pi<float>() * t;
 
-    m_Position = m_Origin + m_Direction * (outward * m_MaxRange) + m_Perpendicular * sideOffset;
+    m_Position = m_CircleCenter
+        - m_Direction * (m_Radius * std::cos(angle))
+        + m_Perpendicular * (m_Radius * std::sin(angle));
 
     const glm::vec2 movement = m_Position - prevPos;
     if (glm::length(movement) > 0.0001f) {
