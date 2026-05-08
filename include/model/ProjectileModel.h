@@ -106,9 +106,8 @@ public:
         int damage,
         const std::string& spriteKey,
         const glm::vec2& direction,
-        float maxRange,
+        float diameter,
         float lifetimeMs,
-        float arcHeight,
         int maxPierce
     );
 
@@ -121,10 +120,10 @@ private:
     glm::vec2 m_Origin;
     glm::vec2 m_Direction = {1.0f, 0.0f};
     glm::vec2 m_Perpendicular = {0.0f, 1.0f};
-    float m_MaxRange = 130.0f;
+    glm::vec2 m_CircleCenter = {0.0f, 0.0f};
+    float m_Radius = 65.0f;
     float m_LifetimeMs = 700.0f;
     float m_ElapsedMs = 0.0f;
-    float m_ArcHeight = 38.0f;
     float m_HitRadius = 12.0f;
     int m_MaxPierce = 5;
     std::unordered_set<const EnemyModel*> m_HitEnemies;
