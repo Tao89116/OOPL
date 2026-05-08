@@ -1,6 +1,7 @@
 #include "ResourceManager.h"
 
 #include "Util/Logger.hpp"
+#include <filesystem>
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
@@ -75,6 +76,10 @@ void ResourceManager::Initialize() {
     m_ImagePaths["tower_slot"] = root + "/slot.png";
     //UI
     m_ImagePaths["hud"] = root + "/hud.png";
+
+    // Animations
+    m_ImagePaths["bananacat_sheet"] = root + "/bananacatframes.png";
+    RegisterSpriteSheetAnimation("bananacat", "bananacatframes.png", 5, 10, 80);
     // Placement preview
     m_ImagePaths["range_circle_valid"]   = root + "/range-circle-valid.png";
     m_ImagePaths["range_circle_invalid"] = root + "/range-circle-invalid.png";
@@ -86,6 +91,118 @@ void ResourceManager::Initialize() {
     RegisterJson("map_paths", "map_paths.json");
 
     LOG_TRACE("ResourceManager initialized.");
+}
+
+void ResourceManager::RegisterSpriteSheetAnimation(
+    const std::string& key,
+    const std::string& relativePath,
+    int columns,
+    int rows,
+    std::size_t intervalMs,
+    bool looping,
+    std::size_t cooldownMs
+) {
+    if (columns <= 0 || rows <= 0) {
+        throw std::runtime_error("Invalid sprite sheet grid for animation: " + key);
+    }
+
+    const std::string root = std::string(RESOURCE_DIR);
+    m_SpriteSheetAnimations[key] = SpriteSheetAnimationSpec{
+        root + "/" + relativePath,
+        columns,
+        rows,
+        intervalMs,
+        looping,
+        cooldownMs
+    };
+}
+
+std::vector<std::string> ResourceManager::GetSpriteSheetFramePaths(const std::string& key) const {
+    const auto found = m_SpriteSheetAnimations.find(key);
+    if (found == m_SpriteSheetAnimations.end()) {
+        throw std::runtime_error("Animation key not found: " + key);
+    }
+
+    const SpriteSheetAnimationSpec& spec = found->second;
+    const std::filesystem::path sheetPath(spec.path);
+    const std::filesystem::path frameDirectory =
+        sheetPath.parent_path() / ".generated" / (sheetPath.stem().string() + "_frames");
+
+    std::filesystem::create_directories(frameDirectory);
+
+    std::vector<std::string> framePaths;
+    framePaths.reserve(static_cast<std::size_t>(spec.columns * spec.rows));
+
+    for (int row = 0; row < spec.rows; ++row) {
+        for (int column = 0; column < spec.columns; ++column) {
+            const int index = row * spec.columns + column;
+            std::ostringstream fileName;
+            fileName << sheetPath.stem().string() << "_" << index << ".png";
+            framePaths.push_back((frameDirectory / fileName.str()).string());
+        }
+    }
+
+    const bool allFramesExist = std::all_of(
+        framePaths.begin(),
+        framePaths.end(),
+        [](const std::string& path) { return std::filesystem::exists(path); }
+    );
+    if (allFramesExist) {
+        return framePaths;
+    }
+
+    std::shared_ptr<SDL_Surface> sheet(IMG_Load(spec.path.c_str()), SDL_FreeSurface);
+    if (sheet == nullptr) {
+        throw std::runtime_error("Failed to load animation sprite sheet: " + spec.path);
+    }
+
+    const int frameWidth = sheet->w / spec.columns;
+    const int frameHeight = sheet->h / spec.rows;
+    if (frameWidth <= 0 || frameHeight <= 0) {
+        throw std::runtime_error("Invalid frame size for animation: " + key);
+    }
+
+    for (int row = 0; row < spec.rows; ++row) {
+        for (int column = 0; column < spec.columns; ++column) {
+            const int index = row * spec.columns + column;
+            const std::string& framePath = framePaths.at(static_cast<std::size_t>(index));
+
+            SDL_Rect sourceRect{column * frameWidth, row * frameHeight, frameWidth, frameHeight};
+            std::shared_ptr<SDL_Surface> frame(
+                SDL_CreateRGBSurfaceWithFormat(0, frameWidth, frameHeight, 32, SDL_PIXELFORMAT_RGBA32),
+                SDL_FreeSurface
+            );
+            if (frame == nullptr) {
+                throw std::runtime_error("Failed to create animation frame surface: " + key);
+            }
+
+            SDL_SetSurfaceBlendMode(sheet.get(), SDL_BLENDMODE_NONE);
+            if (SDL_BlitSurface(sheet.get(), &sourceRect, frame.get(), nullptr) != 0) {
+                throw std::runtime_error("Failed to slice animation frame: " + key);
+            }
+            if (IMG_SavePNG(frame.get(), framePath.c_str()) != 0) {
+                throw std::runtime_error("Failed to save animation frame: " + framePath);
+            }
+        }
+    }
+
+    return framePaths;
+}
+
+std::shared_ptr<Util::Animation> ResourceManager::CreateAnimation(const std::string& key) {
+    const auto found = m_SpriteSheetAnimations.find(key);
+    if (found == m_SpriteSheetAnimations.end()) {
+        throw std::runtime_error("Animation key not found: " + key);
+    }
+
+    const SpriteSheetAnimationSpec& spec = found->second;
+    return std::make_shared<Util::Animation>(
+        GetSpriteSheetFramePaths(key),
+        true,
+        spec.intervalMs,
+        spec.looping,
+        spec.cooldownMs
+    );
 }
 
 void ResourceManager::RegisterJson(const std::string& key, const std::string& relativePath) {
@@ -123,6 +240,7 @@ void ResourceManager::Clear() {
     m_ImagePaths.clear();
     m_FontPaths.clear();
     m_JsonPaths.clear();
+    m_SpriteSheetAnimations.clear();
     m_ImageCache.clear();
     m_JsonCache.clear();
 }

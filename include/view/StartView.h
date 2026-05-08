@@ -7,6 +7,7 @@
 
 #include "pch.hpp"
 #include "ResourceManager.h"
+#include "Util/Animation.hpp"
 #include "Util/GameObject.hpp"
 #include "Util/Renderer.hpp"
 #include "Util/Text.hpp"
@@ -21,6 +22,7 @@ private:
     void InitializeBackground();
     void InitializeTitle();
     void InitializeInfoText();
+    void InitializeBananaCat();
     void RegisterToRenderer();
 
 private:
@@ -34,6 +36,8 @@ private:
     std::shared_ptr<Util::GameObject> m_TitleObj = nullptr;
     std::shared_ptr<Util::Text> m_InfoText = nullptr;
     std::shared_ptr<Util::GameObject> m_InfoObj = nullptr;
+    std::shared_ptr<Util::Animation> m_BananaCatAnimation = nullptr;
+    std::shared_ptr<Util::GameObject> m_BananaCatObj = nullptr;
 };
 
 #endif

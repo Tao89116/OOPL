@@ -1,4 +1,4 @@
-#include "View/StartView.h"
+#include "view/StartView.h"
 
 #include "GameConfig.h"
 #include "Util/Color.hpp"
@@ -32,9 +32,17 @@ void StartView::InitializeInfoText() {
     m_InfoObj->m_Transform.translation = {0.0f, -200.0f};
 }
 
+void StartView::InitializeBananaCat() {
+    m_BananaCatAnimation = m_Resources.CreateAnimation("bananacat");
+    m_BananaCatObj = std::make_shared<Util::GameObject>(m_BananaCatAnimation, 60.0f);
+    m_BananaCatObj->m_Transform.translation = {0.0f, 90.0f};
+    m_BananaCatObj->m_Transform.scale = {1.0f, 1.0f};
+}
+
 void StartView::RegisterToRenderer() {
     m_Renderer.AddChild(m_Background);
     //m_Renderer.AddChild(m_TitleObj);
+    m_Renderer.AddChild(m_BananaCatObj);
     m_Renderer.AddChild(m_InfoObj);
 }
 
@@ -45,6 +53,7 @@ void StartView::Initialize() {
 
     InitializeBackground();
     //InitializeTitle();
+    InitializeBananaCat();
     InitializeInfoText();
     RegisterToRenderer();
 
