@@ -33,6 +33,7 @@ private:
     void SyncProjectileObjects(const GameModel& model);
 
     void SyncPlacementPreviewObjects(const GameModel& model);
+    void SyncSelectedTowerRangeObject(const GameModel& model);
     void ClearPreviewObjectsIfInactive(const GameModel& model);
     void CreateOrUpdatePreviewTower(const GameModel& model);
     void CreateOrUpdatePreviewRange(const GameModel& model);
@@ -52,9 +53,11 @@ private:
 
     std::shared_ptr<Util::GameObject> m_PreviewTowerObject = nullptr;
     std::shared_ptr<Util::GameObject> m_PreviewRangeObject = nullptr;
+    std::shared_ptr<Util::GameObject> m_SelectedTowerRangeObject = nullptr;
 
     std::string m_LastPreviewBuildableId;
     bool m_LastPreviewValid = true;
+    const IBuildable* m_LastSelectedRangeTower = nullptr;
 };
 
 #endif

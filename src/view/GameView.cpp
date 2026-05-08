@@ -5,6 +5,7 @@
 #include "view/GameView.h"
 
 #include "GameConfig.h"
+#include "model/AttackTowerBase.h"
 #include <algorithm>
 #include <unordered_set>
 
@@ -43,6 +44,7 @@ void GameView::Render(const GameModel& model) {
     SyncTowerObjects(model);
     SyncEnemyObjects(model);
     SyncProjectileObjects(model);
+    SyncSelectedTowerRangeObject(model);
     SyncPlacementPreviewObjects(model);
 
     m_UIView.Sync(model);
@@ -169,6 +171,45 @@ void GameView::SyncProjectileObjects(const GameModel& model) {
             ++it;
         }
     }
+}
+
+void GameView::SyncSelectedTowerRangeObject(const GameModel& model) {
+    const auto& selectedTower = model.GetSelectedPlacedTower();
+    const auto attackTower = std::dynamic_pointer_cast<AttackTowerBase>(selectedTower);
+
+    if (!attackTower ||
+        !attackTower->ShowRangePreview() ||
+        attackTower->GetPreviewRange() <= 0.0f) {
+        if (m_SelectedTowerRangeObject) {
+            m_Renderer.RemoveChild(m_SelectedTowerRangeObject);
+            m_SelectedTowerRangeObject = nullptr;
+        }
+        m_LastSelectedRangeTower = nullptr;
+        return;
+    }
+
+    const IBuildable* selectedKey = selectedTower.get();
+    const std::string rangeKey = "range_circle_valid";
+
+    if (!m_SelectedTowerRangeObject || m_LastSelectedRangeTower != selectedKey) {
+        if (m_SelectedTowerRangeObject) {
+            m_Renderer.RemoveChild(m_SelectedTowerRangeObject);
+        }
+
+        m_SelectedTowerRangeObject = std::make_shared<Util::GameObject>(
+            m_Resources.GetImage(rangeKey),
+            45.0f
+        );
+        m_Renderer.AddChild(m_SelectedTowerRangeObject);
+        m_LastSelectedRangeTower = selectedKey;
+    }
+
+    m_SelectedTowerRangeObject->m_Transform.translation = attackTower->GetPosition();
+
+    auto circleImage = m_Resources.GetImage(rangeKey);
+    const float textureRadius = std::max(circleImage->GetSize().x * 0.5f, 1.0f);
+    const float scale = attackTower->GetPreviewRange() / textureRadius;
+    m_SelectedTowerRangeObject->m_Transform.scale = {scale, scale};
 }
 
 void GameView::SyncPlacementPreviewObjects(const GameModel& model) {
