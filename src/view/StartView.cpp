@@ -23,6 +23,31 @@ void StartView::InitializeBackground() {
 //     m_TitleObj->m_Transform.translation = {0.0f, 0.0f};
 // }
 
+void StartView::InitializeBananaCat() {
+    const std::vector<std::string> frameKeys = {
+        "banana_cat_01",
+        "banana_cat_02",
+        "banana_cat_03",
+        "banana_cat_04",
+        "banana_cat_05",
+        "banana_cat_06",
+        "banana_cat_07",
+    };
+
+    std::vector<std::string> framePaths;
+    framePaths.reserve(frameKeys.size());
+    for (const auto& key : frameKeys) {
+        framePaths.push_back(m_Resources.GetImagePath(key));
+    }
+
+    m_BananaCatAnimation = std::make_shared<Util::Animation>(
+        framePaths, true, 120, true, 0);
+    m_BananaCatObj = std::make_shared<Util::GameObject>(
+        m_BananaCatAnimation, 80.0f);
+    m_BananaCatObj->m_Transform.translation = {0.0f, 80.0f};
+    m_BananaCatObj->m_Transform.scale = {0.75f, 0.75f};
+}
+
 void StartView::InitializeInfoText() {
     m_InfoText = m_Resources.CreateText(
         "default", 40,
@@ -34,6 +59,7 @@ void StartView::InitializeInfoText() {
 
 void StartView::RegisterToRenderer() {
     m_Renderer.AddChild(m_Background);
+    m_Renderer.AddChild(m_BananaCatObj);
     //m_Renderer.AddChild(m_TitleObj);
     m_Renderer.AddChild(m_InfoObj);
 }
@@ -44,6 +70,7 @@ void StartView::Initialize() {
     }
 
     InitializeBackground();
+    InitializeBananaCat();
     //InitializeTitle();
     InitializeInfoText();
     RegisterToRenderer();

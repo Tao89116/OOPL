@@ -25,6 +25,15 @@ void ResourceManager::Initialize() {
     m_ImagePaths["bg_result"] = root + "/background-0.png";
     m_ImagePaths["bg_game"]   = root + "/background.png";
 
+    // Start scene animation frames
+    m_ImagePaths["banana_cat_01"] = root + "/banancat01.png";
+    m_ImagePaths["banana_cat_02"] = root + "/banancat02.png";
+    m_ImagePaths["banana_cat_03"] = root + "/banancat03.png";
+    m_ImagePaths["banana_cat_04"] = root + "/banancat04.png";
+    m_ImagePaths["banana_cat_05"] = root + "/banancat05.png";
+    m_ImagePaths["banana_cat_06"] = root + "/banancat06.png";
+    m_ImagePaths["banana_cat_07"] = root + "/banancat07.png";
+
     // Buttons
     m_ImagePaths["btn_tower_1"] = root + "/button-0.png";
     m_ImagePaths["btn_tower_2"] = root + "/button-1.png";
@@ -125,6 +134,15 @@ void ResourceManager::Clear() {
     m_JsonPaths.clear();
     m_ImageCache.clear();
     m_JsonCache.clear();
+}
+
+std::string ResourceManager::GetImagePath(const std::string& key) const {
+    const auto found = m_ImagePaths.find(key);
+    if (found == m_ImagePaths.end()) {
+        throw std::runtime_error("Image key not found: " + key);
+    }
+
+    return found->second;
 }
 
 std::shared_ptr<Util::Image> ResourceManager::GetImage(const std::string& key) {
