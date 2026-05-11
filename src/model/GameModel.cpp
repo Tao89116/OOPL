@@ -52,6 +52,7 @@ void GameModel::Reset() {
     m_CurrentWave.clear();
     m_SpawnedCount = 0;
     m_SpawnTimerMs = 0.0f;
+    m_PoppedBloonCount = 0;
 
     SetupDifficulty();
 }
@@ -375,6 +376,12 @@ void GameModel::UpdateProjectiles(float deltaTimeMs) {
     }
 }
 
+int GameModel::ConsumePoppedBloonCount() {
+    const int poppedCount = m_PoppedBloonCount;
+    m_PoppedBloonCount = 0;
+    return poppedCount;
+}
+
 void GameModel::CleanupObjects() {
     std::vector<std::shared_ptr<EnemyModel>> spawnedChildren;
 
@@ -397,6 +404,7 @@ void GameModel::CleanupObjects() {
                 --m_HP;
                 m_Message = "A bloon leaked through!";
             } else {
+                ++m_PoppedBloonCount;
                 m_Gold += deathEvent->reward;
 
                 for (EnemyType childType : deathEvent->childrenToSpawn) {

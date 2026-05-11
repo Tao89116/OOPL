@@ -1,15 +1,11 @@
-//
-// Created by polyunicorn on 2026/3/13.
-//
-
 #ifndef START_CONTROLLER_H
 #define START_CONTROLLER_H
 
-class SceneManager;
+class StartModel;
 
 class StartController {
 public:
-    void HandleInput(SceneManager& sceneManager);
+    int Update(StartModel& model, float deltaTimeMs);
 };
 
 #endif

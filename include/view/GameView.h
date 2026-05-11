@@ -14,6 +14,7 @@
 #include "ResourceManager.h"
 #include "Util/GameObject.hpp"
 #include "Util/Renderer.hpp"
+#include "Util/SFX.hpp"
 #include "model/GameModel.h"
 #include "model/IBuildable.h"
 #include "view/UIView.h"
@@ -24,9 +25,11 @@ public:
 
     void Initialize(const GameModel& model);
     void Render(const GameModel& model);
+    void PlayPopSounds(int popCount);
 
 private:
     void InitializeBackground(const GameModel& model);
+    void InitializePopSounds();
 
     void SyncTowerObjects(const GameModel& model);
     void SyncEnemyObjects(const GameModel& model);
@@ -54,6 +57,8 @@ private:
     std::shared_ptr<Util::GameObject> m_PreviewTowerObject = nullptr;
     std::shared_ptr<Util::GameObject> m_PreviewRangeObject = nullptr;
     std::shared_ptr<Util::GameObject> m_SelectedTowerRangeObject = nullptr;
+    std::vector<std::shared_ptr<Util::SFX>> m_PopSounds;
+    std::size_t m_NextPopSoundIndex = 0;
 
     std::string m_LastPreviewBuildableId;
     bool m_LastPreviewValid = true;

@@ -6,6 +6,7 @@ set(SRC_FILES
         model/ProjectileModel.cpp
         model/MapModel.cpp
         model/GameModel.cpp
+        model/StartModel.cpp
 
         view/StartView.cpp
         view/DifficultyView.cpp
@@ -43,6 +44,7 @@ set(INCLUDE_FILES
         model/ProjectileModel.h
         model/MapModel.h
         model/GameModel.h
+        model/StartModel.h
 
         view/StartView.h
         view/DifficultyView.h

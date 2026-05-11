@@ -35,6 +35,8 @@ public:
     void ForceWin();
     void ForceLose();
 
+    int ConsumePoppedBloonCount();
+
     int GetHP() const { return m_HP; }
     int GetGold() const { return m_Gold; }
     int GetRound() const { return m_Round; }
@@ -104,6 +106,7 @@ private:
     int m_SpawnedCount = 0;
     float m_SpawnTimerMs = 0.0f;
     float m_SpawnIntervalMs = 900.0f;
+    int m_PoppedBloonCount = 0;
 };
 
 #endif

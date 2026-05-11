@@ -91,6 +91,12 @@ void ResourceManager::Initialize() {
     // Fonts
     m_FontPaths["default"] = root + "/font.ttf";
 
+    // Sound effects
+    m_SoundPaths["pop_01"] = root + "/Pop01.wav";
+    m_SoundPaths["pop_02"] = root + "/Pop02.wav";
+    m_SoundPaths["pop_03"] = root + "/Pop03.wav";
+    m_SoundPaths["pop_04"] = root + "/Pop04.wav";
+
     // Json
     RegisterJson("map_paths", "map_paths.json");
 
@@ -131,6 +137,7 @@ const nlohmann::json& ResourceManager::GetJson(const std::string& key) {
 void ResourceManager::Clear() {
     m_ImagePaths.clear();
     m_FontPaths.clear();
+    m_SoundPaths.clear();
     m_JsonPaths.clear();
     m_ImageCache.clear();
     m_JsonCache.clear();
@@ -175,6 +182,14 @@ std::string ResourceManager::GetFontPath(const std::string& key) const {
     const auto found = m_FontPaths.find(key);
     if (found == m_FontPaths.end()) {
         throw std::runtime_error("Font key not found: " + key);
+    }
+    return found->second;
+}
+
+std::string ResourceManager::GetSoundPath(const std::string& key) const {
+    const auto found = m_SoundPaths.find(key);
+    if (found == m_SoundPaths.end()) {
+        throw std::runtime_error("Sound key not found: " + key);
     }
     return found->second;
 }

@@ -1,0 +1,128 @@
+#include "model/StartModel.h"
+
+#include <algorithm>
+#include <array>
+#include <cmath>
+
+namespace {
+constexpr std::array<float, 3> kRowY = {170.0f, 0.0f, -170.0f};
+constexpr std::array<const char*, 7> kBloonSprites = {
+    "bloon_0",
+    "bloon_1",
+    "bloon_2",
+    "bloon_3",
+    "bloon_4",
+    "bloon_5",
+    "bloon_6",
+};
+}
+
+StartModel::StartModel() {
+    InitializeBloons();
+    m_BananaCatPosition = {kCatStartXRight, kRowY[0]};
+}
+
+void StartModel::InitializeBloons() {
+    m_Bloons.clear();
+    m_Bloons.reserve(18);
+
+    std::size_t spriteIndex = 0;
+    for (int row = 0; row < kRowCount; ++row) {
+        const int bloonCount = kRowBloonCounts[row];
+        const float startX = -360.0f;
+        const float endX = 360.0f;
+        const float gap = (bloonCount == 1)
+            ? 0.0f
+            : (endX - startX) / static_cast<float>(bloonCount - 1);
+
+        for (int column = 0; column < bloonCount; ++column) {
+            Bloon bloon;
+            bloon.position = {startX + gap * static_cast<float>(column), kRowY[row]};
+            bloon.spriteKey = kBloonSprites[spriteIndex % kBloonSprites.size()];
+            m_Bloons.push_back(bloon);
+            ++spriteIndex;
+        }
+    }
+}
+
+int StartModel::Update(float deltaTimeMs) {
+    if (m_AnimationComplete) {
+        return 0;
+    }
+
+    if (m_DelayRemainingMs > 0.0f) {
+        m_DelayRemainingMs = std::max(0.0f, m_DelayRemainingMs - deltaTimeMs);
+        return 0;
+    }
+
+    UpdateBananaCat(deltaTimeMs);
+    const int poppedCount = PopTouchedBloons();
+
+    if (IsCurrentRowComplete()) {
+        AdvanceToNextRow();
+    }
+
+    return poppedCount;
+}
+
+void StartModel::UpdateBananaCat(float deltaTimeMs) {
+    m_BananaCatPosition.x += m_RowDirection * kCatSpeedPxPerMs * deltaTimeMs;
+    m_BananaCatFacingRight = m_RowDirection > 0.0f;
+}
+
+int StartModel::PopTouchedBloons() {
+    int poppedCount = 0;
+    const std::size_t rowStart = FirstBloonIndexInRow(m_CurrentRow);
+    const std::size_t rowEnd = rowStart + static_cast<std::size_t>(kRowBloonCounts[m_CurrentRow]);
+
+    for (std::size_t index = rowStart; index < rowEnd; ++index) {
+        auto& bloon = m_Bloons[index];
+        if (bloon.popped) {
+            continue;
+        }
+
+        const glm::vec2 distance = bloon.position - m_BananaCatPosition;
+        const float distanceSquared = distance.x * distance.x + distance.y * distance.y;
+        if (distanceSquared <= kCollisionRadius * kCollisionRadius) {
+            bloon.popped = true;
+            ++poppedCount;
+        }
+    }
+
+    return poppedCount;
+}
+
+std::size_t StartModel::FirstBloonIndexInRow(int row) const {
+    std::size_t index = 0;
+    for (int currentRow = 0; currentRow < row; ++currentRow) {
+        index += static_cast<std::size_t>(kRowBloonCounts[currentRow]);
+    }
+    return index;
+}
+
+bool StartModel::IsCurrentRowComplete() const {
+    const std::size_t rowStart = FirstBloonIndexInRow(m_CurrentRow);
+    const std::size_t rowEnd = rowStart + static_cast<std::size_t>(kRowBloonCounts[m_CurrentRow]);
+
+    for (std::size_t index = rowStart; index < rowEnd; ++index) {
+        if (!m_Bloons[index].popped) {
+            return false;
+        }
+    }
+    return true;
+}
+
+void StartModel::AdvanceToNextRow() {
+    ++m_CurrentRow;
+    if (m_CurrentRow >= kRowCount) {
+        m_AnimationComplete = true;
+        return;
+    }
+
+    m_RowDirection = (m_CurrentRow == 1) ? 1.0f : -1.0f;
+    m_BananaCatFacingRight = m_RowDirection > 0.0f;
+    m_BananaCatPosition = {
+        m_RowDirection > 0.0f ? kCatStartXLeft : kCatStartXRight,
+        kRowY[m_CurrentRow],
+    };
+}

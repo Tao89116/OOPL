@@ -46,6 +46,8 @@ add_executable(${PROJECT_NAME}
         src/model/MapModel.cpp
         include/model/GameModel.h
         src/model/GameModel.cpp
+        include/model/StartModel.h
+        src/model/StartModel.cpp
         include/View/UIView.h
         src/View/UIView.cpp
         include/View/GameView.h

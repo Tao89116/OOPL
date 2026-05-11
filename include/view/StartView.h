@@ -1,29 +1,32 @@
-//
-// Created by polyunicorn on 2026/3/13.
-//
-
 #ifndef START_VIEW_H
 #define START_VIEW_H
 
-#include "pch.hpp"
 #include "ResourceManager.h"
 #include "Util/Animation.hpp"
 #include "Util/GameObject.hpp"
 #include "Util/Renderer.hpp"
-#include "Util/Text.hpp"
+#include "Util/SFX.hpp"
+#include "pch.hpp"
+#include <cstddef>
+#include <memory>
+#include <vector>
+
+class StartModel;
 
 class StartView {
 public:
     StartView();
-    void Initialize();
-    void Render();
+    void Initialize(const StartModel& model);
+    void Render(const StartModel& model);
+    void PlayPopSounds(int popCount);
 
 private:
     void InitializeBackground();
-    void InitializeTitle();
-    void InitializeInfoText();
     void InitializeBananaCat();
+    void InitializeBloons(const StartModel& model);
+    void InitializePopSounds();
     void RegisterToRenderer();
+    void SyncWithModel(const StartModel& model);
 
 private:
     Util::Renderer m_Renderer;
@@ -32,12 +35,11 @@ private:
     bool m_Initialized = false;
 
     std::shared_ptr<Util::GameObject> m_Background = nullptr;
-    std::shared_ptr<Util::Text> m_TitleText = nullptr;
-    std::shared_ptr<Util::GameObject> m_TitleObj = nullptr;
-    std::shared_ptr<Util::Text> m_InfoText = nullptr;
-    std::shared_ptr<Util::GameObject> m_InfoObj = nullptr;
     std::shared_ptr<Util::Animation> m_BananaCatAnimation = nullptr;
     std::shared_ptr<Util::GameObject> m_BananaCatObj = nullptr;
+    std::vector<std::shared_ptr<Util::GameObject>> m_BloonObjs;
+    std::vector<std::shared_ptr<Util::SFX>> m_PopSounds;
+    std::size_t m_NextPopSoundIndex = 0;
 };
 
 #endif
