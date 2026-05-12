@@ -1,11 +1,12 @@
 #include "model/StartModel.h"
 
+#include "GameConfig.h"
+
 #include <algorithm>
 #include <array>
 #include <cmath>
 
 namespace {
-constexpr std::array<float, 3> kRowY = {170.0f, 0.0f, -170.0f};
 constexpr std::array<const char*, 4> kBloonSprites = {
     "bloon_0",
     "bloon_1",
@@ -16,7 +17,7 @@ constexpr std::array<const char*, 4> kBloonSprites = {
 
 StartModel::StartModel() {
     InitializeBloons();
-    m_BananaCatPosition = {kCatStartXRight, kRowY[0]};
+    m_BananaCatPosition = {kCatStartXRight, GameConfig::StartBloonRowY[0]};
 }
 
 void StartModel::InitializeBloons() {
@@ -26,15 +27,18 @@ void StartModel::InitializeBloons() {
     std::size_t spriteIndex = 0;
     for (int row = 0; row < kRowCount; ++row) {
         const int bloonCount = kRowBloonCounts[row];
-        const float startX = -360.0f;
-        const float endX = 360.0f;
+        const float startX = GameConfig::StartBloonStartX;
+        const float endX = GameConfig::StartBloonEndX;
         const float gap = (bloonCount == 1)
             ? 0.0f
             : (endX - startX) / static_cast<float>(bloonCount - 1);
 
         for (int column = 0; column < bloonCount; ++column) {
             Bloon bloon;
-            bloon.position = {startX + gap * static_cast<float>(column), kRowY[row]};
+            bloon.position = {
+                startX + gap * static_cast<float>(column),
+                GameConfig::StartBloonRowY[row],
+            };
             bloon.spriteKey = kBloonSprites[spriteIndex % kBloonSprites.size()];
             m_Bloons.push_back(bloon);
             ++spriteIndex;
@@ -80,7 +84,8 @@ int StartModel::PopTouchedBloons() {
 
         const glm::vec2 distance = bloon.position - m_BananaCatPosition;
         const float distanceSquared = distance.x * distance.x + distance.y * distance.y;
-        if (distanceSquared <= kCollisionRadius * kCollisionRadius) {
+        if (distanceSquared <= GameConfig::StartBloonCollisionRadius
+                * GameConfig::StartBloonCollisionRadius) {
             bloon.popped = true;
             ++poppedCount;
         }
@@ -120,6 +125,6 @@ void StartModel::AdvanceToNextRow() {
     m_BananaCatFacingRight = m_RowDirection > 0.0f;
     m_BananaCatPosition = {
         m_RowDirection > 0.0f ? kCatStartXLeft : kCatStartXRight,
-        kRowY[m_CurrentRow],
+        GameConfig::StartBloonRowY[m_CurrentRow],
     };
 }

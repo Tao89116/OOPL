@@ -46,7 +46,6 @@ private:
     static constexpr float kCatStartXRight = 760.0f;
     static constexpr float kCatStartXLeft = -760.0f;
     static constexpr float kCatSpeedPxPerMs = 0.42f;
-    static constexpr float kCollisionRadius = 72.0f;
 };
 
 #endif

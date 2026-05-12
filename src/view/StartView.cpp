@@ -46,7 +46,10 @@ void StartView::InitializeBloons(const StartModel& model) {
         auto bloonObj = std::make_shared<Util::GameObject>(
             m_Resources.GetImage(bloon.spriteKey), 60.0f);
         bloonObj->m_Transform.translation = bloon.position;
-        bloonObj->m_Transform.scale = {0.75f, 0.75f};
+        bloonObj->m_Transform.scale = {
+            GameConfig::StartBloonScale,
+            GameConfig::StartBloonScale,
+        };
         bloonObj->SetVisible(!bloon.popped);
         m_BloonObjs.push_back(bloonObj);
     }
