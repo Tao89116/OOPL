@@ -1,6 +1,7 @@
 #ifndef START_MODEL_H
 #define START_MODEL_H
 
+#include "GameConfig.h"
 #include "pch.hpp"
 #include <cstddef>
 #include <string>
@@ -41,8 +42,7 @@ private:
     int m_CurrentRow = 0;
     float m_RowDirection = -1.0f;
 
-    static constexpr int kRowCount = 3;
-    static constexpr int kRowBloonCounts[kRowCount] = {5, 6, 7};
+    static constexpr int kRowCount = static_cast<int>(GameConfig::StartBloonRowY.size());
     static constexpr float kCatStartXRight = 760.0f;
     static constexpr float kCatStartXLeft = -760.0f;
     static constexpr float kCatSpeedPxPerMs = 0.42f;

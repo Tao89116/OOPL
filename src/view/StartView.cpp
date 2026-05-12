@@ -43,12 +43,13 @@ void StartView::InitializeBananaCat() {
 void StartView::InitializeBloons(const StartModel& model) {
     m_BloonObjs.clear();
     for (const auto& bloon : model.GetBloons()) {
-        auto bloonObj = std::make_shared<Util::GameObject>(
-            m_Resources.GetImage(bloon.spriteKey), 60.0f);
+        auto bloonImage = m_Resources.GetImage(bloon.spriteKey);
+        auto bloonObj = std::make_shared<Util::GameObject>(bloonImage, 60.0f);
+        const glm::vec2 imageSize = bloonImage->GetSize();
         bloonObj->m_Transform.translation = bloon.position;
         bloonObj->m_Transform.scale = {
-            GameConfig::StartBloonScale,
-            GameConfig::StartBloonScale,
+            GameConfig::StartBloonWidth / imageSize.x,
+            GameConfig::StartBloonHeight / imageSize.y,
         };
         bloonObj->SetVisible(!bloon.popped);
         m_BloonObjs.push_back(bloonObj);
