@@ -1,7 +1,7 @@
-#include "View/StartView.h"
+#include "view/StartView.h"
 
 #include "GameConfig.h"
-#include "Util/Color.hpp"
+#include "model/StartModel.h"
 
 StartView::StartView() = default;
 
@@ -15,13 +15,6 @@ void StartView::InitializeBackground() {
     m_Background->m_Transform.translation = {0.0f, 0.0f};
     m_Background->m_Transform.scale = {scaleX, scaleY};
 }
-
-// void StartView::InitializeTitle() {
-//     m_TitleText = m_Resources.CreateText(
-//         "default", 36, "Bloons Tower Defense 2", Util::Color(0, 0, 0));
-//     m_TitleObj = std::make_shared<Util::GameObject>(m_TitleText, 100.0f);
-//     m_TitleObj->m_Transform.translation = {0.0f, 0.0f};
-// }
 
 void StartView::InitializeBananaCat() {
     const std::vector<std::string> frameKeys = {
@@ -44,41 +37,78 @@ void StartView::InitializeBananaCat() {
         framePaths, true, 120, true, 0);
     m_BananaCatObj = std::make_shared<Util::GameObject>(
         m_BananaCatAnimation, 80.0f);
-    m_BananaCatObj->m_Transform.translation = {0.0f, 80.0f};
     m_BananaCatObj->m_Transform.scale = {0.75f, 0.75f};
 }
 
-void StartView::InitializeInfoText() {
-    m_InfoText = m_Resources.CreateText(
-        "default", 40,
-        "Press ENTER to Start",
-        Util::Color(0, 0, 0));
-    m_InfoObj = std::make_shared<Util::GameObject>(m_InfoText, 100.0f);
-    m_InfoObj->m_Transform.translation = {0.0f, -200.0f};
+void StartView::InitializeBloons(const StartModel& model) {
+    m_BloonObjs.clear();
+    for (const auto& bloon : model.GetBloons()) {
+        auto bloonObj = std::make_shared<Util::GameObject>(
+            m_Resources.GetImage(bloon.spriteKey), 60.0f);
+        bloonObj->m_Transform.translation = bloon.position;
+        bloonObj->m_Transform.scale = {0.75f, 0.75f};
+        bloonObj->SetVisible(!bloon.popped);
+        m_BloonObjs.push_back(bloonObj);
+    }
+}
+
+void StartView::InitializePopSounds() {
+    m_PopSounds.clear();
+    for (const auto& key : {"pop_01", "pop_02", "pop_03", "pop_04"}) {
+        auto sound = std::make_shared<Util::SFX>(m_Resources.GetSoundPath(key));
+        sound->SetVolume(96);
+        m_PopSounds.push_back(sound);
+    }
 }
 
 void StartView::RegisterToRenderer() {
     m_Renderer.AddChild(m_Background);
+    for (const auto& bloonObj : m_BloonObjs) {
+        m_Renderer.AddChild(bloonObj);
+    }
     m_Renderer.AddChild(m_BananaCatObj);
-    //m_Renderer.AddChild(m_TitleObj);
-    m_Renderer.AddChild(m_InfoObj);
 }
 
-void StartView::Initialize() {
+void StartView::Initialize(const StartModel& model) {
     if (m_Initialized) {
         return;
     }
 
     InitializeBackground();
+    InitializeBloons(model);
     InitializeBananaCat();
-    //InitializeTitle();
-    InitializeInfoText();
+    InitializePopSounds();
+    SyncWithModel(model);
     RegisterToRenderer();
 
     m_Initialized = true;
 }
 
-void StartView::Render() {
-    Initialize();
+void StartView::SyncWithModel(const StartModel& model) {
+    const auto& bloons = model.GetBloons();
+    for (std::size_t index = 0; index < bloons.size() && index < m_BloonObjs.size(); ++index) {
+        m_BloonObjs[index]->m_Transform.translation = bloons[index].position;
+        m_BloonObjs[index]->SetVisible(!bloons[index].popped);
+    }
+
+    m_BananaCatObj->m_Transform.translation = model.GetBananaCatPosition();
+    const float catScaleX = model.IsBananaCatFacingRight() ? 0.75f : -0.75f;
+    m_BananaCatObj->m_Transform.scale = {catScaleX, 0.75f};
+}
+
+void StartView::Render(const StartModel& model) {
+    Initialize(model);
+    SyncWithModel(model);
     m_Renderer.Update();
+}
+
+void StartView::PlayPopSounds(int popCount) {
+    if (m_PopSounds.empty()) {
+        return;
+    }
+
+    for (int count = 0; count < popCount; ++count) {
+        m_PopSounds[m_NextPopSoundIndex]->Play();
+        m_NextPopSoundIndex = (m_NextPopSoundIndex + 1) % m_PopSounds.size();
+    }
 }

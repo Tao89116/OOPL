@@ -19,8 +19,29 @@ void GameView::Initialize(const GameModel& model) {
     }
 
     InitializeBackground(model);
+    InitializePopSounds();
     m_UIView.Initialize();
     m_Initialized = true;
+}
+
+void GameView::InitializePopSounds() {
+    m_PopSounds.clear();
+    for (const auto& key : {"pop_01", "pop_02", "pop_03", "pop_04"}) {
+        auto sound = std::make_shared<Util::SFX>(m_Resources.GetSoundPath(key));
+        sound->SetVolume(96);
+        m_PopSounds.push_back(sound);
+    }
+}
+
+void GameView::PlayPopSounds(int popCount) {
+    if (m_PopSounds.empty()) {
+        return;
+    }
+
+    for (int count = 0; count < popCount; ++count) {
+        m_PopSounds[m_NextPopSoundIndex]->Play();
+        m_NextPopSoundIndex = (m_NextPopSoundIndex + 1) % m_PopSounds.size();
+    }
 }
 
 void GameView::InitializeBackground(const GameModel& model) {

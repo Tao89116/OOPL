@@ -1,18 +1,7 @@
-//
-// Created by polyunicorn on 2026/3/13.
-//
 #include "controller/StartController.h"
 
-#include "SceneType.h"
-#include "scene/SceneManager.h"
-#include "Util/Input.hpp"
-#include "Util/Keycode.hpp"
-#include <iostream>
+#include "model/StartModel.h"
 
-
-void StartController::HandleInput(SceneManager& sceneManager) {
-    if (Util::Input::IsKeyUp(Util::Keycode::RETURN)) {
-        std::cout << "Enter pressed -> DifficultyScene" << std::endl;
-        sceneManager.RequestSceneChange(SceneType::Difficulty);
-    }
+int StartController::Update(StartModel& model, float deltaTimeMs) {
+    return model.Update(deltaTimeMs);
 }

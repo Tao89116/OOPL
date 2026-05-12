@@ -10,6 +10,6 @@
 
 void ResultController::HandleInput(SceneManager& sceneManager) {
     if (Util::Input::IsKeyUp(Util::Keycode::RETURN)) {
-        sceneManager.RequestSceneChange(SceneType::Start);
+        sceneManager.RequestSceneChange(SceneType::Difficulty);
     }
 }

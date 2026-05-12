@@ -1,13 +1,10 @@
-//
-// Created by polyunicorn on 2026/3/13.
-//
-
 #ifndef START_SCENE_H
 #define START_SCENE_H
 
+#include "controller/StartController.h"
+#include "model/StartModel.h"
 #include "scene/IScene.h"
 #include "view/StartView.h"
-#include "controller/StartController.h"
 
 class StartScene : public IScene {
 public:
@@ -15,6 +12,7 @@ public:
     void Update(SceneManager& sceneManager) override;
 
 private:
+    StartModel m_Model;
     StartView m_View;
     StartController m_Controller;
 };

@@ -24,6 +24,7 @@ public:
     ) const;
 
     std::string GetFontPath(const std::string& key) const;
+    std::string GetSoundPath(const std::string& key) const;
 
     void RegisterJson(const std::string& key, const std::string& relativePath);
     const nlohmann::json& GetJson(const std::string& key);
@@ -38,6 +39,7 @@ private:
 private:
     std::unordered_map<std::string, std::string> m_ImagePaths;
     std::unordered_map<std::string, std::string> m_FontPaths;
+    std::unordered_map<std::string, std::string> m_SoundPaths;
     std::unordered_map<std::string, std::string> m_JsonPaths;
 
     std::unordered_map<std::string, std::shared_ptr<Util::Image>> m_ImageCache;
