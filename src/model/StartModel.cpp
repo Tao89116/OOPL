@@ -6,14 +6,11 @@
 
 namespace {
 constexpr std::array<float, 3> kRowY = {170.0f, 0.0f, -170.0f};
-constexpr std::array<const char*, 7> kBloonSprites = {
+constexpr std::array<const char*, 4> kBloonSprites = {
     "bloon_0",
     "bloon_1",
     "bloon_2",
-    "bloon_3",
-    "bloon_4",
-    "bloon_5",
-    "bloon_6",
+    "bloon_3"
 };
 }
 
