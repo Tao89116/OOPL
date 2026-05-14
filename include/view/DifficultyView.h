@@ -10,6 +10,8 @@
 #include "Util/GameObject.hpp"
 #include "Util/Renderer.hpp"
 #include "Util/Text.hpp"
+#include <vector>
+
 
 class DifficultyView {
 public:
@@ -18,9 +20,17 @@ public:
     void Render();
 
 private:
+    struct DifficultyCardObjects {
+        std::shared_ptr<Util::GameObject> preview;
+        std::shared_ptr<Util::GameObject> phrame;
+        std::shared_ptr<Util::Text> labelText;
+        std::shared_ptr<Util::GameObject> label;
+    };
+
     void InitializeBackground();
     void InitializeTitle();
     void InitializeInfoText();
+    void InitializeDifficultyCards();
     void RegisterToRenderer();
 
 private:
@@ -33,6 +43,7 @@ private:
     std::shared_ptr<Util::GameObject> m_TitleObj = nullptr;
     std::shared_ptr<Util::Text> m_InfoText = nullptr;
     std::shared_ptr<Util::GameObject> m_InfoObj = nullptr;
+    std::vector<DifficultyCardObjects> m_DifficultyCards;
 };
 
 #endif

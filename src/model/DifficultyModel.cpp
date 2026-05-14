@@ -1,5 +1,14 @@
 #include "model/DifficultyModel.h"
 
+namespace {
+const std::array<DifficultyOption, 3> kDifficultyOptions = {{
+    {DifficultyType::Easy,   "Easy",   "bg_easy",   {-360.0f, 0.0f}, {280.0f, 340.0f}},
+    {DifficultyType::Normal, "Normal", "bg_normal", {   0.0f, 0.0f}, {280.0f, 340.0f}},
+    {DifficultyType::Hard,   "Hard",   "bg_hard",   { 360.0f, 0.0f}, {280.0f, 340.0f}},
+}};
+}
+
+
 int DifficultyModel::GetBuildCost(
     DifficultyType difficulty,
     const std::string& buildableId
@@ -95,4 +104,8 @@ int DifficultyModel::GetUpgradeCost(
     }
 
     return 999999;
+}
+
+const std::array<DifficultyOption, 3>& DifficultyModel::GetDifficultyOptions() {
+    return kDifficultyOptions;
 }
