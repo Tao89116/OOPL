@@ -24,6 +24,7 @@ void ResourceManager::Initialize() {
     m_ImagePaths["bg_hard"]   = root + "/background-3.png";
     m_ImagePaths["bg_result"] = root + "/background-0.png";
     m_ImagePaths["bg_game"]   = root + "/background.png";
+    m_ImagePaths["difficulty_phrame"] = root + "/phrame.png";
 
     // Start scene animation frames
     m_ImagePaths["banana_cat_01"] = root + "/banancat01.png";

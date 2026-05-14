@@ -6,7 +6,17 @@
 #define DIFFICULTY_MODEL_H
 
 #include "SceneType.h"
+#include "pch.hpp"
+#include <array>
 #include <string>
+
+struct DifficultyOption {
+    DifficultyType difficulty;
+    std::string label;
+    std::string backgroundImageKey;
+    glm::vec2 cardCenter;
+    glm::vec2 hitboxSize;
+};
 
 class DifficultyModel {
 public:
@@ -21,6 +31,8 @@ public:
         int upgradePathIndex,
         int nextTier
     );
+
+    static const std::array<DifficultyOption, 3>& GetDifficultyOptions();
 
     // TODO:
     // Sell refund ratio
