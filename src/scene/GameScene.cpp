@@ -17,6 +17,7 @@ void GameScene::Update(SceneManager& sceneManager) {
 
     m_Controller.HandleInput(m_Model);
     m_Model.Update(deltaTimeMs);
+    m_View.QueuePopEffects(m_Model.ConsumePoppedEnemyEvents());
     m_View.PlayPopSounds(m_Model.ConsumePoppedBloonCount());
     m_View.Render(m_Model);
 

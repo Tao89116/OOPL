@@ -12,6 +12,11 @@
 
 class GameModel {
 public:
+    struct PoppedEnemyEvent {
+        const EnemyModel* enemy = nullptr;
+        glm::vec2 position = {0.0f, 0.0f};
+    };
+
     explicit GameModel(DifficultyType difficulty);
 
     void Reset();
@@ -36,6 +41,7 @@ public:
     void ForceLose();
 
     int ConsumePoppedBloonCount();
+    std::vector<PoppedEnemyEvent> ConsumePoppedEnemyEvents();
 
     int GetHP() const { return m_HP; }
     int GetGold() const { return m_Gold; }
@@ -107,6 +113,7 @@ private:
     float m_SpawnTimerMs = 0.0f;
     float m_SpawnIntervalMs = 900.0f;
     int m_PoppedBloonCount = 0;
+    std::vector<PoppedEnemyEvent> m_PoppedEnemyEvents;
 };
 
 #endif

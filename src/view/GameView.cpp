@@ -6,6 +6,7 @@
 
 #include "GameConfig.h"
 #include "model/AttackTowerBase.h"
+#include "Util/Time.hpp"
 #include <algorithm>
 #include <unordered_set>
 
@@ -30,6 +31,14 @@ void GameView::InitializePopSounds() {
         auto sound = std::make_shared<Util::SFX>(m_Resources.GetSoundPath(key));
         sound->SetVolume(96);
         m_PopSounds.push_back(sound);
+    }
+}
+
+void GameView::QueuePopEffects(const std::vector<GameModel::PoppedEnemyEvent>& events) {
+    for (const auto& event : events) {
+        if (event.enemy) {
+            m_PendingPopEffects.insert(event.enemy);
+        }
     }
 }
 
@@ -65,6 +74,7 @@ void GameView::Render(const GameModel& model) {
     SyncTowerObjects(model);
     SyncEnemyObjects(model);
     SyncProjectileObjects(model);
+    SyncPopEffects(Util::Time::GetDeltaTimeMs());
     SyncSelectedTowerRangeObject(model);
     SyncPlacementPreviewObjects(model);
 
@@ -139,8 +149,40 @@ void GameView::SyncEnemyObjects(const GameModel& model) {
 
     for (auto it = m_EnemyObjects.begin(); it != m_EnemyObjects.end();) {
         if (live.find(it->first) == live.end()) {
+            if (m_PendingPopEffects.erase(it->first) > 0) {
+                CreatePopEffectAt(it->second->m_Transform.translation);
+            }
             m_Renderer.RemoveChild(it->second);
             it = m_EnemyObjects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    m_PendingPopEffects.clear();
+}
+
+void GameView::CreatePopEffectAt(const glm::vec2& position) {
+    auto obj = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage("pop"),
+        31.0f
+    );
+
+    obj->m_Transform.translation = position;
+    obj->m_Transform.scale *= 0.6f;
+    m_Renderer.AddChild(obj);
+
+    m_PopEffects.push_back({obj, 180.0f});
+}
+
+void GameView::SyncPopEffects(float deltaTimeMs) {
+    for (auto it = m_PopEffects.begin(); it != m_PopEffects.end();) {
+        it->remainingMs -= deltaTimeMs;
+        if (it->remainingMs <= 0.0f) {
+            if (it->object) {
+                m_Renderer.RemoveChild(it->object);
+            }
+            it = m_PopEffects.erase(it);
         } else {
             ++it;
         }
