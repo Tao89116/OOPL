@@ -45,7 +45,7 @@ void ResourceManager::Initialize() {
     m_ImagePaths["btn_tower_7"] = root + "/button-6.png";
     m_ImagePaths["btn_tower_8"] = root + "/button-7.png";
 
-    m_ImagePaths["btn_start"]  = root + "/button-3.png";
+    m_ImagePaths["btn_start"]  = root + "/btn_start.png";
     m_ImagePaths["btn_action"] = root + "/button-4.png";
 
     // Enemies

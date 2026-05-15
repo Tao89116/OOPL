@@ -111,9 +111,9 @@ void UIView::InitializeButtons() {
     m_Button8->m_Transform.translation = {verticalPos + 3 * verticalInterval, 1*horizontalInterval + horizontalGap};
     m_Button8->m_Transform.scale *=0.35;
 
-    // m_ButtonStart = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_4"), 80.0f);
-    // m_ButtonStart->m_Transform.translation = {460.0f, -115.0f};
-    // m_ButtonStart->m_Transform.scale *=0.5;
+    m_ButtonStart = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_start"), 80.0f);
+    m_ButtonStart->m_Transform.translation = {460.0f, -115.0f};
+    m_ButtonStart->m_Transform.scale *=0.5;
 }
 
 // void UIView::InitializeButtonLabels() {
@@ -200,7 +200,7 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_Button6);
     m_Renderer.AddChild(m_Button7);
     m_Renderer.AddChild(m_Button8);
-    // m_Renderer.AddChild(m_ButtonStart);
+    m_Renderer.AddChild(m_ButtonStart);
 
     // m_Renderer.AddChild(m_Button1LabelObj);
     // m_Renderer.AddChild(m_Button2LabelObj);
