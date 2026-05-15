@@ -1,0 +1,783 @@
+{
+  "spawnIntervalMs": 400,
+  "rounds": [
+    {
+      "round": 1,
+      "segments": [
+        {
+          "type": "Red",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "segments": [
+        {
+          "type": "Red",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "round": 3,
+      "segments": [
+        {
+          "type": "Red",
+          "count": 10
+        },
+        {
+          "type": "Blue",
+          "count": 4
+        },
+        {
+          "type": "Red",
+          "count": 5
+        },
+        {
+          "type": "Blue",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "round": 4,
+      "segments": [
+        {
+          "type": "Red",
+          "count": 5
+        },
+        {
+          "type": "Blue",
+          "count": 12
+        },
+        {
+          "type": "Red",
+          "count": 5
+        },
+        {
+          "type": "Blue",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "round": 5,
+      "segments": [
+        {
+          "type": "Red",
+          "count": 10
+        },
+        {
+          "type": "Blue",
+          "count": 8
+        },
+        {
+          "type": "Red",
+          "count": 12
+        },
+        {
+          "type": "Blue",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "round": 6,
+      "segments": [
+        {
+          "type": "Red",
+          "count": 13
+        },
+        {
+          "type": "Green",
+          "count": 7
+        },
+        {
+          "type": "Green",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "round": 7,
+      "segments": [
+        {
+          "type": "Blue",
+          "count": 50
+        }
+      ]
+    },
+    {
+      "round": 8,
+      "segments": [
+        {
+          "type": "Red",
+          "count": 9
+        },
+        {
+          "type": "Blue",
+          "count": 16
+        },
+        {
+          "type": "Red",
+          "count": 9
+        },
+        {
+          "type": "Blue",
+          "count": 7
+        },
+        {
+          "type": "Red",
+          "count": 9
+        },
+        {
+          "type": "Blue",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "round": 9,
+      "segments": [
+        {
+          "type": "Blue",
+          "count": 20
+        },
+        {
+          "type": "Green",
+          "count": 15
+        },
+        {
+          "type": "Blue",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "round": 10,
+      "segments": [
+        {
+          "type": "Green",
+          "count": 32
+        }
+      ]
+    },
+    {
+      "round": 11,
+      "segments": [
+        {
+          "type": "Green",
+          "count": 12
+        },
+        {
+          "type": "Yellow",
+          "count": 7
+        },
+        {
+          "type": "Yellow",
+          "count": 4
+        }
+      ]
+    },
+    {
+      "round": 12,
+      "segments": [
+        {
+          "type": "Rainbow",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "round": 13,
+      "segments": [
+        {
+          "type": "Blue",
+          "count": 18
+        },
+        {
+          "type": "Red",
+          "count": 18
+        },
+        {
+          "type": "Green",
+          "count": 30
+        },
+        {
+          "type": "Blue",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "round": 14,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 23
+        }
+      ]
+    },
+    {
+      "round": 15,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 6
+        },
+        {
+          "type": "Green",
+          "count": 6
+        },
+        {
+          "type": "Yellow",
+          "count": 4
+        },
+        {
+          "type": "Green",
+          "count": 8
+        },
+        {
+          "type": "Yellow",
+          "count": 3
+        }
+      ]
+    },
+    {
+      "round": 16,
+      "segments": [
+        {
+          "type": "Blue",
+          "count": 45
+        },
+        {
+          "type": "Green",
+          "count": 25
+        },
+        {
+          "type": "Blue",
+          "count": 9
+        },
+        {
+          "type": "Green",
+          "count": 25
+        }
+      ]
+    },
+    {
+      "round": 17,
+      "segments": [
+        {
+          "type": "Blue",
+          "count": 20
+        },
+        {
+          "type": "Green",
+          "count": 55
+        },
+        {
+          "type": "Blue",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "round": 18,
+      "segments": [
+        {
+          "type": "Blue",
+          "count": 30
+        },
+        {
+          "type": "Yellow",
+          "count": 22
+        },
+        {
+          "type": "Green",
+          "count": 24
+        }
+      ]
+    },
+    {
+      "round": 19,
+      "segments": [
+        {
+          "type": "Green",
+          "count": 75
+        }
+      ]
+    },
+    {
+      "round": 20,
+      "segments": [
+        {
+          "type": "Lead",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "round": 21,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 14
+        },
+        {
+          "type": "Blue",
+          "count": 10
+        },
+        {
+          "type": "Yellow",
+          "count": 23
+        },
+        {
+          "type": "Green",
+          "count": 10
+        },
+        {
+          "type": "Green",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "round": 22,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 50
+        }
+      ]
+    },
+    {
+      "round": 23,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 30
+        },
+        {
+          "type": "Green",
+          "count": 35
+        },
+        {
+          "type": "Yellow",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "round": 24,
+      "segments": [
+        {
+          "type": "Green",
+          "count": 30
+        },
+        {
+          "type": "Yellow",
+          "count": 45
+        },
+        {
+          "type": "Green",
+          "count": 26
+        },
+        {
+          "type": "Blue",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "round": 25,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 20
+        },
+        {
+          "type": "Black",
+          "count": 15
+        },
+        {
+          "type": "Yellow",
+          "count": 22
+        }
+      ]
+    },
+    {
+      "round": 26,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 80
+        },
+        {
+          "type": "Yellow",
+          "count": 22
+        }
+      ]
+    },
+    {
+      "round": 27,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 28
+        }
+      ]
+    },
+    {
+      "round": 28,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 12
+        },
+        {
+          "type": "White",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "round": 29,
+      "segments": [
+        {
+          "type": "Lead",
+          "count": 4
+        },
+        {
+          "type": "Black",
+          "count": 11
+        },
+        {
+          "type": "White",
+          "count": 9
+        }
+      ]
+    },
+    {
+      "round": 30,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 120
+        }
+      ]
+    },
+    {
+      "round": 31,
+      "segments": [
+        {
+          "type": "Lead",
+          "count": 11
+        }
+      ]
+    },
+    {
+      "round": 32,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 20
+        },
+        {
+          "type": "White",
+          "count": 8
+        },
+        {
+          "type": "Black",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "round": 33,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 55
+        }
+      ]
+    },
+    {
+      "round": 34,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 25
+        },
+        {
+          "type": "White",
+          "count": 23
+        },
+        {
+          "type": "Yellow",
+          "count": 50
+        }
+      ]
+    },
+    {
+      "round": 35,
+      "segments": [
+        {
+          "type": "Rainbow",
+          "count": 7
+        }
+      ]
+    },
+    {
+      "round": 36,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 11
+        },
+        {
+          "type": "Yellow",
+          "count": 12
+        },
+        {
+          "type": "Black",
+          "count": 10
+        },
+        {
+          "type": "Lead",
+          "count": 4
+        },
+        {
+          "type": "White",
+          "count": 10
+        },
+        {
+          "type": "Black",
+          "count": 6
+        }
+      ]
+    },
+    {
+      "round": 37,
+      "segments": [
+        {
+          "type": "Lead",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "round": 38,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 200
+        }
+      ]
+    },
+    {
+      "round": 39,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 50
+        },
+        {
+          "type": "Black",
+          "count": 15
+        },
+        {
+          "type": "White",
+          "count": 13
+        },
+        {
+          "type": "Lead",
+          "count": 8
+        },
+        {
+          "type": "Rainbow",
+          "count": 5
+        },
+        {
+          "type": "White",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "round": 40,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 60
+        }
+      ]
+    },
+    {
+      "round": 41,
+      "segments": [
+        {
+          "type": "White",
+          "count": 18
+        },
+        {
+          "type": "Lead",
+          "count": 10
+        },
+        {
+          "type": "Rainbow",
+          "count": 10
+        }
+      ]
+    },
+    {
+      "round": 42,
+      "segments": [
+        {
+          "type": "Yellow",
+          "count": 120
+        },
+        {
+          "type": "Black",
+          "count": 50
+        },
+        {
+          "type": "White",
+          "count": 40
+        }
+      ]
+    },
+    {
+      "round": 43,
+      "segments": [
+        {
+          "type": "Rainbow",
+          "count": 20
+        },
+        {
+          "type": "Lead",
+          "count": 20
+        }
+      ]
+    },
+    {
+      "round": 44,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 130
+        }
+      ]
+    },
+    {
+      "round": 45,
+      "segments": [
+        {
+          "type": "White",
+          "count": 110
+        }
+      ]
+    },
+    {
+      "round": 46,
+      "segments": [
+        {
+          "type": "Lead",
+          "count": 35
+        }
+      ]
+    },
+    {
+      "round": 47,
+      "segments": [
+        {
+          "type": "Black",
+          "count": 30
+        },
+        {
+          "type": "White",
+          "count": 40
+        },
+        {
+          "type": "Lead",
+          "count": 13
+        },
+        {
+          "type": "Rainbow",
+          "count": 8
+        }
+      ]
+    },
+    {
+      "round": 48,
+      "segments": [
+        {
+          "type": "Lead",
+          "count": 20
+        },
+        {
+          "type": "White",
+          "count": 30
+        },
+        {
+          "type": "Black",
+          "count": 40
+        },
+        {
+          "type": "Lead",
+          "count": 12
+        }
+      ]
+    },
+    {
+      "round": 49,
+      "segments": [
+        {
+          "type": "Rainbow",
+          "count": 30
+        }
+      ]
+    },
+    {
+      "round": 50,
+      "segments": [
+        {
+          "type": "Rainbow",
+          "count": 7
+        },
+        {
+          "type": "Lead",
+          "count": 10
+        },
+        {
+          "type": "Rainbow",
+          "count": 7
+        },
+        {
+          "type": "Lead",
+          "count": 7
+        },
+        {
+          "type": "Rainbow",
+          "count": 7
+        },
+        {
+          "type": "Lead",
+          "count": 7
+        },
+        {
+          "type": "Rainbow",
+          "count": 7
+        },
+        {
+          "type": "Lead",
+          "count": 4
+        },
+        {
+          "type": "Rainbow",
+          "count": 7
+        }
+      ]
+    }
+  ]
+}

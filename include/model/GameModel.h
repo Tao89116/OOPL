@@ -93,7 +93,7 @@ private:
     int m_HP = 20;
     int m_Gold = 300;
     int m_Round = 1;
-    int m_TotalRounds = 5;
+    int m_TotalRounds = 50;
 
     bool m_RoundRunning = false;
     bool m_Paused = false;

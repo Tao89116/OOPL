@@ -1,6 +1,7 @@
 #include "model/GameModel.h"
 #include "GameConfig.h"
 #include "model/DifficultyModel.h"
+#include "model/WaveConfig.h"
 #include <limits>
 
 GameModel::GameModel(DifficultyType difficulty)
@@ -33,7 +34,7 @@ void GameModel::SetupDifficulty() {
 
 void GameModel::Reset() {
     m_Round = 1;
-    m_TotalRounds = GameConfig::TotalRounds;
+    m_TotalRounds = WaveConfig::GetInstance().GetTotalRounds();
     m_RoundRunning = false;
     m_Paused = false;
     m_Win = false;
@@ -56,6 +57,7 @@ void GameModel::Reset() {
     m_PoppedEnemyEvents.clear();
 
     SetupDifficulty();
+    m_SpawnIntervalMs = static_cast<float>(WaveConfig::GetInstance().GetSpawnIntervalMs());
 }
 
 void GameModel::SelectBuildable(const BuildableRegistry::Entry* entry) {
@@ -298,19 +300,7 @@ void GameModel::TogglePause() {
 }
 
 void GameModel::SetupWave() {
-    m_CurrentWave.clear();
-
-    if (m_Round == 1) {
-        m_CurrentWave = {EnemyType::Red, EnemyType::Red, EnemyType::Red, EnemyType::Red, EnemyType::Blue};
-    } else if (m_Round == 2) {
-        m_CurrentWave = {EnemyType::Red, EnemyType::Blue, EnemyType::Blue, EnemyType::Green, EnemyType::Blue, EnemyType::Red};
-    } else if (m_Round == 3) {
-        m_CurrentWave = {EnemyType::Blue, EnemyType::Blue, EnemyType::Green, EnemyType::Green, EnemyType::Yellow, EnemyType::Blue};
-    } else if (m_Round == 4) {
-        m_CurrentWave = {EnemyType::Green, EnemyType::Green, EnemyType::Yellow, EnemyType::Yellow, EnemyType::Black, EnemyType::White};
-    } else {
-        m_CurrentWave = {EnemyType::Lead, EnemyType::Yellow, EnemyType::Green, EnemyType::Black, EnemyType::White, EnemyType::Rainbow};
-    }
+    m_CurrentWave = WaveConfig::GetInstance().GetRoundWave(m_Round);
 }
 
 void GameModel::Update(float deltaTimeMs) {
