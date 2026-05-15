@@ -20,6 +20,8 @@ constexpr float kVerticalPos = 462.5f;
 constexpr float kVerticalInterval = 45.0f;
 constexpr float kHorizontalGap = 80.0f;
 constexpr float kHorizontalInterval = 50.0f;
+const glm::vec2 kStartButtonCenter = {460.0f, -115.0f};
+const glm::vec2 kStartButtonHalfSize = {52.5f, 18.0f};
 
 const std::array<TowerButtonBinding, 8> kTowerButtons = {{
     {{kVerticalPos,                       2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "dart_tower",    Util::Keycode::NUM_1},
@@ -32,11 +34,15 @@ const std::array<TowerButtonBinding, 8> kTowerButtons = {{
     {{kVerticalPos + 3 * kVerticalInterval, 1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "glue_trap",              Util::Keycode::NUM_8}
 }};
 
+bool IsInRect(const glm::vec2& point, const glm::vec2& center, const glm::vec2& halfSize) {
+    return point.x >= center.x - halfSize.x &&
+           point.x <= center.x + halfSize.x &&
+           point.y >= center.y - halfSize.y &&
+           point.y <= center.y + halfSize.y;
+}
+
 bool IsInButtonRect(const glm::vec2& point, const TowerButtonBinding& button) {
-    return point.x >= button.center.x - button.halfSize.x &&
-           point.x <= button.center.x + button.halfSize.x &&
-           point.y >= button.center.y - button.halfSize.y &&
-           point.y <= button.center.y + button.halfSize.y;
+    return IsInRect(point, button.center, button.halfSize);
 }
 
 } // namespace
@@ -45,7 +51,7 @@ void GameController::HandleInput(GameModel& model) {
     auto& registry = BuildableRegistry::GetInstance();
     const glm::vec2 mousePos = Util::Input::GetCursorPosition();
     const bool isMouseLeftUp = Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB);
-    bool consumedByTowerButton = false;
+    bool consumedByHudButton = false;
 
     for (const auto& button : kTowerButtons) {
         if (button.buildableId[0] != '\0' && Util::Input::IsKeyUp(button.hotkey)) {
@@ -58,8 +64,13 @@ void GameController::HandleInput(GameModel& model) {
             } else {
                 model.SetMessage("This tower button is not available yet.");
             }
-            consumedByTowerButton = true;
+            consumedByHudButton = true;
         }
+    }
+
+    if (isMouseLeftUp && IsInRect(mousePos, kStartButtonCenter, kStartButtonHalfSize)) {
+        model.StartRound();
+        consumedByHudButton = true;
     }
 
     if (Util::Input::IsKeyUp(Util::Keycode::SPACE)) {
@@ -78,16 +89,16 @@ void GameController::HandleInput(GameModel& model) {
         model.SellSelectedTower();
     }
 
-    if (isMouseLeftUp && !consumedByTowerButton) {
+    if (isMouseLeftUp && !consumedByHudButton) {
         if (model.SelectPlacedTowerAt(mousePos)) {
-            consumedByTowerButton = true;
+            consumedByHudButton = true;
         }
     }
 
     if (model.GetPlacement().IsActive()) {
         model.UpdatePlacementPreview(mousePos);
 
-        if (isMouseLeftUp && !consumedByTowerButton) {
+        if (isMouseLeftUp && !consumedByHudButton) {
             model.ConfirmPlacement();
         }
 
