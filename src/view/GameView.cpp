@@ -169,7 +169,7 @@ void GameView::CreatePopEffectAt(const glm::vec2& position) {
     );
 
     obj->m_Transform.translation = position;
-    obj->m_Transform.scale *= 0.6f;
+    obj->m_Transform.scale *= 0.4f;
     m_Renderer.AddChild(obj);
 
     m_PopEffects.push_back({obj, 180.0f});
