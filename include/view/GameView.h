@@ -18,6 +18,7 @@
 #include "model/GameModel.h"
 #include "model/IBuildable.h"
 #include "view/UIView.h"
+#include <unordered_set>
 
 class GameView {
 public:
@@ -26,6 +27,7 @@ public:
     void Initialize(const GameModel& model);
     void Render(const GameModel& model);
     void PlayPopSounds(int popCount);
+    void QueuePopEffects(const std::vector<GameModel::PoppedEnemyEvent>& events);
 
 private:
     void InitializeBackground(const GameModel& model);
@@ -34,6 +36,8 @@ private:
     void SyncTowerObjects(const GameModel& model);
     void SyncEnemyObjects(const GameModel& model);
     void SyncProjectileObjects(const GameModel& model);
+    void CreatePopEffectAt(const glm::vec2& position);
+    void SyncPopEffects(float deltaTimeMs);
 
     void SyncPlacementPreviewObjects(const GameModel& model);
     void SyncSelectedTowerRangeObject(const GameModel& model);
@@ -48,11 +52,18 @@ private:
     UIView m_UIView;
     bool m_Initialized = false;
 
+    struct PopEffect {
+        std::shared_ptr<Util::GameObject> object;
+        float remainingMs = 0.0f;
+    };
+
     std::shared_ptr<Util::GameObject> m_Background = nullptr;
 
     std::unordered_map<const IBuildable*, std::shared_ptr<Util::GameObject>> m_TowerObjects;
     std::unordered_map<const EnemyModel*, std::shared_ptr<Util::GameObject>> m_EnemyObjects;
     std::unordered_map<const ProjectileModel*, std::shared_ptr<Util::GameObject>> m_ProjectileObjects;
+    std::vector<PopEffect> m_PopEffects;
+    std::unordered_set<const EnemyModel*> m_PendingPopEffects;
 
     std::shared_ptr<Util::GameObject> m_PreviewTowerObject = nullptr;
     std::shared_ptr<Util::GameObject> m_PreviewRangeObject = nullptr;

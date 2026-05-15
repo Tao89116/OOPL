@@ -5,7 +5,7 @@ class StartModel;
 
 class StartController {
 public:
-    int Update(StartModel& model, float deltaTimeMs);
+    void Update(StartModel& model, float deltaTimeMs);
 };
 
 #endif

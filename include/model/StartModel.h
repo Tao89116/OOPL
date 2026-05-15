@@ -9,6 +9,10 @@
 
 class StartModel {
 public:
+    struct PoppedBloonEvent {
+        glm::vec2 position = {0.0f, 0.0f};
+    };
+
     struct Bloon {
         glm::vec2 position;
         std::string spriteKey;
@@ -17,7 +21,8 @@ public:
 
     StartModel();
 
-    int Update(float deltaTimeMs);
+    void Update(float deltaTimeMs);
+    std::vector<PoppedBloonEvent> ConsumePoppedBloonEvents();
 
     const std::vector<Bloon>& GetBloons() const { return m_Bloons; }
     const glm::vec2& GetBananaCatPosition() const { return m_BananaCatPosition; }
@@ -27,13 +32,14 @@ public:
 private:
     void InitializeBloons();
     void UpdateBananaCat(float deltaTimeMs);
-    int PopTouchedBloons();
+    void PopTouchedBloons();
     std::size_t FirstBloonIndexInRow(int row) const;
     bool IsCurrentRowComplete() const;
     void AdvanceToNextRow();
 
 private:
     std::vector<Bloon> m_Bloons;
+    std::vector<PoppedBloonEvent> m_PoppedBloonEvents;
     glm::vec2 m_BananaCatPosition = {760.0f, 0.0f};
     bool m_BananaCatFacingRight = false;
     bool m_AnimationComplete = false;

@@ -50,24 +50,28 @@ void StartModel::InitializeBloons() {
     }
 }
 
-int StartModel::Update(float deltaTimeMs) {
+void StartModel::Update(float deltaTimeMs) {
     if (m_AnimationComplete) {
-        return 0;
+        return;
     }
 
     if (m_DelayRemainingMs > 0.0f) {
         m_DelayRemainingMs = std::max(0.0f, m_DelayRemainingMs - deltaTimeMs);
-        return 0;
+        return;
     }
 
     UpdateBananaCat(deltaTimeMs);
-    const int poppedCount = PopTouchedBloons();
+    PopTouchedBloons();
 
     if (IsCurrentRowComplete()) {
         AdvanceToNextRow();
     }
+}
 
-    return poppedCount;
+std::vector<StartModel::PoppedBloonEvent> StartModel::ConsumePoppedBloonEvents() {
+    std::vector<PoppedBloonEvent> events = std::move(m_PoppedBloonEvents);
+    m_PoppedBloonEvents.clear();
+    return events;
 }
 
 void StartModel::UpdateBananaCat(float deltaTimeMs) {
@@ -75,8 +79,7 @@ void StartModel::UpdateBananaCat(float deltaTimeMs) {
     m_BananaCatFacingRight = m_RowDirection > 0.0f;
 }
 
-int StartModel::PopTouchedBloons() {
-    int poppedCount = 0;
+void StartModel::PopTouchedBloons() {
     const std::size_t rowStart = FirstBloonIndexInRow(m_CurrentRow);
     const std::size_t rowEnd = rowStart
         + static_cast<std::size_t>(GameConfig::StartBloonsPerRow[m_CurrentRow]);
@@ -92,11 +95,9 @@ int StartModel::PopTouchedBloons() {
         if (distanceSquared <= GameConfig::StartBloonCollisionRadius
                 * GameConfig::StartBloonCollisionRadius) {
             bloon.popped = true;
-            ++poppedCount;
+            m_PoppedBloonEvents.push_back({bloon.position});
         }
     }
-
-    return poppedCount;
 }
 
 std::size_t StartModel::FirstBloonIndexInRow(int row) const {

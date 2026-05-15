@@ -2,6 +2,7 @@
 
 #include "GameConfig.h"
 #include "model/StartModel.h"
+#include "Util/Time.hpp"
 
 StartView::StartView() = default;
 
@@ -103,7 +104,41 @@ void StartView::SyncWithModel(const StartModel& model) {
 void StartView::Render(const StartModel& model) {
     Initialize(model);
     SyncWithModel(model);
+    SyncPopEffects(Util::Time::GetDeltaTimeMs());
     m_Renderer.Update();
+}
+
+void StartView::QueuePopEffects(const std::vector<StartModel::PoppedBloonEvent>& events) {
+    for (const auto& event : events) {
+        CreatePopEffectAt(event.position);
+    }
+}
+
+void StartView::CreatePopEffectAt(const glm::vec2& position) {
+    auto obj = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage("pop"),
+        61.0f
+    );
+
+    obj->m_Transform.translation = position;
+    obj->m_Transform.scale *= 0.4f;
+    m_Renderer.AddChild(obj);
+
+    m_PopEffects.push_back({obj, 180.0f});
+}
+
+void StartView::SyncPopEffects(float deltaTimeMs) {
+    for (auto it = m_PopEffects.begin(); it != m_PopEffects.end();) {
+        it->remainingMs -= deltaTimeMs;
+        if (it->remainingMs <= 0.0f) {
+            if (it->object) {
+                m_Renderer.RemoveChild(it->object);
+            }
+            it = m_PopEffects.erase(it);
+        } else {
+            ++it;
+        }
+    }
 }
 
 void StartView::PlayPopSounds(int popCount) {

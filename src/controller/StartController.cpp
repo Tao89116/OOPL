@@ -2,6 +2,6 @@
 
 #include "model/StartModel.h"
 
-int StartController::Update(StartModel& model, float deltaTimeMs) {
-    return model.Update(deltaTimeMs);
+void StartController::Update(StartModel& model, float deltaTimeMs) {
+    model.Update(deltaTimeMs);
 }
