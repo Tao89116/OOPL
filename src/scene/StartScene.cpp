@@ -6,9 +6,11 @@
 
 void StartScene::Update(SceneManager& sceneManager) {
     const float deltaTimeMs = Util::Time::GetDeltaTimeMs();
-    const int poppedCount = m_Controller.Update(m_Model, deltaTimeMs);
+    m_Controller.Update(m_Model, deltaTimeMs);
+    const auto poppedEvents = m_Model.ConsumePoppedBloonEvents();
 
-    m_View.PlayPopSounds(poppedCount);
+    m_View.QueuePopEffects(poppedEvents);
+    m_View.PlayPopSounds(static_cast<int>(poppedEvents.size()));
     m_View.Render(m_Model);
 
     if (m_Model.IsAnimationComplete()) {
