@@ -16,17 +16,17 @@ void GameModel::SetupDifficulty() {
         case DifficultyType::Easy:
             m_HP = 100;
             m_Gold = 650;
-            m_SpawnIntervalMs = 1100.0f;
+            m_SpawnIntervalMs = 400.0f;
             break;
         case DifficultyType::Normal:
             m_HP = 75;
             m_Gold = 650;
-            m_SpawnIntervalMs = 900.0f;
+            m_SpawnIntervalMs = 400.0f;
             break;
         case DifficultyType::Hard:
             m_HP = 50;
             m_Gold = 650;
-            m_SpawnIntervalMs = 720.0f;
+            m_SpawnIntervalMs = 400.0f;
             break;
     }
 }

@@ -51,7 +51,7 @@ protected:
     ) override;
 
 private:
-    float m_FreezeDurationMs = 1200.0f;
+    float m_FreezeDurationMs = 1250.0f;
 };
 
 class CannonTower : public AttackTowerBase {

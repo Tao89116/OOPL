@@ -16,10 +16,10 @@ DartTower::DartTower(const glm::vec2& position)
     m_CanPlaceOnPath = false;
 
     m_ShowRangePreview = true;
-    m_PreviewRange = 145.0f;
+    m_PreviewRange = 180.0f;
 
-    m_Range = 145.0f;
-    m_AttackIntervalMs = 650.0f;
+    m_Range = 180.0f;
+    m_AttackIntervalMs = 825.0f;
     m_Damage = 1;
 }
 
@@ -54,7 +54,7 @@ TrackTower::TrackTower(const glm::vec2& position)
     m_PreviewRange = 125.0f;
 
     m_Range = 125.0f;
-    m_AttackIntervalMs = 380.0f;
+    m_AttackIntervalMs = 1375.0f;
     m_Damage = 1;
 }
 
@@ -67,7 +67,7 @@ std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
         m_Damage,
         "projectile_1",
         glm::vec2(1.0f, 0.0f),
-        72.0f,
+        125.0f,
         0.9f
     );
 }
@@ -119,7 +119,7 @@ void TrackTower::Attack(
             m_Damage,
             "projectile_1",
             direction,
-            72.0f,
+            125.0f,
             0.9f
         ));
     }
@@ -141,7 +141,7 @@ IceBallTower::IceBallTower(const glm::vec2& position)
 
     m_ShowRangePreview = true;
     m_PreviewRange = m_Range;
-    m_AttackIntervalMs = 2000.0f;
+    m_AttackIntervalMs = 2325.0f;
     m_Damage = 0;
 }
 
@@ -211,9 +211,9 @@ CannonTower::CannonTower(const glm::vec2& position)
     m_CanPlaceOnPath = false;
 
     m_ShowRangePreview = true;
-    m_PreviewRange = 180.0f;
+    m_PreviewRange = 216.0f;
 
-    m_Range = 175.0f;
+    m_Range = 216.0f;
     m_AttackIntervalMs = 1200.0f;
     m_Damage = 1;
 }
@@ -246,10 +246,10 @@ SuperTower::SuperTower(const glm::vec2& position)
     m_CanPlaceOnPath = false;
 
     m_ShowRangePreview = true;
-    m_PreviewRange = 230.0f;
+    m_PreviewRange = 252.0f;
 
-    m_Range = 230.0f;
-    m_AttackIntervalMs = 120.0f;
+    m_Range = 252.0f;
+    m_AttackIntervalMs = 50.0f;
     m_Damage = 1;
 }
 
@@ -281,10 +281,10 @@ BoomerangTower::BoomerangTower(const glm::vec2& position)
     m_CanPlaceOnPath = false;
 
     m_ShowRangePreview = true;
-    m_PreviewRange = 160.0f;
+    m_PreviewRange = 234.0f;
 
-    m_Range = 160.0f;
-    m_AttackIntervalMs = 1000.0f;
+    m_Range = 234.0f;
+    m_AttackIntervalMs = 1250.0f;
     m_Damage = 1;
 }
 
