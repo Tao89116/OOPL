@@ -101,6 +101,7 @@ void ResourceManager::Initialize() {
 
     // Json
     RegisterJson("map_paths", "map_paths.json");
+    RegisterJson("waves", "waves.json");
 
     LOG_TRACE("ResourceManager initialized.");
 }

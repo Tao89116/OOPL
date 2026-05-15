@@ -14,7 +14,7 @@ namespace GameConfig {
     constexpr float CenterX = 640.0f;
     constexpr float CenterY = 360.0f;
 
-    constexpr int TotalRounds = 5;
+    constexpr int TotalRounds = 50;
 
     // Start scene bloon layout. Edit these values to manually move each
     // bloon row and resize the bloons so they can cover the title text in
