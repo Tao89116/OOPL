@@ -55,7 +55,8 @@ public:
         const std::string& spriteKey,
         const glm::vec2& direction,
         float maxDistance,
-        float speed = 0.7f
+        float speed = 0.7f,
+        float hitRadius = 10.0f
     );
 
     void Update(
@@ -124,7 +125,7 @@ private:
     float m_Radius = 65.0f;
     float m_LifetimeMs = 700.0f;
     float m_ElapsedMs = 0.0f;
-    float m_HitRadius = 12.0f;
+    float m_HitRadius = 20.0f;
     int m_MaxPierce = 2;
     std::unordered_set<const EnemyModel*> m_HitEnemies;
 };
