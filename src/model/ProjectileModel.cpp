@@ -66,10 +66,12 @@ DirectionalProjectile::DirectionalProjectile(
     const std::string& spriteKey,
     const glm::vec2& direction,
     float maxDistance,
-    float speed
+    float speed,
+    float hitRadius
 )
     : ProjectileModel(startPos, damage, spriteKey, nullptr),
-      m_MaxDistance(maxDistance) {
+      m_MaxDistance(maxDistance),
+      m_HitRadius(hitRadius) {
     const float dirLen = glm::length(direction);
     if (dirLen > 0.0001f) {
         m_Direction = direction / dirLen;

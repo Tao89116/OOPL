@@ -68,7 +68,8 @@ std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
         "projectile_1",
         glm::vec2(1.0f, 0.0f),
         125.0f,
-        0.9f
+        0.9f,
+        18.0f
     );
 }
 
@@ -120,7 +121,8 @@ void TrackTower::Attack(
             "projectile_1",
             direction,
             125.0f,
-            0.9f
+            0.9f,
+            18.0f
         ));
     }
 }
