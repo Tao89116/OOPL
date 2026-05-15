@@ -38,7 +38,7 @@ std::shared_ptr<EnemyModel> AttackTowerBase::FindTarget(
     const std::vector<std::shared_ptr<EnemyModel>>& enemies
 ) {
     for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->IsAlive()) {
+        if (!CanTargetEnemy(enemy)) {
             continue;
         }
 
@@ -49,6 +49,19 @@ std::shared_ptr<EnemyModel> AttackTowerBase::FindTarget(
     }
 
     return nullptr;
+}
+
+bool AttackTowerBase::CanTargetEnemy(const std::shared_ptr<EnemyModel>& enemy) const {
+    if (!enemy || !enemy->CanBeTargeted()) {
+        return false;
+    }
+
+    const EnemyModel::DamageOptions damageOptions = GetDamageOptions();
+    if (enemy->IsFrozen() && !damageOptions.canPopFrozen) {
+        return false;
+    }
+
+    return true;
 }
 
 void AttackTowerBase::Attack(

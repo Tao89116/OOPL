@@ -19,10 +19,6 @@ enum class EnemyType {
     Rainbow
 };
 
-struct EnemyDamageOptions {
-    bool canPopFrozen = false;
-};
-
 class EnemyModel {
 public:
     struct DeathEvent {
@@ -31,7 +27,9 @@ public:
         std::vector<EnemyType> childrenToSpawn;
     };
 
-    using DamageOptions = EnemyDamageOptions;
+    struct DamageOptions {
+        bool canPopFrozen;
+    };
 
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex);
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex, int pathIndex);
