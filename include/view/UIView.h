@@ -54,8 +54,8 @@ private:
     std::shared_ptr<Util::Text> m_HelpText = nullptr;
     std::shared_ptr<Util::GameObject> m_HelpObject = nullptr;
 
-    // std::shared_ptr<Util::Text> m_MessageText = nullptr;
-    // std::shared_ptr<Util::GameObject> m_MessageObject = nullptr;
+    std::shared_ptr<Util::Text> m_MessageText = nullptr;
+    std::shared_ptr<Util::GameObject> m_MessageObject = nullptr;
 
     std::shared_ptr<Util::GameObject> m_Button1 = nullptr;
     std::shared_ptr<Util::GameObject> m_Button2 = nullptr;

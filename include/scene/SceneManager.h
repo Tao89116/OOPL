@@ -8,6 +8,7 @@
 #include "pch.hpp"
 #include "SceneType.h"
 #include "scene/IScene.h"
+#include "model/GameModel.h"
 
 class SceneManager {
 public:
@@ -22,6 +23,8 @@ public:
 
     void SetResult(ResultType result) { m_Result = result; }
     ResultType GetResult() const { return m_Result; }
+    std::shared_ptr<GameModel> GetGameSession() const { return m_GameSession; }
+    void SetGameSession(const std::shared_ptr<GameModel>& model) { m_GameSession = model; }
 
 private:
     void CreateScene(SceneType sceneType);
@@ -35,6 +38,7 @@ private:
 
     DifficultyType m_Difficulty = DifficultyType::Easy;
     ResultType m_Result = ResultType::Lose;
+    std::shared_ptr<GameModel> m_GameSession = nullptr;
 };
 
 #endif

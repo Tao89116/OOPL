@@ -12,6 +12,7 @@
 class MapModel {
 public:
     explicit MapModel(DifficultyType difficulty);
+    void ReloadByDifficulty(DifficultyType difficulty);
 
     const std::vector<std::vector<glm::vec2>>& GetPaths() const { return m_Data.paths; }
     const std::vector<glm::vec2>& GetPath(size_t pathIndex) const { return m_Data.paths.at(pathIndex); }

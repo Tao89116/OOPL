@@ -23,6 +23,7 @@ set(SRC_FILES
         scene/StartScene.cpp
         scene/DifficultyScene.cpp
         scene/GameScene.cpp
+        scene/CheatScene.cpp
         scene/ResultScene.cpp
         scene/SceneManager.cpp
 )
@@ -38,6 +39,7 @@ set(INCLUDE_FILES
         scene/StartScene.h
         scene/DifficultyScene.h
         scene/GameScene.h
+        scene/CheatScene.h
         scene/ResultScene.h
 
         model/EnemyModel.h
