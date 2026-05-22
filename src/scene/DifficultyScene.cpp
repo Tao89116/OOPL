@@ -30,19 +30,76 @@ bool DifficultyScene::ConsumeCheatSequenceInput() {
     if (m_CheatCount < kKonami.size()) return false;
 
     for (std::size_t i = 0; i < kKonami.size(); ++i) {
-        std::size_t idx = (m_CheatWriteIndex + i) % m_CheatBuffer.size();
+        const std::size_t idx = (m_CheatWriteIndex + i) % m_CheatBuffer.size();
         if (m_CheatBuffer[idx] != kKonami[i]) return false;
     }
     return true;
 }
 
+void DifficultyScene::DrawCheatGui(SceneManager& sceneManager) {
+    if (!m_CheatModel) return;
+
+    ImGui::Begin("Cheat Mode", &m_CheatMode);
+
+    int diffIndex = static_cast<int>(sceneManager.GetDifficulty());
+    const char* diffItems[] = {"Easy", "Normal", "Hard"};
+    ImGui::Combo("Difficulty", &diffIndex, diffItems, 3);
+
+    if (ImGui::Button("Apply Difficulty")) {
+        sceneManager.SetDifficulty(static_cast<DifficultyType>(diffIndex));
+        m_CheatModel->SetDifficultyCheat(static_cast<DifficultyType>(diffIndex));
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Apply + Go Game")) {
+        sceneManager.SetDifficulty(static_cast<DifficultyType>(diffIndex));
+        m_CheatModel->SetDifficultyCheat(static_cast<DifficultyType>(diffIndex));
+        sceneManager.SetGameSession(m_CheatModel);
+        sceneManager.RequestSceneChange(SceneType::Game);
+    }
+
+    ImGui::InputInt("Gold", &m_GoldInput);
+    if (ImGui::Button("Apply Gold")) m_CheatModel->SetGoldCheat(m_GoldInput);
+
+    ImGui::InputInt("HP", &m_HPInput);
+    if (ImGui::Button("Apply HP")) m_CheatModel->SetHPCheat(m_HPInput);
+
+    ImGui::InputInt("Round", &m_RoundInput);
+    if (ImGui::Button("Apply Round")) m_CheatModel->SetRoundCheat(m_RoundInput);
+
+    const char* enemyItems[] = {"Red", "Blue", "Green", "Yellow", "Black", "White", "Lead", "Rainbow"};
+    ImGui::Combo("Enemy Type", &m_EnemyTypeIndex, enemyItems, 8);
+    ImGui::InputInt("Spawn Count", &m_SpawnCountInput);
+    if (ImGui::Button("Spawn")) {
+        m_CheatModel->SpawnEnemyCheat(static_cast<EnemyType>(m_EnemyTypeIndex), m_SpawnCountInput);
+    }
+
+    if (ImGui::Button("Force Win")) m_CheatModel->ForceWin();
+    ImGui::SameLine();
+    if (ImGui::Button("Force Lose")) m_CheatModel->ForceLose();
+
+    if (ImGui::Button("Close")) {
+        m_CheatMode = false;
+    }
+    ImGui::End();
+
+    if (!m_CheatMode) {
+        sceneManager.RequestSceneChange(SceneType::Difficulty);
+    }
+}
+
 void DifficultyScene::Update(SceneManager& sceneManager) {
-    if (ConsumeCheatSequenceInput()) {
-        auto cheatModel = std::make_shared<GameModel>(sceneManager.GetDifficulty());
-        cheatModel->SetCheatMode(true);
-        cheatModel->SetMessage("Cheat mode opened from Difficulty. Controls: 1/2/3 diff, [/] round, ;/' gold, O/P HP, mouse wheel enemy type, -/+ count, ENTER spawn, F9/F10 lose/win, ESC close.");
-        sceneManager.SetGameSession(cheatModel);
-        sceneManager.RequestSceneChange(SceneType::Cheat);
+    if (!m_CheatMode && ConsumeCheatSequenceInput()) {
+        m_CheatMode = true;
+        m_CheatModel = std::make_shared<GameModel>(sceneManager.GetDifficulty());
+        m_CheatModel->SetCheatMode(true);
+        m_GoldInput = m_CheatModel->GetGold();
+        m_HPInput = m_CheatModel->GetHP();
+        m_RoundInput = m_CheatModel->GetRound();
+    }
+
+    if (m_CheatMode) {
+        DrawCheatGui(sceneManager);
+        m_View.Render();
         return;
     }
 
