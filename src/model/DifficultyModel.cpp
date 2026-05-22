@@ -23,57 +23,57 @@ int DifficultyModel::GetBuildCost(
 
     if (buildableId == "track_tower") {
         switch (difficulty) {
-            case DifficultyType::Easy:   return 125;
-            case DifficultyType::Normal: return 140;
-            case DifficultyType::Hard:   return 160;
+            case DifficultyType::Easy:   return 340;
+            case DifficultyType::Normal: return 385;
+            case DifficultyType::Hard:   return 390;
         }
     }
 
     if (buildableId == "cannon_tower" || buildableId == "bomb_tower") {
         switch (difficulty) {
-            case DifficultyType::Easy:   return 235;
-            case DifficultyType::Normal: return 260;
-            case DifficultyType::Hard:   return 300;
+            case DifficultyType::Easy:   return 520;
+            case DifficultyType::Normal: return 585;
+            case DifficultyType::Hard:   return 600;
         }
     }
 
     if (buildableId == "glue_trap") {
         switch (difficulty) {
-            case DifficultyType::Easy:   return 170;
-            case DifficultyType::Normal: return 190;
-            case DifficultyType::Hard:   return 220;
+            case DifficultyType::Easy:   return 35;
+            case DifficultyType::Normal: return 40;
+            case DifficultyType::Hard:   return 40;
         }
     }
 
     if (buildableId == "super_tower") {
         switch (difficulty) {
-            case DifficultyType::Easy:   return 380;
-            case DifficultyType::Normal: return 420;
-            case DifficultyType::Hard:   return 500;
+            case DifficultyType::Easy:   return 3600;
+            case DifficultyType::Normal: return 4080;
+            case DifficultyType::Hard:   return 4160;
         }
     }
 
     if (buildableId == "iceball_tower") {
         switch (difficulty) {
-            case DifficultyType::Easy:   return 160;
-            case DifficultyType::Normal: return 180;
-            case DifficultyType::Hard:   return 210;
+            case DifficultyType::Easy:   return 385;
+            case DifficultyType::Normal: return 435;
+            case DifficultyType::Hard:   return 440;
         }
     }
 
     if (buildableId == "spike_trap") {
         switch (difficulty) {
-            case DifficultyType::Easy:   return 70;
-            case DifficultyType::Normal: return 80;
-            case DifficultyType::Hard:   return 95;
+            case DifficultyType::Easy:   return 25;
+            case DifficultyType::Normal: return 30;
+            case DifficultyType::Hard:   return 30;
         }
     }
 
     if (buildableId == "boomerang_tower") {
         switch (difficulty) {
-            case DifficultyType::Easy:   return 200;
-            case DifficultyType::Normal: return 220;
-            case DifficultyType::Hard:   return 260;
+            case DifficultyType::Easy:   return 475;
+            case DifficultyType::Normal: return 535;
+            case DifficultyType::Hard:   return 545;
         }
     }
 

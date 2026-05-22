@@ -37,44 +37,44 @@ struct EnemyProfileTraits<RedTag> {
 template <>
 struct EnemyProfileTraits<BlueTag> {
     static constexpr EnemyType Type = EnemyType::Blue;
-    static EnemyProfile Build() { return {1, 0.14f, 20, "bloon_1", {EnemyType::Red}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.4f, 20, "bloon_1", {EnemyType::Red}}; }
 };
 
 template <>
 struct EnemyProfileTraits<GreenTag> {
     static constexpr EnemyType Type = EnemyType::Green;
-    static EnemyProfile Build() { return {1, 0.16f, 25, "bloon_2", {EnemyType::Blue}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.8f, 25, "bloon_2", {EnemyType::Blue}}; }
 };
 
 template <>
 struct EnemyProfileTraits<YellowTag> {
     static constexpr EnemyType Type = EnemyType::Yellow;
-    static EnemyProfile Build() { return {1, 0.20f, 30, "bloon_3", {EnemyType::Green}}; }
+    static EnemyProfile Build() { return {1, 0.12*3.2f, 30, "bloon_3", {EnemyType::Green}}; }
 };
 
 template <>
 struct EnemyProfileTraits<BlackTag> {
     static constexpr EnemyType Type = EnemyType::Black;
-    static EnemyProfile Build() { return {1, 0.21f, 35, "bloon_4", {EnemyType::Yellow, EnemyType::Yellow}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.8f, 35, "bloon_4", {EnemyType::Yellow, EnemyType::Yellow}}; }
 };
 
 template <>
 struct EnemyProfileTraits<WhiteTag> {
     static constexpr EnemyType Type = EnemyType::White;
-    static EnemyProfile Build() { return {1, 0.21f, 35, "bloon_5", {EnemyType::Yellow, EnemyType::Yellow}}; }
+    static EnemyProfile Build() { return {1, 0.12*2.5f, 35, "bloon_5", {EnemyType::Yellow, EnemyType::Yellow}}; }
 };
 
 template <>
 struct EnemyProfileTraits<LeadTag> {
     static constexpr EnemyType Type = EnemyType::Lead;
-    static EnemyProfile Build() { return {2, 0.10f, 45, "bloon_6", {EnemyType::Black, EnemyType::Black}}; }
+    static EnemyProfile Build() { return {1, 0.12f, 45, "bloon_6", {EnemyType::Black, EnemyType::Black}}; }
 };
 
 template <>
 struct EnemyProfileTraits<RainbowTag> {
     static constexpr EnemyType Type = EnemyType::Rainbow;
     static EnemyProfile Build() {
-        return {1, 0.22f, 60, "bloon_7", {EnemyType::Black, EnemyType::Black, EnemyType::White, EnemyType::White}};
+        return {1, 0.12*2.2f, 60, "bloon_7", {EnemyType::Black, EnemyType::Black, EnemyType::White, EnemyType::White}};
     }
 };
 

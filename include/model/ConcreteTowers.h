@@ -74,7 +74,7 @@ protected:
 private:
     int m_RemainingCharges = 20;
     int m_Damage = 0;
-    float m_SlowMultiplier = 0.6f;
+    float m_SlowMultiplier = 0.1f;
     float m_SlowDurationMs = 3200.0f;
 };
 

@@ -352,10 +352,6 @@ void SpikeTrap::TriggerOn(const std::shared_ptr<EnemyModel>& enemy) {
     if (m_RemainingCharges <= 0) {
         m_ShouldRemove = true;
     }
-
-    // TODO:
-    // GlueTrap -> enemy->AddStatusEffect(...)
-    // BombTrap -> 範圍傷害
 }
 
 GlueTrap::GlueTrap(const glm::vec2& position)
@@ -366,7 +362,7 @@ GlueTrap::GlueTrap(const glm::vec2& position)
     m_SpriteKey = "tower_glues";
     m_PreviewSpriteKey = "tower_glues";
 
-    m_Cost = 80;
+    m_Cost = 30;
     m_FootprintRadius = 18.0f;
     m_CanPlaceOnPath = true;
 

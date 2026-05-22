@@ -112,7 +112,7 @@ bool GameModel::SelectPlacedTowerAt(const glm::vec2& worldPos) {
     }
 
     m_SelectedPlacedTower = bestTower;
-    const int refund = DifficultyModel::GetBuildCost(m_Difficulty, bestTower->GetId()) / 2;
+    const int refund = DifficultyModel::GetBuildCost(m_Difficulty, bestTower->GetId()) * 0.8;
     m_Message = "Selected " + bestTower->GetDisplayName() +
                 " (press X to sell, refund " + std::to_string(refund) + ")";
     return true;

@@ -97,8 +97,8 @@ void StartView::SyncWithModel(const StartModel& model) {
     }
 
     m_BananaCatObj->m_Transform.translation = model.GetBananaCatPosition();
-    const float catScaleX = model.IsBananaCatFacingRight() ? -0.75f : 0.75f;
-    m_BananaCatObj->m_Transform.scale = {catScaleX, 0.75f};
+    const float catScaleX = model.IsBananaCatFacingRight() ? -0.6f : 0.6f;
+    m_BananaCatObj->m_Transform.scale = {catScaleX, 0.6f};
 }
 
 void StartView::Render(const StartModel& model) {

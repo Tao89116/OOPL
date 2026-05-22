@@ -75,7 +75,7 @@ std::vector<StartModel::PoppedBloonEvent> StartModel::ConsumePoppedBloonEvents()
 }
 
 void StartModel::UpdateBananaCat(float deltaTimeMs) {
-    m_BananaCatPosition.x += m_RowDirection * kCatSpeedPxPerMs * deltaTimeMs;
+    m_BananaCatPosition.x += m_RowDirection * kCatSpeedPxPerMs* 1.5 * deltaTimeMs;
     m_BananaCatFacingRight = m_RowDirection > 0.0f;
 }
 

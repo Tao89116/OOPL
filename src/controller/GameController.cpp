@@ -20,8 +20,8 @@ constexpr float kVerticalPos = 462.5f;
 constexpr float kVerticalInterval = 45.0f;
 constexpr float kHorizontalGap = 80.0f;
 constexpr float kHorizontalInterval = 50.0f;
-const glm::vec2 kStartButtonCenter = {460.0f, -115.0f};
-const glm::vec2 kStartButtonHalfSize = {52.5f, 18.0f};
+const glm::vec2 kStartButtonCenter = {535.0f, -275.0f};
+const glm::vec2 kStartButtonHalfSize = {73.5f, 25.2f};//這裡有點蠢
 
 const std::array<TowerButtonBinding, 8> kTowerButtons = {{
     {{kVerticalPos,                       2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "dart_tower",    Util::Keycode::NUM_1},
