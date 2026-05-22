@@ -31,6 +31,7 @@ public:
 
 private:
     void InitializeBackground(const GameModel& model);
+    void SyncBackground(const GameModel& model);
     void InitializePopSounds();
 
     void SyncTowerObjects(const GameModel& model);
@@ -58,6 +59,7 @@ private:
     };
 
     std::shared_ptr<Util::GameObject> m_Background = nullptr;
+    std::string m_CurrentBackgroundKey;
 
     std::unordered_map<const IBuildable*, std::shared_ptr<Util::GameObject>> m_TowerObjects;
     std::unordered_map<const EnemyModel*, std::shared_ptr<Util::GameObject>> m_EnemyObjects;

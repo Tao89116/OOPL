@@ -55,6 +55,7 @@ void GameView::PlayPopSounds(int popCount) {
 
 void GameView::InitializeBackground(const GameModel& model) {
     const std::string bgKey = model.GetMap().GetBackgroundKey();
+    m_CurrentBackgroundKey = bgKey;
 
     auto image = m_Resources.GetImage(bgKey);
     m_Background = std::make_shared<Util::GameObject>(image, 0.0f);
@@ -68,8 +69,23 @@ void GameView::InitializeBackground(const GameModel& model) {
     m_Renderer.AddChild(m_Background);
 }
 
+void GameView::SyncBackground(const GameModel& model) {
+    const std::string nextKey = model.GetMap().GetBackgroundKey();
+    if (m_Background && nextKey == m_CurrentBackgroundKey) {
+        return;
+    }
+
+    if (m_Background) {
+        m_Renderer.RemoveChild(m_Background);
+        m_Background = nullptr;
+    }
+
+    InitializeBackground(model);
+}
+
 void GameView::Render(const GameModel& model) {
     Initialize(model);
+    SyncBackground(model);
 
     SyncTowerObjects(model);
     SyncEnemyObjects(model);
