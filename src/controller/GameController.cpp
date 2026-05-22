@@ -1,7 +1,3 @@
-//
-// Created by polyunicorn on 2026/3/13.
-//
-
 #include "controller/GameController.h"
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
@@ -21,17 +17,17 @@ constexpr float kVerticalInterval = 45.0f;
 constexpr float kHorizontalGap = 80.0f;
 constexpr float kHorizontalInterval = 50.0f;
 const glm::vec2 kStartButtonCenter = {535.0f, -275.0f};
-const glm::vec2 kStartButtonHalfSize = {73.5f, 25.2f};//這裡有點蠢
+const glm::vec2 kStartButtonHalfSize = {73.5f, 25.2f};
 
 const std::array<TowerButtonBinding, 8> kTowerButtons = {{
-    {{kVerticalPos,                       2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "dart_tower",    Util::Keycode::NUM_1},
-    {{kVerticalPos + kVerticalInterval,   2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "track_tower",   Util::Keycode::NUM_2},
-    {{kVerticalPos + 2 * kVerticalInterval, 2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "iceball_tower",  Util::Keycode::NUM_3},
+    {{kVerticalPos,                       2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "dart_tower",      Util::Keycode::NUM_1},
+    {{kVerticalPos + kVerticalInterval,   2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "track_tower",     Util::Keycode::NUM_2},
+    {{kVerticalPos + 2 * kVerticalInterval, 2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "iceball_tower",   Util::Keycode::NUM_3},
     {{kVerticalPos + 3 * kVerticalInterval, 2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "cannon_tower",    Util::Keycode::NUM_4},
-    {{kVerticalPos,                       1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "boomerang_tower",   Util::Keycode::NUM_5},
-    {{kVerticalPos + kVerticalInterval,   1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "super_tower", Util::Keycode::NUM_6},
-    {{kVerticalPos + 2 * kVerticalInterval, 1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "spike_trap",    Util::Keycode::NUM_7},
-    {{kVerticalPos + 3 * kVerticalInterval, 1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "glue_trap",              Util::Keycode::NUM_8}
+    {{kVerticalPos,                       1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "boomerang_tower", Util::Keycode::NUM_5},
+    {{kVerticalPos + kVerticalInterval,   1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "super_tower",     Util::Keycode::NUM_6},
+    {{kVerticalPos + 2 * kVerticalInterval, 1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "spike_trap",      Util::Keycode::NUM_7},
+    {{kVerticalPos + 3 * kVerticalInterval, 1 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "glue_trap",       Util::Keycode::NUM_8}
 }};
 
 bool IsInRect(const glm::vec2& point, const glm::vec2& center, const glm::vec2& halfSize) {
@@ -47,7 +43,79 @@ bool IsInButtonRect(const glm::vec2& point, const TowerButtonBinding& button) {
 
 } // namespace
 
+bool GameController::ConsumeCheatSequenceInput(GameModel& model) {
+    static const std::array<CheatStep, 10> kTarget = {
+        CheatStep::Up, CheatStep::Up, CheatStep::Down, CheatStep::Down,
+        CheatStep::Left, CheatStep::Right, CheatStep::Left, CheatStep::Right,
+        CheatStep::B, CheatStep::A
+    };
+
+    std::optional<CheatStep> step;
+    if (Util::Input::IsKeyUp(Util::Keycode::UP)) step = CheatStep::Up;
+    else if (Util::Input::IsKeyUp(Util::Keycode::DOWN)) step = CheatStep::Down;
+    else if (Util::Input::IsKeyUp(Util::Keycode::LEFT)) step = CheatStep::Left;
+    else if (Util::Input::IsKeyUp(Util::Keycode::RIGHT)) step = CheatStep::Right;
+    else if (Util::Input::IsKeyUp(Util::Keycode::B)) step = CheatStep::B;
+    else if (Util::Input::IsKeyUp(Util::Keycode::A)) step = CheatStep::A;
+
+    if (!step) return false;
+
+    m_CheatBuffer[m_CheatWriteIndex] = *step;
+    m_CheatWriteIndex = (m_CheatWriteIndex + 1) % m_CheatBuffer.size();
+    if (m_CheatCount < m_CheatBuffer.size()) ++m_CheatCount;
+    if (m_CheatCount < kTarget.size()) return false;
+
+    for (std::size_t i = 0; i < kTarget.size(); ++i) {
+        const std::size_t idx = (m_CheatWriteIndex + i) % m_CheatBuffer.size();
+        if (m_CheatBuffer[idx] != kTarget[i]) return false;
+    }
+
+    model.SetCheatMode(true);
+    model.SetMessage("Cheat mode enabled. [ESC: close] [Q/W: difficulty] [R/F: round +/-] [G/H: gold +/-] [T/Y: enemy type] [N/M: count +/-] [K: spawn] [F9: lose] [F10: win]");
+    return true;
+}
+
+void GameController::HandleCheatModeInput(GameModel& model) {
+    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) {
+        model.SetCheatMode(false);
+        model.SetMessage("Cheat mode closed.");
+        return;
+    }
+
+    if (Util::Input::IsKeyUp(Util::Keycode::Q)) m_CheatDifficultyIndex = (m_CheatDifficultyIndex + 2) % 3;
+    if (Util::Input::IsKeyUp(Util::Keycode::W)) m_CheatDifficultyIndex = (m_CheatDifficultyIndex + 1) % 3;
+    if (Util::Input::IsKeyUp(Util::Keycode::Q) || Util::Input::IsKeyUp(Util::Keycode::W)) {
+        model.SetDifficultyCheat(static_cast<DifficultyType>(m_CheatDifficultyIndex));
+    }
+
+    if (Util::Input::IsKeyUp(Util::Keycode::R)) model.SetRoundCheat(model.GetRound() + 1);
+    if (Util::Input::IsKeyUp(Util::Keycode::F)) model.SetRoundCheat(model.GetRound() - 1);
+
+    if (Util::Input::IsKeyUp(Util::Keycode::G)) model.SetGoldCheat(model.GetGold() + 100);
+    if (Util::Input::IsKeyUp(Util::Keycode::H)) model.SetGoldCheat(std::max(0, model.GetGold() - 100));
+
+    if (Util::Input::IsKeyUp(Util::Keycode::T)) m_CheatEnemyTypeIndex = (m_CheatEnemyTypeIndex + 7) % 8;
+    if (Util::Input::IsKeyUp(Util::Keycode::Y)) m_CheatEnemyTypeIndex = (m_CheatEnemyTypeIndex + 1) % 8;
+
+    if (Util::Input::IsKeyUp(Util::Keycode::N)) m_CheatSpawnCount = std::max(1, m_CheatSpawnCount - 1);
+    if (Util::Input::IsKeyUp(Util::Keycode::M)) m_CheatSpawnCount = std::min(99, m_CheatSpawnCount + 1);
+
+    if (Util::Input::IsKeyUp(Util::Keycode::K)) {
+        model.SpawnEnemyCheat(static_cast<EnemyType>(m_CheatEnemyTypeIndex), m_CheatSpawnCount);
+    }
+
+    if (Util::Input::IsKeyUp(Util::Keycode::F9)) model.ForceLose();
+    if (Util::Input::IsKeyUp(Util::Keycode::F10)) model.ForceWin();
+}
+
 void GameController::HandleInput(GameModel& model) {
+    if (model.IsCheatMode()) {
+        HandleCheatModeInput(model);
+        return;
+    }
+
+    ConsumeCheatSequenceInput(model);
+
     auto& registry = BuildableRegistry::GetInstance();
     const glm::vec2 mousePos = Util::Input::GetCursorPosition();
     const bool isMouseLeftUp = Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB);
@@ -57,13 +125,8 @@ void GameController::HandleInput(GameModel& model) {
         if (button.buildableId[0] != '\0' && Util::Input::IsKeyUp(button.hotkey)) {
             model.SelectBuildable(registry.FindById(button.buildableId));
         }
-
         if (isMouseLeftUp && IsInButtonRect(mousePos, button)) {
-            if (button.buildableId[0] != '\0') {
-                model.SelectBuildable(registry.FindById(button.buildableId));
-            } else {
-                model.SetMessage("This tower button is not available yet.");
-            }
+            model.SelectBuildable(registry.FindById(button.buildableId));
             consumedByHudButton = true;
         }
     }
@@ -73,45 +136,19 @@ void GameController::HandleInput(GameModel& model) {
         consumedByHudButton = true;
     }
 
-    if (Util::Input::IsKeyUp(Util::Keycode::SPACE)) {
-        model.StartRound();
-    }
-    if (Util::Input::IsKeyUp(Util::Keycode::P)) {
-        model.TogglePause();
-    }
-    if (Util::Input::IsKeyUp(Util::Keycode::R)) {
-        model.Reset();
-    }
-    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) {
-        model.CancelPlacement();
-    }
-    if (Util::Input::IsKeyUp(Util::Keycode::X)) {
-        model.SellSelectedTower();
-    }
+    if (Util::Input::IsKeyUp(Util::Keycode::SPACE)) model.StartRound();
+    if (Util::Input::IsKeyUp(Util::Keycode::P)) model.TogglePause();
+    if (Util::Input::IsKeyUp(Util::Keycode::R)) model.Reset();
+    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) model.CancelPlacement();
+    if (Util::Input::IsKeyUp(Util::Keycode::X)) model.SellSelectedTower();
 
-    if (isMouseLeftUp && !consumedByHudButton) {
-        if (model.SelectPlacedTowerAt(mousePos)) {
-            consumedByHudButton = true;
-        }
+    if (isMouseLeftUp && !consumedByHudButton && model.SelectPlacedTowerAt(mousePos)) {
+        consumedByHudButton = true;
     }
 
     if (model.GetPlacement().IsActive()) {
         model.UpdatePlacementPreview(mousePos);
-
-        if (isMouseLeftUp && !consumedByHudButton) {
-            model.ConfirmPlacement();
-        }
-
-        if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_RB)) {
-            model.CancelPlacement();
-        }
-    }
-
-    //cheat
-    if (Util::Input::IsKeyUp(Util::Keycode::F9)) {
-        model.ForceLose();
-    }
-    if (Util::Input::IsKeyUp(Util::Keycode::F10)) {
-        model.ForceWin();
+        if (isMouseLeftUp && !consumedByHudButton) model.ConfirmPlacement();
+        if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_RB)) model.CancelPlacement();
     }
 }

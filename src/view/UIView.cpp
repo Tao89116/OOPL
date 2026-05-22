@@ -53,7 +53,7 @@ void UIView::InitializeHelpText() {
     m_HelpText = m_Resources.CreateText(
         "default",
         20,
-        "X Sell Selected Tower \n P Pause",
+        "X Sell Selected Tower \n P Pause \n Konami: cheat mode",
         Util::Color(255, 255, 255)
     );
 
@@ -64,6 +64,12 @@ void UIView::InitializeHelpText() {
 
     m_HelpObject = std::make_shared<Util::GameObject>(m_HelpText, 100.0f);
     m_HelpObject->m_Transform.translation = {530.0f, 0.0f};
+}
+
+void UIView::InitializeMessageText() {
+    m_MessageText = m_Resources.CreateText("default", 18, "", Util::Color(255, 255, 0));
+    m_MessageObject = std::make_shared<Util::GameObject>(m_MessageText, 100.0f);
+    m_MessageObject->m_Transform.translation = {0.0f, -330.0f};
 }
 
 
@@ -123,6 +129,7 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_SelectedObject);
     m_Renderer.AddChild(m_HelpObject);
     m_Renderer.AddChild(m_HudImg);
+    m_Renderer.AddChild(m_MessageObject);
 }
 
 void UIView::Initialize() {
@@ -133,6 +140,7 @@ void UIView::Initialize() {
     InitializeHud();
     InitializeSelectedInfo();
     InitializeHelpText();
+    InitializeMessageText();
     InitializeButtons();
     RegisterObjectsToRenderer();
 
@@ -183,5 +191,16 @@ void UIView::Sync(const GameModel& model) {
 
     SyncHudText(model);
     SyncSelectedInfoText(model);
+    SyncMessageText(model);
+
+}
+
+void UIView::SyncMessageText(const GameModel& model) {
+    if (!m_MessageText) {
+        return;
+    }
+
+    const std::string cheat = model.IsCheatMode() ? "[CHEAT MODE] " : "";
+    m_MessageText->SetText(cheat + model.GetMessage());
 
 }

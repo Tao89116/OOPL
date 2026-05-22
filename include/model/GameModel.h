@@ -39,6 +39,10 @@ public:
 
     void ForceWin();
     void ForceLose();
+    bool SetDifficultyCheat(DifficultyType difficulty);
+    bool SetRoundCheat(int round);
+    bool SetGoldCheat(int gold);
+    bool SpawnEnemyCheat(EnemyType type, int count);
 
     int ConsumePoppedBloonCount();
     std::vector<PoppedEnemyEvent> ConsumePoppedEnemyEvents();
@@ -52,6 +56,8 @@ public:
     bool IsPaused() const { return m_Paused; }
     bool IsWin() const { return m_Win; }
     bool IsLose() const { return m_Lose; }
+    bool IsCheatMode() const { return m_CheatMode; }
+    void SetCheatMode(bool value) { m_CheatMode = value; }
 
     DifficultyType GetDifficulty() const { return m_Difficulty; }
     const BuildableRegistry::Entry* GetSelectedBuildableEntry() const { return m_SelectedBuildableEntry; }
@@ -114,6 +120,7 @@ private:
     float m_SpawnIntervalMs = 900.0f;
     int m_PoppedBloonCount = 0;
     std::vector<PoppedEnemyEvent> m_PoppedEnemyEvents;
+    bool m_CheatMode = false;
 };
 
 #endif

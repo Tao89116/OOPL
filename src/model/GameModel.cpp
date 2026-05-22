@@ -498,6 +498,7 @@ void GameModel::ForceWin() {
     }
     m_Win = true;
     m_RoundRunning = false;
+    m_Message = "Cheat applied: force win.";
 }
 
 void GameModel::ForceLose() {
@@ -507,4 +508,66 @@ void GameModel::ForceLose() {
     m_Lose = true;
     m_RoundRunning = false;
     m_HP = 0;
+    m_Message = "Cheat applied: force lose.";
+}
+
+bool GameModel::SetDifficultyCheat(DifficultyType difficulty) {
+    m_Difficulty = difficulty;
+    SetupDifficulty();
+    m_Message = "Cheat applied: difficulty changed.";
+    return true;
+}
+
+bool GameModel::SetRoundCheat(int round) {
+    if (round < 1 || round > m_TotalRounds) {
+        m_Message = "Cheat rejected: round out of range.";
+        return false;
+    }
+
+    m_Round = round;
+    m_RoundRunning = false;
+    m_CurrentWave.clear();
+    m_Enemies.clear();
+    m_Projectiles.clear();
+    m_SpawnedCount = 0;
+    m_SpawnTimerMs = 0.0f;
+    m_Message = "Cheat applied: round set to " + std::to_string(round) + ".";
+    return true;
+}
+
+bool GameModel::SetGoldCheat(int gold) {
+    if (gold < 0) {
+        m_Message = "Cheat rejected: gold must be non-negative.";
+        return false;
+    }
+
+    m_Gold = gold;
+    m_Message = "Cheat applied: gold set to " + std::to_string(gold) + ".";
+    return true;
+}
+
+bool GameModel::SpawnEnemyCheat(EnemyType type, int count) {
+    if (count <= 0) {
+        m_Message = "Cheat rejected: spawn count must be > 0.";
+        return false;
+    }
+
+    if (static_cast<int>(type) < static_cast<int>(EnemyType::Red) ||
+        static_cast<int>(type) > static_cast<int>(EnemyType::Rainbow)) {
+        m_Message = "Cheat rejected: invalid enemy type.";
+        return false;
+    }
+
+    for (int i = 0; i < count; ++i) {
+        const int pathBranchIndex = i % static_cast<int>(m_Map.GetPathCount());
+        auto enemy = std::make_shared<EnemyModel>(
+            type,
+            m_Map.GetSpawnPoint(pathBranchIndex),
+            pathBranchIndex
+        );
+        m_Enemies.push_back(enemy);
+    }
+
+    m_Message = "Cheat applied: spawned " + std::to_string(count) + " enemies.";
+    return true;
 }
