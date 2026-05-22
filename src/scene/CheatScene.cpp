@@ -13,7 +13,7 @@ CheatScene::CheatScene(const std::shared_ptr<GameModel>& model)
 
 void CheatScene::Update(SceneManager& sceneManager) {
     if (!m_Model) {
-        sceneManager.RequestSceneChange(SceneType::Game);
+        sceneManager.RequestSceneChange(SceneType::Difficulty);
         return;
     }
 
@@ -39,6 +39,8 @@ void CheatScene::Update(SceneManager& sceneManager) {
 
     if (Util::Input::IsKeyUp(Util::Keycode::SEMICOLON)) m_Model->SetGoldCheat(std::max(0, m_Model->GetGold() - 100));
     if (Util::Input::IsKeyUp(Util::Keycode::APOSTROPHE)) m_Model->SetGoldCheat(m_Model->GetGold() + 100);
+    if (Util::Input::IsKeyUp(Util::Keycode::O)) m_Model->SetHPCheat(std::max(0, m_Model->GetHP() - 5));
+    if (Util::Input::IsKeyUp(Util::Keycode::P)) m_Model->SetHPCheat(m_Model->GetHP() + 5);
 
     if (Util::Input::IsKeyUp(Util::Keycode::RETURN)) m_Model->SpawnEnemyCheat(static_cast<EnemyType>(enemyType), spawnCount);
     if (Util::Input::IsKeyUp(Util::Keycode::F9)) m_Model->ForceLose();
@@ -47,6 +49,6 @@ void CheatScene::Update(SceneManager& sceneManager) {
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) {
         m_Model->SetCheatMode(false);
         m_Model->SetMessage("Cheat form closed.");
-        sceneManager.RequestSceneChange(SceneType::Game);
+        sceneManager.RequestSceneChange(SceneType::Difficulty);
     }
 }
