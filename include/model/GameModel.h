@@ -42,6 +42,7 @@ public:
     bool SetDifficultyCheat(DifficultyType difficulty);
     bool SetRoundCheat(int round);
     bool SetGoldCheat(int gold);
+    bool SetHPCheat(int hp);
     bool SpawnEnemyCheat(EnemyType type, int count);
 
     int ConsumePoppedBloonCount();

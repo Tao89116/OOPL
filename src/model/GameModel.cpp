@@ -550,6 +550,19 @@ bool GameModel::SetGoldCheat(int gold) {
     return true;
 }
 
+bool GameModel::SetHPCheat(int hp) {
+    if (hp < 0) {
+        m_Message = "Cheat rejected: HP must be non-negative.";
+        return false;
+    }
+    m_HP = hp;
+    if (m_HP > 0) {
+        m_Lose = false;
+    }
+    m_Message = "Cheat applied: HP set to " + std::to_string(hp) + ".";
+    return true;
+}
+
 bool GameModel::SpawnEnemyCheat(EnemyType type, int count) {
     if (count <= 0) {
         m_Message = "Cheat rejected: spawn count must be > 0.";
