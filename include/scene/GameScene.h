@@ -19,10 +19,18 @@ public:
     void Update(SceneManager& sceneManager) override;
 
 private:
+    void DrawCheatGui(SceneManager& sceneManager);
+
     ResourceManager& m_Resources = ResourceManager::GetInstance();
     std::shared_ptr<GameModel> m_Model;
     GameView m_View;
     GameController m_Controller;
+
+    int m_GoldInput = 0;
+    int m_HPInput = 0;
+    int m_RoundInput = 1;
+    int m_EnemyTypeIndex = 0;
+    int m_SpawnCountInput = 1;
 };
 
 #endif

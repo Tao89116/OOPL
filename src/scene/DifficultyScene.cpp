@@ -53,7 +53,7 @@ void DifficultyScene::DrawCheatGui(SceneManager& sceneManager) {
     if (ImGui::Button("Apply + Go Game")) {
         sceneManager.SetDifficulty(static_cast<DifficultyType>(diffIndex));
         m_CheatModel->SetDifficultyCheat(static_cast<DifficultyType>(diffIndex));
-        m_CheatModel->SetCheatMode(false);
+        m_CheatModel->SetCheatMode(true);
         m_CheatModel->SetMessage("Cheat setup applied. Entering game.");
         sceneManager.SetGameSession(m_CheatModel);
         sceneManager.RequestSceneChange(SceneType::Game);
