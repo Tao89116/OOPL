@@ -513,7 +513,11 @@ void GameModel::ForceLose() {
 
 bool GameModel::SetDifficultyCheat(DifficultyType difficulty) {
     m_Difficulty = difficulty;
+    m_Map.ReloadByDifficulty(difficulty);
     SetupDifficulty();
+    m_Enemies.clear();
+    m_Projectiles.clear();
+    m_RoundRunning = false;
     m_Message = "Cheat applied: difficulty changed.";
     return true;
 }

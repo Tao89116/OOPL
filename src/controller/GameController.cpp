@@ -71,49 +71,15 @@ bool GameController::ConsumeCheatSequenceInput(GameModel& model) {
     }
 
     model.SetCheatMode(true);
-    model.SetMessage("Cheat mode enabled. [ESC: close] [Q/W: difficulty] [R/F: round +/-] [G/H: gold +/-] [T/Y: enemy type] [N/M: count +/-] [K: spawn] [F9: lose] [F10: win]");
+    model.SetMessage("Cheat mode enabled. Opening cheat form...");
     return true;
 }
 
 void GameController::HandleCheatModeInput(GameModel& model) {
-    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) {
-        model.SetCheatMode(false);
-        model.SetMessage("Cheat mode closed.");
-        return;
-    }
-
-    if (Util::Input::IsKeyUp(Util::Keycode::Q)) m_CheatDifficultyIndex = (m_CheatDifficultyIndex + 2) % 3;
-    if (Util::Input::IsKeyUp(Util::Keycode::W)) m_CheatDifficultyIndex = (m_CheatDifficultyIndex + 1) % 3;
-    if (Util::Input::IsKeyUp(Util::Keycode::Q) || Util::Input::IsKeyUp(Util::Keycode::W)) {
-        model.SetDifficultyCheat(static_cast<DifficultyType>(m_CheatDifficultyIndex));
-    }
-
-    if (Util::Input::IsKeyUp(Util::Keycode::R)) model.SetRoundCheat(model.GetRound() + 1);
-    if (Util::Input::IsKeyUp(Util::Keycode::F)) model.SetRoundCheat(model.GetRound() - 1);
-
-    if (Util::Input::IsKeyUp(Util::Keycode::G)) model.SetGoldCheat(model.GetGold() + 100);
-    if (Util::Input::IsKeyUp(Util::Keycode::H)) model.SetGoldCheat(std::max(0, model.GetGold() - 100));
-
-    if (Util::Input::IsKeyUp(Util::Keycode::T)) m_CheatEnemyTypeIndex = (m_CheatEnemyTypeIndex + 7) % 8;
-    if (Util::Input::IsKeyUp(Util::Keycode::Y)) m_CheatEnemyTypeIndex = (m_CheatEnemyTypeIndex + 1) % 8;
-
-    if (Util::Input::IsKeyUp(Util::Keycode::N)) m_CheatSpawnCount = std::max(1, m_CheatSpawnCount - 1);
-    if (Util::Input::IsKeyUp(Util::Keycode::M)) m_CheatSpawnCount = std::min(99, m_CheatSpawnCount + 1);
-
-    if (Util::Input::IsKeyUp(Util::Keycode::K)) {
-        model.SpawnEnemyCheat(static_cast<EnemyType>(m_CheatEnemyTypeIndex), m_CheatSpawnCount);
-    }
-
-    if (Util::Input::IsKeyUp(Util::Keycode::F9)) model.ForceLose();
-    if (Util::Input::IsKeyUp(Util::Keycode::F10)) model.ForceWin();
+    (void)model;
 }
 
 void GameController::HandleInput(GameModel& model) {
-    if (model.IsCheatMode()) {
-        HandleCheatModeInput(model);
-        return;
-    }
-
     ConsumeCheatSequenceInput(model);
 
     auto& registry = BuildableRegistry::GetInstance();

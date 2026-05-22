@@ -9,6 +9,10 @@ MapModel::MapModel(DifficultyType difficulty)
     : m_Data(MapFactory::CreateByDifficulty(difficulty)) {
 }
 
+void MapModel::ReloadByDifficulty(DifficultyType difficulty) {
+    m_Data = MapFactory::CreateByDifficulty(difficulty);
+}
+
 float MapModel::DistancePointToSegment(
     const glm::vec2& point,
     const glm::vec2& segStart,

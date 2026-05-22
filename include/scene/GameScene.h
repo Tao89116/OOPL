@@ -14,13 +14,13 @@
 
 class GameScene : public IScene {
 public:
-    explicit GameScene(DifficultyType difficulty);
+    explicit GameScene(DifficultyType difficulty, const std::shared_ptr<GameModel>& sharedModel = nullptr);
 
     void Update(SceneManager& sceneManager) override;
 
 private:
     ResourceManager& m_Resources = ResourceManager::GetInstance();
-    GameModel m_Model;
+    std::shared_ptr<GameModel> m_Model;
     GameView m_View;
     GameController m_Controller;
 };
