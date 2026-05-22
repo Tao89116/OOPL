@@ -10,6 +10,7 @@ GameScene::GameScene(DifficultyType difficulty, const std::shared_ptr<GameModel>
     m_GoldInput = m_Model->GetGold();
     m_HPInput = m_Model->GetHP();
     m_RoundInput = m_Model->GetRound();
+    m_DifficultyIndex = static_cast<int>(difficulty);
 }
 
 void GameScene::DrawCheatGui(SceneManager& sceneManager) {
@@ -19,12 +20,11 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
 
     ImGui::Begin("Cheat Mode (In Game)");
 
-    int diffIndex = static_cast<int>(sceneManager.GetDifficulty());
     const char* diffItems[] = {"Easy", "Normal", "Hard"};
-    ImGui::Combo("Difficulty", &diffIndex, diffItems, 3);
+    ImGui::Combo("Difficulty", &m_DifficultyIndex, diffItems, 3);
     if (ImGui::Button("Apply Difficulty")) {
-        sceneManager.SetDifficulty(static_cast<DifficultyType>(diffIndex));
-        m_Model->SetDifficultyCheat(static_cast<DifficultyType>(diffIndex));
+        sceneManager.SetDifficulty(static_cast<DifficultyType>(m_DifficultyIndex));
+        m_Model->SetDifficultyCheat(static_cast<DifficultyType>(m_DifficultyIndex));
     }
 
     ImGui::InputInt("Gold", &m_GoldInput);

@@ -29,6 +29,7 @@ private:
     int m_GoldInput = 0;
     int m_HPInput = 0;
     int m_RoundInput = 1;
+    int m_DifficultyIndex = 0;
     int m_EnemyTypeIndex = 0;
     int m_SpawnCountInput = 1;
 };

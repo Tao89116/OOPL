@@ -41,18 +41,17 @@ void DifficultyScene::DrawCheatGui(SceneManager& sceneManager) {
 
     ImGui::Begin("Cheat Mode", &m_CheatMode);
 
-    int diffIndex = static_cast<int>(sceneManager.GetDifficulty());
     const char* diffItems[] = {"Easy", "Normal", "Hard"};
-    ImGui::Combo("Difficulty", &diffIndex, diffItems, 3);
+    ImGui::Combo("Difficulty", &m_DifficultyIndex, diffItems, 3);
 
     if (ImGui::Button("Apply Difficulty")) {
-        sceneManager.SetDifficulty(static_cast<DifficultyType>(diffIndex));
-        m_CheatModel->SetDifficultyCheat(static_cast<DifficultyType>(diffIndex));
+        sceneManager.SetDifficulty(static_cast<DifficultyType>(m_DifficultyIndex));
+        m_CheatModel->SetDifficultyCheat(static_cast<DifficultyType>(m_DifficultyIndex));
     }
     ImGui::SameLine();
     if (ImGui::Button("Apply + Go Game")) {
-        sceneManager.SetDifficulty(static_cast<DifficultyType>(diffIndex));
-        m_CheatModel->SetDifficultyCheat(static_cast<DifficultyType>(diffIndex));
+        sceneManager.SetDifficulty(static_cast<DifficultyType>(m_DifficultyIndex));
+        m_CheatModel->SetDifficultyCheat(static_cast<DifficultyType>(m_DifficultyIndex));
         m_CheatModel->SetCheatMode(true);
         m_CheatModel->SetMessage("Cheat setup applied. Entering game.");
         sceneManager.SetGameSession(m_CheatModel);
@@ -97,6 +96,7 @@ void DifficultyScene::Update(SceneManager& sceneManager) {
         m_GoldInput = m_CheatModel->GetGold();
         m_HPInput = m_CheatModel->GetHP();
         m_RoundInput = m_CheatModel->GetRound();
+        m_DifficultyIndex = static_cast<int>(sceneManager.GetDifficulty());
     }
 
     if (m_CheatMode) {
