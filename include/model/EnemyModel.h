@@ -48,10 +48,12 @@ public:
     EnemyType GetType() const { return m_Type; }
     int GetHP() const { return m_HP; }
     int GetReward() const { return m_Reward; }
+    int GetLeakDamage() const { return m_LeakDamage; }
     const std::string& GetSpriteKey() const { return m_SpriteKey; }
 
     int GetPathBranchIndex() const { return m_PathBranchIndex; }
     int GetPathIndex() const { return m_PathIndex; }
+    static int GetRBE(EnemyType type);
     std::optional<DeathEvent> ConsumeDeathEvent();
 private:
     void SetupStatsByType(EnemyType type);
@@ -69,6 +71,7 @@ private:
     float m_FreezeRemainMs = 0.0f;
     float m_SlowRemainMs = 0.0f;
     int m_Reward = 15;
+    int m_LeakDamage = 1;
 
     bool m_Alive = true;
     bool m_ReachedGoal = false;

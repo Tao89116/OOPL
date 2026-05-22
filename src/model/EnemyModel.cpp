@@ -12,6 +12,7 @@ struct EnemyProfile {
     int hp;
     float speed;
     int reward;
+    int leakDamage;
     const char* sprite;
     std::vector<EnemyType> childrenOnPop;//氣球破掉邏輯 高級氣球會分裂成更多氣球
 };
@@ -31,50 +32,50 @@ struct RainbowTag {};
 template <>
 struct EnemyProfileTraits<RedTag> {
     static constexpr EnemyType Type = EnemyType::Red;
-    static EnemyProfile Build() { return {1, 0.12f, 15, "bloon_0", {}}; }
+    static EnemyProfile Build() { return {1, 0.12f, 15, 1, "bloon_0", {}}; }
 };
 
 template <>
 struct EnemyProfileTraits<BlueTag> {
     static constexpr EnemyType Type = EnemyType::Blue;
-    static EnemyProfile Build() { return {1, 0.12*1.4f, 20, "bloon_1", {EnemyType::Red}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.4f, 20, 0, "bloon_1", {EnemyType::Red}}; }
 };
 
 template <>
 struct EnemyProfileTraits<GreenTag> {
     static constexpr EnemyType Type = EnemyType::Green;
-    static EnemyProfile Build() { return {1, 0.12*1.8f, 25, "bloon_2", {EnemyType::Blue}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.8f, 25, 0, "bloon_2", {EnemyType::Blue}}; }
 };
 
 template <>
 struct EnemyProfileTraits<YellowTag> {
     static constexpr EnemyType Type = EnemyType::Yellow;
-    static EnemyProfile Build() { return {1, 0.12*3.2f, 30, "bloon_3", {EnemyType::Green}}; }
+    static EnemyProfile Build() { return {1, 0.12*3.2f, 30, 0, "bloon_3", {EnemyType::Green}}; }
 };
 
 template <>
 struct EnemyProfileTraits<BlackTag> {
     static constexpr EnemyType Type = EnemyType::Black;
-    static EnemyProfile Build() { return {1, 0.12*1.8f, 35, "bloon_4", {EnemyType::Yellow, EnemyType::Yellow}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.8f, 35, 0, "bloon_4", {EnemyType::Yellow, EnemyType::Yellow}}; }
 };
 
 template <>
 struct EnemyProfileTraits<WhiteTag> {
     static constexpr EnemyType Type = EnemyType::White;
-    static EnemyProfile Build() { return {1, 0.12*2.5f, 35, "bloon_5", {EnemyType::Yellow, EnemyType::Yellow}}; }
+    static EnemyProfile Build() { return {1, 0.12*2.5f, 35, 0, "bloon_5", {EnemyType::Yellow, EnemyType::Yellow}}; }
 };
 
 template <>
 struct EnemyProfileTraits<LeadTag> {
     static constexpr EnemyType Type = EnemyType::Lead;
-    static EnemyProfile Build() { return {1, 0.12f, 45, "bloon_6", {EnemyType::Black, EnemyType::Black}}; }
+    static EnemyProfile Build() { return {1, 0.12f, 45, 0, "bloon_6", {EnemyType::Black, EnemyType::Black}}; }
 };
 
 template <>
 struct EnemyProfileTraits<RainbowTag> {
     static constexpr EnemyType Type = EnemyType::Rainbow;
     static EnemyProfile Build() {
-        return {1, 0.12*2.2f, 60, "bloon_7", {EnemyType::Black, EnemyType::Black, EnemyType::White, EnemyType::White}};
+        return {1, 0.12*2.2f, 60, 0, "bloon_7", {EnemyType::Black, EnemyType::Black, EnemyType::White, EnemyType::White}};
     }
 };
 
@@ -122,6 +123,7 @@ void EnemyModel::SetupStatsByType(EnemyType type) {
     m_HP = profile.hp;
     m_BaseSpeed = profile.speed;
     m_Reward = profile.reward;
+    m_LeakDamage = GetRBE(type);
     m_SpriteKey = profile.sprite;
 }
 
@@ -225,13 +227,26 @@ std::optional<EnemyModel::DeathEvent> EnemyModel::ConsumeDeathEvent() {
     DeathEvent event;
     event.reachedGoal = m_ReachedGoal;
     event.reward = m_ReachedGoal ? 0 : m_Reward;
-    event.childrenToSpawn = m_ChildrenToSpawn;
+    event.childrenToSpawn = m_ReachedGoal ? std::vector<EnemyType>{} : m_ChildrenToSpawn;
     m_ChildrenToSpawn.clear();
     return event;
 }
 
 std::vector<EnemyType> EnemyModel::GetChildrenByType(EnemyType type) {
     return GetProfile(type).childrenOnPop;
+}
+
+int EnemyModel::GetRBE(EnemyType type) {
+    const EnemyProfile& profile = GetProfile(type);
+    if (profile.leakDamage > 0) {
+        return profile.leakDamage;
+    }
+
+    int rbe = 1;
+    for (EnemyType childType : profile.childrenOnPop) {
+        rbe += GetRBE(childType);
+    }
+    return rbe;
 }
 
 void EnemyModel::ApplyFreeze(float durationMs) {
