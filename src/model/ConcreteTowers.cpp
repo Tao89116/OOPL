@@ -34,7 +34,8 @@ std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
         m_Position,
         m_Damage,
         "projectile_0",
-        target
+        target,
+        GetDamageOptions()
     );
 }
 
@@ -69,7 +70,8 @@ std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
         glm::vec2(1.0f, 0.0f),
         125.0f,
         0.9f,
-        18.0f
+        18.0f,
+        GetDamageOptions()
     );
 }
 
@@ -82,7 +84,7 @@ void TrackTower::Update(
 
     bool hasEnemyInRange = false;
     for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->IsAlive()) {
+        if (!CanTargetEnemy(enemy)) {
             continue;
         }
 
@@ -122,7 +124,8 @@ void TrackTower::Attack(
             direction,
             125.0f,
             0.9f,
-            18.0f
+            18.0f,
+            GetDamageOptions()
         ));
     }
 }
@@ -158,7 +161,8 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
         "projectile_2_test",
         m_Range,
         380.0f,
-        m_FreezeDurationMs
+        m_FreezeDurationMs,
+        GetDamageOptions()
     );
 }
 
@@ -171,7 +175,7 @@ void IceBallTower::Update(
 
     bool hasEnemyInRange = false;
     for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->CanBeTargeted()) {
+        if (!CanTargetEnemy(enemy)) {
             continue;
         }
 
@@ -191,7 +195,8 @@ void IceBallTower::Update(
         "projectile_2_test",
         m_Range,
         380.0f,
-        m_FreezeDurationMs
+        m_FreezeDurationMs,
+        GetDamageOptions()
     );
     if (effect) {
         projectiles.push_back(effect);
@@ -231,7 +236,8 @@ std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
         m_Position,
         m_Damage,
         "projectile_3",
-        target
+        target,
+        GetDamageOptions()
     );
 }
 
@@ -266,7 +272,8 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
         m_Position,
         m_Damage,
         "projectile_5",
-        target
+        target,
+        GetDamageOptions()
     );
 }
 
@@ -309,7 +316,8 @@ std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
         direction,
         diameter,
         300.0f,
-        2
+        2,
+        GetDamageOptions()
     );
 }
 

@@ -27,15 +27,20 @@ public:
         std::vector<EnemyType> childrenToSpawn;
     };
 
+    struct DamageOptions {
+        bool canPopFrozen;
+    };
+
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex);
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex, int pathIndex);
 
     void Update(float deltaTimeMs, const std::vector<glm::vec2>& path);
-    void TakeDamage(int damage);
+    void TakeDamage(int damage, const DamageOptions& options = {});
     void ApplyFreeze(float durationMs);
     void ApplySlow(float speedMultiplier, float durationMs);
 
     bool IsAlive() const { return m_Alive; }
+    bool IsFrozen() const { return m_FreezeRemainMs > 0.0f; }
     bool HasReachedGoal() const { return m_ReachedGoal; }
     bool CanBeTargeted() const { return m_Alive && !m_ReachedGoal; }
 

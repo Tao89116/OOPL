@@ -11,7 +11,8 @@ public:
         const glm::vec2& startPos,
         int damage,
         const std::string& spriteKey,
-        const std::shared_ptr<EnemyModel>& target
+        const std::shared_ptr<EnemyModel>& target,
+        const EnemyModel::DamageOptions& damageOptions = {}
     );
 
     virtual ~ProjectileModel() = default;
@@ -43,6 +44,7 @@ protected:
     bool m_Active = true;
     std::string m_SpriteKey;
     std::weak_ptr<EnemyModel> m_Target;
+    EnemyModel::DamageOptions m_DamageOptions = {};
     float m_Rotation = 0.0f;
     float m_RenderScale = 1.0f;
 };
@@ -56,7 +58,8 @@ public:
         const glm::vec2& direction,
         float maxDistance,
         float speed = 0.7f,
-        float hitRadius = 10.0f
+        float hitRadius = 10.0f,
+        const EnemyModel::DamageOptions& damageOptions = {}
     );
 
     void Update(
@@ -79,7 +82,8 @@ public:
         const std::string& spriteKey,
         float maxRadius,
         float expandDurationMs,
-        float freezeDurationMs
+        float freezeDurationMs,
+        const EnemyModel::DamageOptions& damageOptions = {}
     );
 
     void Update(
@@ -109,7 +113,8 @@ public:
         const glm::vec2& direction,
         float diameter,
         float lifetimeMs,
-        int maxPierce
+        int maxPierce,
+        const EnemyModel::DamageOptions& damageOptions = {}
     );
 
     void Update(
@@ -137,7 +142,8 @@ public:
         const glm::vec2& startPos,
         int damage,
         const std::string& spriteKey,
-        const std::shared_ptr<EnemyModel>& target
+        const std::shared_ptr<EnemyModel>& target,
+        const EnemyModel::DamageOptions& damageOptions = {}
     );
 
 protected:
@@ -156,7 +162,8 @@ public:
         const glm::vec2& startPos,
         int damage,
         const std::string& spriteKey,
-        const std::shared_ptr<EnemyModel>& target
+        const std::shared_ptr<EnemyModel>& target,
+        const EnemyModel::DamageOptions& damageOptions = {}
     );
 
 protected:
@@ -176,7 +183,8 @@ public:
         const glm::vec2& startPos,
         int damage,
         const std::string& spriteKey,
-        const std::shared_ptr<EnemyModel>& target
+        const std::shared_ptr<EnemyModel>& target,
+        const EnemyModel::DamageOptions& damageOptions = {}
     );
 
 protected:

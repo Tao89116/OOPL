@@ -197,8 +197,12 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
     m_Position += normalized * moveDistance;
 }
 
-void EnemyModel::TakeDamage(int damage) {
+void EnemyModel::TakeDamage(int damage, const DamageOptions& options) {
     if (!m_Alive || damage <= 0) {
+        return;
+    }
+
+    if (IsFrozen() && !options.canPopFrozen) {
         return;
     }
 
