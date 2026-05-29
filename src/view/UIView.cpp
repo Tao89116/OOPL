@@ -49,22 +49,7 @@ void UIView::InitializeSelectedInfo() {
     m_SelectedObject->m_Transform.translation = {530.0f, 20.0f};
 }
 
-// void UIView::InitializeHelpText() {
-//     m_HelpText = m_Resources.CreateText(
-//         "default",
-//         20,
-//         "X Sell Selected Tower",
-//         Util::Color(255, 255, 255)
-//     );
-//
-//     if (!m_HelpText) {
-//         std::cout << "[UI ERROR] m_HelpText create failed\n";
-//         return;
-//     }
-//
-//     m_HelpObject = std::make_shared<Util::GameObject>(m_HelpText, 100.0f);
-//     m_HelpObject->m_Transform.translation = {530.0f, 0.0f};
-// }
+
 
 void UIView::InitializeMessageText() {
     m_MessageText = m_Resources.CreateText("default", 18, "", Util::Color(255, 255, 0));
@@ -129,7 +114,7 @@ void UIView::InitializeActionButtons() {
 
     m_ButtonSellText = m_Resources.CreateText("default", 16, "", Util::Color(255, 255, 255));
     m_ButtonSellTextObj = std::make_shared<Util::GameObject>(m_ButtonSellText, 100.0f);
-    m_ButtonSellTextObj->m_Transform.translation = {535.0f, -220.0f};
+    m_ButtonSellTextObj->m_Transform.translation = {570.0f, -220.0f};
 
     m_ButtonUpgrade1Text = m_Resources.CreateText("default", 14, "", Util::Color(255, 255, 255));
     m_ButtonUpgrade1TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade1Text, 100.0f);
@@ -167,7 +152,6 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_HudObject);
     m_Renderer.AddChild(m_HudBuyItemObj);
     m_Renderer.AddChild(m_SelectedObject);
-    //m_Renderer.AddChild(m_HelpObject);
     m_Renderer.AddChild(m_HudImg);
     m_Renderer.AddChild(m_MessageObject);
 }
@@ -179,7 +163,6 @@ void UIView::Initialize() {
 
     InitializeHud();
     InitializeSelectedInfo();
-    //InitializeHelpText();
     InitializeMessageText();
     InitializeButtons();
     InitializeActionButtons();
@@ -235,7 +218,7 @@ void UIView::SyncActionButtons(const GameModel& model) {
     m_ButtonSell->SetVisible(showActions);
     m_ButtonSellTextObj->SetVisible(showActions);
     if (showActions) {
-        m_ButtonSellText->SetText("Sell\n$" + std::to_string(model.GetSelectedTowerSellRefund()));
+        m_ButtonSellText->SetText("$" + std::to_string(model.GetSelectedTowerSellRefund()));
     }
 
     const bool showUpgrade1 = showActions && model.GetSelectedPlacedTower()->IsUpgradeable() &&
@@ -246,13 +229,13 @@ void UIView::SyncActionButtons(const GameModel& model) {
     m_ButtonUpgrade1->SetVisible(showUpgrade1);
     m_ButtonUpgrade1TextObj->SetVisible(showUpgrade1);
     if (showUpgrade1) {
-        m_ButtonUpgrade1Text->SetText("UP1\n$" + std::to_string(model.GetSelectedTowerUpgradeCost(0)));
+        m_ButtonUpgrade1Text->SetText("$" + std::to_string(model.GetSelectedTowerUpgradeCost(0)));
     }
 
     m_ButtonUpgrade2->SetVisible(showUpgrade2);
     m_ButtonUpgrade2TextObj->SetVisible(showUpgrade2);
     if (showUpgrade2) {
-        m_ButtonUpgrade2Text->SetText("UP2\n$" + std::to_string(model.GetSelectedTowerUpgradeCost(1)));
+        m_ButtonUpgrade2Text->SetText("$" + std::to_string(model.GetSelectedTowerUpgradeCost(1)));
     }
 }
 
