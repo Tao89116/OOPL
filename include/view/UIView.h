@@ -26,14 +26,16 @@ public:
 private:
     void InitializeHud();
     void InitializeSelectedInfo();
-    void InitializeHelpText();
+    //void InitializeHelpText();
     void InitializeMessageText();
     void InitializeButtons();
     void InitializeButtonLabels();
+    void InitializeActionButtons();
     void RegisterObjectsToRenderer();
 
     void SyncHudText(const GameModel& model);
     void SyncSelectedInfoText(const GameModel& model);
+    void SyncActionButtons(const GameModel& model);
 
 private:
     Util::Renderer& m_Renderer;
@@ -50,8 +52,8 @@ private:
     std::shared_ptr<Util::Text> m_SelectedText = nullptr;
     std::shared_ptr<Util::GameObject> m_SelectedObject = nullptr;
 
-    std::shared_ptr<Util::Text> m_HelpText = nullptr;
-    std::shared_ptr<Util::GameObject> m_HelpObject = nullptr;
+    // std::shared_ptr<Util::Text> m_HelpText = nullptr;
+    // std::shared_ptr<Util::GameObject> m_HelpObject = nullptr;
 
     std::shared_ptr<Util::Text> m_MessageText = nullptr;
     std::shared_ptr<Util::GameObject> m_MessageObject = nullptr;
@@ -65,6 +67,17 @@ private:
     std::shared_ptr<Util::GameObject> m_Button7 = nullptr;
     std::shared_ptr<Util::GameObject> m_Button8 = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonStart = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonSell = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade1 = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade2 = nullptr;
+
+    std::shared_ptr<Util::Text> m_ButtonSellText = nullptr;
+    std::shared_ptr<Util::Text> m_ButtonUpgrade1Text = nullptr;
+    std::shared_ptr<Util::Text> m_ButtonUpgrade2Text = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonSellTextObj = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade1TextObj = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade2TextObj = nullptr;
+
     std::shared_ptr<Util::GameObject> m_HudImg = nullptr;
 
     float verticalPos = 462.5f;
