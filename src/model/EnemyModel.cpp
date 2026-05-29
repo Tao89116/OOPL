@@ -32,50 +32,50 @@ struct RainbowTag {};
 template <>
 struct EnemyProfileTraits<RedTag> {
     static constexpr EnemyType Type = EnemyType::Red;
-    static EnemyProfile Build() { return {1, 0.12f, 15, 1, "bloon_0", {}}; }
+    static EnemyProfile Build() { return {1, 0.12f, 1, 1, "bloon_0", {}}; }
 };
 
 template <>
 struct EnemyProfileTraits<BlueTag> {
     static constexpr EnemyType Type = EnemyType::Blue;
-    static EnemyProfile Build() { return {1, 0.12*1.4f, 20, 0, "bloon_1", {EnemyType::Red}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.4f, 2, 0, "bloon_1", {EnemyType::Red}}; }
 };
 
 template <>
 struct EnemyProfileTraits<GreenTag> {
     static constexpr EnemyType Type = EnemyType::Green;
-    static EnemyProfile Build() { return {1, 0.12*1.8f, 25, 0, "bloon_2", {EnemyType::Blue}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.8f, 3, 0, "bloon_2", {EnemyType::Blue}}; }
 };
 
 template <>
 struct EnemyProfileTraits<YellowTag> {
     static constexpr EnemyType Type = EnemyType::Yellow;
-    static EnemyProfile Build() { return {1, 0.12*3.2f, 30, 0, "bloon_3", {EnemyType::Green}}; }
+    static EnemyProfile Build() { return {1, 0.12*3.2f, 4, 0, "bloon_3", {EnemyType::Green}}; }
 };
 
 template <>
 struct EnemyProfileTraits<BlackTag> {
     static constexpr EnemyType Type = EnemyType::Black;
-    static EnemyProfile Build() { return {1, 0.12*1.8f, 35, 0, "bloon_4", {EnemyType::Yellow, EnemyType::Yellow}}; }
+    static EnemyProfile Build() { return {1, 0.12*1.8f, 5, 0, "bloon_4", {EnemyType::Yellow, EnemyType::Yellow}}; }
 };
 
 template <>
 struct EnemyProfileTraits<WhiteTag> {
     static constexpr EnemyType Type = EnemyType::White;
-    static EnemyProfile Build() { return {1, 0.12*2.5f, 35, 0, "bloon_5", {EnemyType::Yellow, EnemyType::Yellow}}; }
+    static EnemyProfile Build() { return {1, 0.12*2.5f, 5, 0, "bloon_5", {EnemyType::Yellow, EnemyType::Yellow}}; }
 };
 
 template <>
 struct EnemyProfileTraits<LeadTag> {
     static constexpr EnemyType Type = EnemyType::Lead;
-    static EnemyProfile Build() { return {1, 0.12f, 45, 0, "bloon_6", {EnemyType::Black, EnemyType::Black}}; }
+    static EnemyProfile Build() { return {1, 0.12f, 10, 0, "bloon_6", {EnemyType::Black, EnemyType::Black}}; }
 };
 
 template <>
 struct EnemyProfileTraits<RainbowTag> {
     static constexpr EnemyType Type = EnemyType::Rainbow;
     static EnemyProfile Build() {
-        return {1, 0.12*2.2f, 60, 0, "bloon_7", {EnemyType::Black, EnemyType::Black, EnemyType::White, EnemyType::White}};
+        return {1, 0.12*2.2f, 30, 0, "bloon_7", {EnemyType::Black, EnemyType::Black, EnemyType::White, EnemyType::White}};
     }
 };
 
