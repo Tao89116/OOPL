@@ -53,7 +53,7 @@ void UIView::InitializeHelpText() {
     m_HelpText = m_Resources.CreateText(
         "default",
         20,
-        "X Sell Selected Tower \n P Pause ",
+        "X Sell Selected Tower",
         Util::Color(255, 255, 255)
     );
 

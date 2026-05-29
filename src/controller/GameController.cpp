@@ -103,7 +103,7 @@ void GameController::HandleInput(GameModel& model) {
     }
 
     if (Util::Input::IsKeyUp(Util::Keycode::SPACE)) model.StartRound();
-    if (Util::Input::IsKeyUp(Util::Keycode::P)) model.TogglePause();
+    //if (Util::Input::IsKeyUp(Util::Keycode::P)) model.TogglePause();
     if (Util::Input::IsKeyUp(Util::Keycode::R)) model.Reset();
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) model.CancelPlacement();
     if (Util::Input::IsKeyUp(Util::Keycode::X)) model.SellSelectedTower();

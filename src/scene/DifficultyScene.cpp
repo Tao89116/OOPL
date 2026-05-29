@@ -74,9 +74,9 @@ void DifficultyScene::DrawCheatGui(SceneManager& sceneManager) {
         m_CheatModel->SpawnEnemyCheat(static_cast<EnemyType>(m_EnemyTypeIndex), m_SpawnCountInput);
     }
 
-    if (ImGui::Button("Force Win")) m_CheatModel->ForceWin();
-    ImGui::SameLine();
-    if (ImGui::Button("Force Lose")) m_CheatModel->ForceLose();
+    // if (ImGui::Button("Force Win")) m_CheatModel->ForceWin();
+    // ImGui::SameLine();
+    // if (ImGui::Button("Force Lose")) m_CheatModel->ForceLose();
 
     if (ImGui::Button("Close")) {
         m_CheatMode = false;

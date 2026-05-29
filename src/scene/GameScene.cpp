@@ -18,7 +18,7 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
         return;
     }
 
-    ImGui::Begin("Cheat Mode (In Game)");
+    ImGui::Begin("Cheat Mode");
 
     const char* diffItems[] = {"Easy", "Normal", "Hard"};
     ImGui::Combo("Difficulty", &m_DifficultyIndex, diffItems, 3);
@@ -41,6 +41,10 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
     ImGui::InputInt("Spawn Count", &m_SpawnCountInput);
     if (ImGui::Button("Spawn")) {
         m_Model->SpawnEnemyCheat(static_cast<EnemyType>(m_EnemyTypeIndex), m_SpawnCountInput);
+    }
+
+    if (ImGui::Button("Pause")) {
+        m_Model->TogglePause();
     }
 
     if (ImGui::Button("Force Win")) m_Model->ForceWin();

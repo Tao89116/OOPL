@@ -158,7 +158,7 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
     return std::make_shared<ExpandingAoEProjectile>(
         m_Position,
         m_Damage,
-        "projectile_2_test",
+        "projectile_2",
         m_Range,
         380.0f,
         m_FreezeDurationMs,
@@ -192,7 +192,7 @@ void IceBallTower::Update(
     auto effect = std::make_shared<ExpandingAoEProjectile>(
         m_Position,
         m_Damage,
-        "projectile_2_test",
+        "projectile_2",
         m_Range,
         380.0f,
         m_FreezeDurationMs,
