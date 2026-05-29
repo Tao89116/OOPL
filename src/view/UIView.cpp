@@ -53,7 +53,7 @@ void UIView::InitializeHelpText() {
     m_HelpText = m_Resources.CreateText(
         "default",
         20,
-        "X Sell Selected Tower \n P Pause \n Konami: cheat mode",
+        "X Sell Selected Tower \n P Pause ",
         Util::Color(255, 255, 255)
     );
 
@@ -191,16 +191,6 @@ void UIView::Sync(const GameModel& model) {
 
     SyncHudText(model);
     SyncSelectedInfoText(model);
-    SyncMessageText(model);
 
 }
 
-void UIView::SyncMessageText(const GameModel& model) {
-    if (!m_MessageText) {
-        return;
-    }
-
-    const std::string cheat = model.IsCheatMode() ? "[CHEAT MODE] " : "";
-    m_MessageText->SetText(cheat + model.GetMessage());
-
-}

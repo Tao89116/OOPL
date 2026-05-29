@@ -7,7 +7,6 @@
 #include "scene/StartScene.h"
 #include "scene/DifficultyScene.h"
 #include "scene/GameScene.h"
-#include "scene/CheatScene.h"
 #include "scene/ResultScene.h"
 
 SceneManager::SceneManager() {
@@ -38,9 +37,6 @@ void SceneManager::CreateScene(SceneType sceneType) {
                 m_GameSession = std::make_shared<GameModel>(m_Difficulty);
             }
             m_CurrentScene = std::make_unique<GameScene>(m_Difficulty, m_GameSession);
-            break;
-        case SceneType::Cheat:
-            m_CurrentScene = std::make_unique<CheatScene>(m_GameSession);
             break;
         case SceneType::Result:
             m_GameSession.reset();

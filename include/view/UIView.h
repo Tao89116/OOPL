@@ -34,7 +34,6 @@ private:
 
     void SyncHudText(const GameModel& model);
     void SyncSelectedInfoText(const GameModel& model);
-    void SyncMessageText(const GameModel& model);
 
 private:
     Util::Renderer& m_Renderer;
@@ -68,32 +67,6 @@ private:
     std::shared_ptr<Util::GameObject> m_ButtonStart = nullptr;
     std::shared_ptr<Util::GameObject> m_HudImg = nullptr;
 
-    // std::shared_ptr<Util::Text> m_Button1Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button1LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_Button2Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button2LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_Button3Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button3LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_Button4Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button4LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_Button5Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button5LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_Button6Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button6LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_Button7Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button7LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_Button8Label = nullptr;
-    // std::shared_ptr<Util::GameObject> m_Button8LabelObj = nullptr;
-    //
-    // std::shared_ptr<Util::Text> m_ButtonStartLabel = nullptr;
-    // std::shared_ptr<Util::GameObject> m_ButtonStartLabelObj = nullptr;
     float verticalPos = 462.5f;
     const float verticalInterval = 45.0f;
     float horizontalGap = 80.0f;

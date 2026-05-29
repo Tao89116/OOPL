@@ -9,7 +9,6 @@ enum class SceneType {
     Start,
     Difficulty,
     Game,
-    Cheat,
     Result
 };
 
