@@ -46,25 +46,25 @@ void UIView::InitializeSelectedInfo() {
         Util::Color(255, 255, 255)
     );
     m_SelectedObject = std::make_shared<Util::GameObject>(m_SelectedText, 100.0f);
-    m_SelectedObject->m_Transform.translation = {530.0f, -150.0f};
+    m_SelectedObject->m_Transform.translation = {530.0f, 20.0f};
 }
 
-void UIView::InitializeHelpText() {
-    m_HelpText = m_Resources.CreateText(
-        "default",
-        20,
-        "X Sell Selected Tower",
-        Util::Color(255, 255, 255)
-    );
-
-    if (!m_HelpText) {
-        std::cout << "[UI ERROR] m_HelpText create failed\n";
-        return;
-    }
-
-    m_HelpObject = std::make_shared<Util::GameObject>(m_HelpText, 100.0f);
-    m_HelpObject->m_Transform.translation = {530.0f, 0.0f};
-}
+// void UIView::InitializeHelpText() {
+//     m_HelpText = m_Resources.CreateText(
+//         "default",
+//         20,
+//         "X Sell Selected Tower",
+//         Util::Color(255, 255, 255)
+//     );
+//
+//     if (!m_HelpText) {
+//         std::cout << "[UI ERROR] m_HelpText create failed\n";
+//         return;
+//     }
+//
+//     m_HelpObject = std::make_shared<Util::GameObject>(m_HelpText, 100.0f);
+//     m_HelpObject->m_Transform.translation = {530.0f, 0.0f};
+// }
 
 void UIView::InitializeMessageText() {
     m_MessageText = m_Resources.CreateText("default", 18, "", Util::Color(255, 255, 0));
@@ -120,12 +120,12 @@ void UIView::InitializeActionButtons() {
     m_ButtonSell->m_Transform.scale *= 0.65f;
 
     m_ButtonUpgrade1 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_upgrade_1"), 90.0f);
-    m_ButtonUpgrade1->m_Transform.translation = {500.0f, -165.0f};
-    m_ButtonUpgrade1->m_Transform.scale *= 0.55f;
+    m_ButtonUpgrade1->m_Transform.translation = {500.0f, -120.0f};
+    m_ButtonUpgrade1->m_Transform.scale *= 0.6f;
 
     m_ButtonUpgrade2 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_upgrade_2"), 90.0f);
-    m_ButtonUpgrade2->m_Transform.translation = {570.0f, -165.0f};
-    m_ButtonUpgrade2->m_Transform.scale *= 0.55f;
+    m_ButtonUpgrade2->m_Transform.translation = {570.0f, -120.0f};
+    m_ButtonUpgrade2->m_Transform.scale *= 0.6f;
 
     m_ButtonSellText = m_Resources.CreateText("default", 16, "", Util::Color(255, 255, 255));
     m_ButtonSellTextObj = std::make_shared<Util::GameObject>(m_ButtonSellText, 100.0f);
@@ -167,7 +167,7 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_HudObject);
     m_Renderer.AddChild(m_HudBuyItemObj);
     m_Renderer.AddChild(m_SelectedObject);
-    m_Renderer.AddChild(m_HelpObject);
+    //m_Renderer.AddChild(m_HelpObject);
     m_Renderer.AddChild(m_HudImg);
     m_Renderer.AddChild(m_MessageObject);
 }
@@ -179,7 +179,7 @@ void UIView::Initialize() {
 
     InitializeHud();
     InitializeSelectedInfo();
-    InitializeHelpText();
+    //InitializeHelpText();
     InitializeMessageText();
     InitializeButtons();
     InitializeActionButtons();

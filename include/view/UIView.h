@@ -26,7 +26,7 @@ public:
 private:
     void InitializeHud();
     void InitializeSelectedInfo();
-    void InitializeHelpText();
+    //void InitializeHelpText();
     void InitializeMessageText();
     void InitializeButtons();
     void InitializeButtonLabels();
@@ -52,8 +52,8 @@ private:
     std::shared_ptr<Util::Text> m_SelectedText = nullptr;
     std::shared_ptr<Util::GameObject> m_SelectedObject = nullptr;
 
-    std::shared_ptr<Util::Text> m_HelpText = nullptr;
-    std::shared_ptr<Util::GameObject> m_HelpObject = nullptr;
+    // std::shared_ptr<Util::Text> m_HelpText = nullptr;
+    // std::shared_ptr<Util::GameObject> m_HelpObject = nullptr;
 
     std::shared_ptr<Util::Text> m_MessageText = nullptr;
     std::shared_ptr<Util::GameObject> m_MessageObject = nullptr;
