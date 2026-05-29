@@ -17,6 +17,7 @@ protected:
 class TrackTower : public AttackTowerBase {
 public:
     explicit TrackTower(const glm::vec2& position);
+    bool ApplyUpgrade(int pathIndex) override;
 
 protected:
     void Update(
@@ -33,6 +34,10 @@ protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;
+
+private:
+    float m_TackHitRadius = 18.0f;
+    float m_TackRenderScale = 1.0f;
 };
 
 class IceBallTower : public AttackTowerBase {
@@ -52,16 +57,22 @@ protected:
 
 private:
     float m_FreezeDurationMs = 1250.0f;
+    bool ApplyUpgrade(int pathIndex) override;
 };
 
 class CannonTower : public AttackTowerBase {
 public:
     explicit CannonTower(const glm::vec2& position);
+    bool ApplyUpgrade(int pathIndex) override;
 
 protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;
+
+private:
+    float m_ExplosionRadius = 75.0f;
+    float m_ProjectileScale = 1.0f;
 };
 
 class GlueTrap : public TrapBase {//被緩速之後切成"已緩速"狀態
@@ -91,11 +102,15 @@ protected:
 class BoomerangTower : public AttackTowerBase {
 public:
     explicit BoomerangTower(const glm::vec2& position);
+    bool ApplyUpgrade(int pathIndex) override;
 
 protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;
+
+private:
+    int m_BoomerangPierce = 2;
 };
 
 class SpikeTrap : public TrapBase {

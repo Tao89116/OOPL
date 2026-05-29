@@ -75,6 +75,7 @@ void GameModel::BeginPlacement(const BuildableRegistry::Entry* entry) {
     }
 
     m_SelectedBuildableEntry = entry;
+    m_SelectedPlacedTower.reset();
     m_Placement.Begin(entry);
 
     if (m_Placement.GetPreviewBuildable()) {
@@ -86,7 +87,12 @@ void GameModel::BeginPlacement(const BuildableRegistry::Entry* entry) {
 
 void GameModel::CancelPlacement() {
     m_Placement.Cancel();
+    m_SelectedPlacedTower.reset();
     m_Message = "Placement cancelled.";
+}
+
+void GameModel::ClearSelectedPlacedTower() {
+    m_SelectedPlacedTower.reset();
 }
 
 bool GameModel::SelectPlacedTowerAt(const glm::vec2& worldPos) {
@@ -112,9 +118,83 @@ bool GameModel::SelectPlacedTowerAt(const glm::vec2& worldPos) {
     }
 
     m_SelectedPlacedTower = bestTower;
-    const int refund = DifficultyModel::GetBuildCost(m_Difficulty, bestTower->GetId()) * 0.8;
+    const int refund = DifficultyModel::GetBuildCost(m_Difficulty, bestTower->GetId()) / 2;
     m_Message = "Selected " + bestTower->GetDisplayName() +
                 " (press X to sell, refund " + std::to_string(refund) + ")";
+    return true;
+}
+
+
+int GameModel::GetSelectedTowerSellRefund() const {
+    if (!m_SelectedPlacedTower) {
+        return 0;
+    }
+
+    return DifficultyModel::GetBuildCost(m_Difficulty, m_SelectedPlacedTower->GetId()) / 2;
+}
+
+int GameModel::GetSelectedTowerUpgradeCost(int upgradePathIndex) const {
+    if (!m_SelectedPlacedTower || !m_SelectedPlacedTower->IsUpgradeable()) {
+        return 999999;
+    }
+
+    const int nextTier = m_SelectedPlacedTower->GetUpgradeTier(upgradePathIndex) + 1;
+    return DifficultyModel::GetUpgradeCost(
+        m_Difficulty,
+        m_SelectedPlacedTower->GetId(),
+        upgradePathIndex,
+        nextTier
+    );
+}
+
+bool GameModel::CanSelectedTowerUpgrade(int upgradePathIndex) const {
+    if (!m_SelectedPlacedTower || !m_SelectedPlacedTower->IsUpgradeable()) {
+        return false;
+    }
+
+    const int cost = GetSelectedTowerUpgradeCost(upgradePathIndex);
+    return cost < 999999 && m_Gold >= cost;
+}
+
+std::string GameModel::GetSelectedTowerUpgradeName(int upgradePathIndex) const {
+    if (!m_SelectedPlacedTower || !m_SelectedPlacedTower->IsUpgradeable()) {
+        return "";
+    }
+
+    return m_SelectedPlacedTower->GetUpgradeName(upgradePathIndex);
+}
+
+bool GameModel::UpgradeSelectedTower(int upgradePathIndex) {
+    if (!m_SelectedPlacedTower) {
+        m_Message = "No tower selected. Click a tower first.";
+        return false;
+    }
+
+    if (!m_SelectedPlacedTower->IsUpgradeable()) {
+        m_Message = "This tower cannot be upgraded.";
+        return false;
+    }
+
+    const int cost = GetSelectedTowerUpgradeCost(upgradePathIndex);
+    if (cost >= 999999) {
+        m_Message = "This upgrade is already complete.";
+        return false;
+    }
+
+    if (m_Gold < cost) {
+        m_Message = "Not enough gold for upgrade.";
+        return false;
+    }
+
+    const std::string upgradeName = m_SelectedPlacedTower->GetUpgradeName(upgradePathIndex);
+    if (!m_SelectedPlacedTower->ApplyUpgrade(upgradePathIndex)) {
+        m_Message = "Upgrade failed.";
+        return false;
+    }
+
+    m_Gold -= cost;
+    m_Message = "Upgraded " + m_SelectedPlacedTower->GetDisplayName() +
+                (upgradeName.empty() ? "" : " with " + upgradeName) + ".";
     return true;
 }
 
@@ -125,7 +205,7 @@ bool GameModel::SellSelectedTower() {
     }
 
     const auto target = m_SelectedPlacedTower;
-    const int refund = DifficultyModel::GetBuildCost(m_Difficulty, target->GetId()) / 2;
+    const int refund = GetSelectedTowerSellRefund();
 
     const auto eraseBegin = std::remove_if(
         m_Towers.begin(),
@@ -471,14 +551,18 @@ void GameModel::CleanupObjects() {
     );
 
     if (roundEndedThisCleanup) {
+        const int clearReward = std::max(0, 101 - m_Round);
+        m_Gold += clearReward;
+        const std::string rewardText = " +" + std::to_string(clearReward) + " gold.";
+
         if (m_Round >= m_TotalRounds) {
             m_Win = true;
-            m_Message = trapsExpiredAtRoundEnd ? "Victory! Traps expired." : "Victory!";
+            m_Message = trapsExpiredAtRoundEnd ? "Victory! Traps expired." + rewardText : "Victory!" + rewardText;
         } else {
             ++m_Round;
             m_Message = trapsExpiredAtRoundEnd
-                            ? "Round cleared. Traps expired. Press SPACE for next round."
-                            : "Round cleared. Press SPACE for next round.";
+                            ? "Round cleared. Traps expired." + rewardText + " Press SPACE for next round."
+                            : "Round cleared." + rewardText + " Press SPACE for next round.";
         }
     }
 }

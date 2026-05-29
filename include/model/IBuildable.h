@@ -42,6 +42,12 @@ public:
     // Lifecycle
     virtual bool ShouldRemove() const = 0;
     virtual bool OnRoundEnded() { return false; }
+
+    // Upgrade hooks. Traps keep the default non-upgradeable behavior.
+    virtual bool IsUpgradeable() const { return false; }
+    virtual int GetUpgradeTier(int pathIndex) const { (void)pathIndex; return 0; }
+    virtual std::string GetUpgradeName(int pathIndex) const { (void)pathIndex; return ""; }
+    virtual bool ApplyUpgrade(int pathIndex) { (void)pathIndex; return false; }
 };
 
 #endif

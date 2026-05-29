@@ -9,13 +9,17 @@ ProjectileModel::ProjectileModel(
     int damage,
     const std::string& spriteKey,
     const std::shared_ptr<EnemyModel>& target,
-    const EnemyModel::DamageOptions& damageOptions
+    const EnemyModel::DamageOptions& damageOptions,
+    int maxPierce,
+    float renderScale
 )
     : m_Position(startPos),
       m_Damage(damage),
       m_SpriteKey(spriteKey),
       m_Target(target),
-      m_DamageOptions(damageOptions) {
+      m_DamageOptions(damageOptions),
+      m_RenderScale(renderScale),
+      m_MaxPierce(std::max(1, maxPierce)) {
 }
 
 void ProjectileModel::Update(
@@ -38,6 +42,27 @@ void ProjectileModel::Update(
 
     if (distance < 8.0f) {
         OnHit(target, enemies);
+        m_HitEnemies.insert(target.get());
+        if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
+            m_Active = false;
+            return;
+        }
+
+        for (const auto& enemy : enemies) {
+            if (!enemy || enemy == target || !enemy->CanBeTargeted() ||
+                m_HitEnemies.find(enemy.get()) != m_HitEnemies.end()) {
+                continue;
+            }
+
+            if (glm::distance(enemy->GetPosition(), m_Position) <= 24.0f * m_RenderScale) {
+                enemy->TakeDamage(m_Damage, m_DamageOptions);
+                m_HitEnemies.insert(enemy.get());
+                if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
+                    break;
+                }
+            }
+        }
+
         m_Active = false;
         return;
     }
@@ -70,9 +95,11 @@ DirectionalProjectile::DirectionalProjectile(
     float maxDistance,
     float speed,
     float hitRadius,
-    const EnemyModel::DamageOptions& damageOptions
+    const EnemyModel::DamageOptions& damageOptions,
+    int maxPierce,
+    float renderScale
 )
-    : ProjectileModel(startPos, damage, spriteKey, nullptr, damageOptions),
+    : ProjectileModel(startPos, damage, spriteKey, nullptr, damageOptions, maxPierce, renderScale),
       m_MaxDistance(maxDistance),
       m_HitRadius(hitRadius) {
     const float dirLen = glm::length(direction);
@@ -102,8 +129,11 @@ void DirectionalProjectile::Update(
 
         if (glm::distance(enemy->GetPosition(), m_Position) <= m_HitRadius) {
             enemy->TakeDamage(m_Damage, m_DamageOptions);
-            m_Active = false;
-            return;
+            m_HitEnemies.insert(enemy.get());
+            if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
+                m_Active = false;
+                return;
+            }
         }
     }
 
@@ -119,13 +149,15 @@ ExpandingAoEProjectile::ExpandingAoEProjectile(
     float maxRadius,
     float expandDurationMs,
     float freezeDurationMs,
-    const EnemyModel::DamageOptions& damageOptions
+    const EnemyModel::DamageOptions& damageOptions,
+    float renderScale
 )
-    : ProjectileModel(centerPos, damage, spriteKey, nullptr, damageOptions),
+    : ProjectileModel(centerPos, damage, spriteKey, nullptr, damageOptions, 1, renderScale),
       m_Center(centerPos),
       m_MaxRadius(maxRadius),
       m_ExpandDurationMs(expandDurationMs),
-      m_FreezeDurationMs(freezeDurationMs) {
+      m_FreezeDurationMs(freezeDurationMs),
+      m_RenderScaleMultiplier(renderScale) {
     m_Position = centerPos;
     m_Speed = 0.0f; // 固定在塔中心，不做飛行投射
     m_CurrentRadius = m_InitialRadius;
@@ -145,7 +177,7 @@ void ExpandingAoEProjectile::Update(
     m_ElapsedMs += deltaTimeMs;
     const float t = std::clamp(m_ElapsedMs / std::max(m_ExpandDurationMs, 1.0f), 0.0f, 1.0f);
     m_CurrentRadius = m_InitialRadius + (m_MaxRadius - m_InitialRadius) * t;
-    m_RenderScale = t;
+    m_RenderScale = t * m_RenderScaleMultiplier;
 
     if (!m_HasAppliedEffect) {
         for (const auto& enemy : enemies) {
@@ -187,7 +219,7 @@ BoomerangProjectile::BoomerangProjectile(
       m_Origin(startPos),
       m_Radius(diameter * 0.5f),
       m_LifetimeMs(lifetimeMs),
-      m_MaxPierce(std::clamp(maxPierce, 1, 2)) {
+      m_MaxPierce(std::max(1, maxPierce)) {
     const float len = glm::length(direction);
     if (len > 0.0001f) {
         m_Direction = direction / len;
@@ -275,9 +307,12 @@ CannonProjectile::CannonProjectile(
     int damage,
     const std::string& spriteKey,
     const std::shared_ptr<EnemyModel>& target,
-    const EnemyModel::DamageOptions& damageOptions
+    const EnemyModel::DamageOptions& damageOptions,
+    float explosionRadius,
+    float renderScale
 )
-    : ProjectileModel(startPos, damage, spriteKey, target, damageOptions) {
+    : ProjectileModel(startPos, damage, spriteKey, target, damageOptions, 1, renderScale),
+      m_ExplosionRadius(explosionRadius) {
 }
 
 void CannonProjectile::OnHit(

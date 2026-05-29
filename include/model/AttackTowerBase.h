@@ -4,6 +4,7 @@
 #include "model/TowerBase.h"
 #include "model/EnemyModel.h"
 #include "model/ProjectileModel.h"
+#include <array>
 
 class AttackTowerBase : public TowerBase {
 public:
@@ -19,13 +20,18 @@ public:
     float GetAttackRange() const { return m_Range; }
     int GetDamage() const { return m_Damage; }
 
+    bool IsUpgradeable() const override { return true; }
+    int GetUpgradeTier(int pathIndex) const override;
+    std::string GetUpgradeName(int pathIndex) const override;
+    bool ApplyUpgrade(int pathIndex) override;
+
 protected:
     void UpdateCooldown(float deltaTimeMs);
     std::shared_ptr<EnemyModel> FindTarget(
         const std::vector<std::shared_ptr<EnemyModel>>& enemies
     );
     bool CanTargetEnemy(const std::shared_ptr<EnemyModel>& enemy) const;
-    virtual EnemyModel::DamageOptions GetDamageOptions() const { return {}; }
+    virtual EnemyModel::DamageOptions GetDamageOptions() const { return {m_CanPopFrozen}; }
 
     virtual void Attack(
         const std::shared_ptr<EnemyModel>& target,
@@ -41,6 +47,10 @@ protected:
     float m_AttackIntervalMs = 1000.0f;
     float m_CooldownMs = 0.0f;
     int m_Damage = 1;
+    int m_Pierce = 1;
+    bool m_CanPopFrozen = false;
+    std::array<int, 2> m_UpgradeTiers = {0, 0};
+    std::array<std::string, 2> m_UpgradeNames = {"", ""};
 
     // TODO:
     // 新攻擊塔若有特殊攻擊放在：

@@ -30,7 +30,9 @@ public:
     void UpdatePlacementPreview(const glm::vec2& worldPos);
     bool ConfirmPlacement();
     bool SelectPlacedTowerAt(const glm::vec2& worldPos);
+    void ClearSelectedPlacedTower();
     bool SellSelectedTower();
+    bool UpgradeSelectedTower(int upgradePathIndex);
 
     bool CanPlaceBuildable(const std::shared_ptr<IBuildable>& buildable, const glm::vec2& position) const;
 
@@ -64,6 +66,10 @@ public:
     const BuildableRegistry::Entry* GetSelectedBuildableEntry() const { return m_SelectedBuildableEntry; }
     const std::string& GetMessage() const { return m_Message; }
     const std::shared_ptr<IBuildable>& GetSelectedPlacedTower() const { return m_SelectedPlacedTower; }
+    int GetSelectedTowerSellRefund() const;
+    int GetSelectedTowerUpgradeCost(int upgradePathIndex) const;
+    bool CanSelectedTowerUpgrade(int upgradePathIndex) const;
+    std::string GetSelectedTowerUpgradeName(int upgradePathIndex) const;
 
     const MapModel& GetMap() const { return m_Map; }
     const PlacementModel& GetPlacement() const { return m_Placement; }

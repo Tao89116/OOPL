@@ -21,6 +21,7 @@ DartTower::DartTower(const glm::vec2& position)
     m_Range = 180.0f;
     m_AttackIntervalMs = 825.0f;
     m_Damage = 1;
+    m_UpgradeNames = {"Piercing Darts", "Long Range Darts"};
 }
 
 std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
@@ -35,7 +36,8 @@ std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
         m_Damage,
         "projectile_0",
         target,
-        GetDamageOptions()
+        GetDamageOptions(),
+        m_Pierce
     );
 }
 
@@ -57,6 +59,25 @@ TrackTower::TrackTower(const glm::vec2& position)
     m_Range = 125.0f;
     m_AttackIntervalMs = 1375.0f;
     m_Damage = 1;
+    m_UpgradeNames = {"Faster Shooting", "Extra Range Tacks"};
+}
+
+bool TrackTower::ApplyUpgrade(int pathIndex) {
+    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+        return false;
+    }
+
+    if (pathIndex == 0) {
+        m_AttackIntervalMs = std::max(50.0f, m_AttackIntervalMs - 15.0f);
+    } else {
+        m_Range += 10.0f;
+        m_PreviewRange = m_Range;
+        m_TackHitRadius *= 1.3f;
+        m_TackRenderScale *= 1.3f;
+    }
+
+    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    return true;
 }
 
 std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
@@ -70,8 +91,10 @@ std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
         glm::vec2(1.0f, 0.0f),
         125.0f,
         0.9f,
-        18.0f,
-        GetDamageOptions()
+        m_TackHitRadius,
+        GetDamageOptions(),
+        1,
+        m_TackRenderScale
     );
 }
 
@@ -122,10 +145,12 @@ void TrackTower::Attack(
             m_Damage,
             "projectile_1",
             direction,
-            125.0f,
+            m_Range,
             0.9f,
-            18.0f,
-            GetDamageOptions()
+            m_TackHitRadius,
+            GetDamageOptions(),
+            1,
+            m_TackRenderScale
         ));
     }
 }
@@ -148,6 +173,23 @@ IceBallTower::IceBallTower(const glm::vec2& position)
     m_PreviewRange = m_Range;
     m_AttackIntervalMs = 2325.0f;
     m_Damage = 0;
+    m_UpgradeNames = {"Long Freeze Time", "Wide Freeze Radius"};
+}
+
+bool IceBallTower::ApplyUpgrade(int pathIndex) {
+    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+        return false;
+    }
+
+    if (pathIndex == 0) {
+        m_FreezeDurationMs += 20.0f;
+    } else {
+        m_Range += 15.0f;
+        m_PreviewRange = m_Range;
+    }
+
+    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    return true;
 }
 
 std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
@@ -162,7 +204,8 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
         m_Range,
         380.0f,
         m_FreezeDurationMs,
-        GetDamageOptions()
+        GetDamageOptions(),
+        (m_Range > 110.0f) ? 1.2f : 1.0f
     );
 }
 
@@ -196,7 +239,8 @@ void IceBallTower::Update(
         m_Range,
         380.0f,
         m_FreezeDurationMs,
-        GetDamageOptions()
+        GetDamageOptions(),
+        (m_Range > 110.0f) ? 1.2f : 1.0f
     );
     if (effect) {
         projectiles.push_back(effect);
@@ -223,6 +267,24 @@ CannonTower::CannonTower(const glm::vec2& position)
     m_Range = 216.0f;
     m_AttackIntervalMs = 1200.0f;
     m_Damage = 1;
+    m_UpgradeNames = {"Bigger Bombs", "Extra Range Bombs"};
+}
+
+bool CannonTower::ApplyUpgrade(int pathIndex) {
+    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+        return false;
+    }
+
+    if (pathIndex == 0) {
+        m_ExplosionRadius *= 1.5f;
+        m_ProjectileScale *= 1.5f;
+    } else {
+        m_Range += 20.0f;
+        m_PreviewRange = m_Range;
+    }
+
+    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    return true;
 }
 
 std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
@@ -237,7 +299,9 @@ std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
         m_Damage,
         "projectile_3",
         target,
-        GetDamageOptions()
+        GetDamageOptions(),
+        m_ExplosionRadius,
+        m_ProjectileScale
     );
 }
 
@@ -259,6 +323,7 @@ SuperTower::SuperTower(const glm::vec2& position)
     m_Range = 252.0f;
     m_AttackIntervalMs = 50.0f;
     m_Damage = 1;
+    m_UpgradeNames = {"Epic Range", "Laser Vision"};
 }
 
 std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
@@ -273,7 +338,8 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
         m_Damage,
         "projectile_5",
         target,
-        GetDamageOptions()
+        GetDamageOptions(),
+        m_Pierce
     );
 }
 
@@ -295,6 +361,22 @@ BoomerangTower::BoomerangTower(const glm::vec2& position)
     m_Range = 234.0f;
     m_AttackIntervalMs = 1250.0f;
     m_Damage = 1;
+    m_UpgradeNames = {"Multi Target", "Sonic Boom"};
+}
+
+bool BoomerangTower::ApplyUpgrade(int pathIndex) {
+    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+        return false;
+    }
+
+    if (pathIndex == 0) {
+        m_BoomerangPierce += 3;
+    } else {
+        m_CanPopFrozen = true;
+    }
+
+    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    return true;
 }
 
 std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
@@ -316,7 +398,7 @@ std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
         direction,
         diameter,
         300.0f,
-        2,
+        m_BoomerangPierce,
         GetDamageOptions()
     );
 }

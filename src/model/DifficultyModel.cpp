@@ -86,21 +86,53 @@ int DifficultyModel::GetUpgradeCost(
     int upgradePathIndex,
     int nextTier
 ) {
-    if (buildableId == "dart_tower" && upgradePathIndex == 0) {
-        if (nextTier == 1) {
-            switch (difficulty) {
-                case DifficultyType::Easy:   return 120;
-                case DifficultyType::Normal: return 140;
-                case DifficultyType::Hard:   return 170;
-            }
+    if (nextTier != 1 || upgradePathIndex < 0 || upgradePathIndex > 1) {
+        return 999999;
+    }
+
+    auto byDifficulty = [difficulty](int easy, int normal, int hard) {
+        switch (difficulty) {
+            case DifficultyType::Easy:   return easy;
+            case DifficultyType::Normal: return normal;
+            case DifficultyType::Hard:   return hard;
         }
-        if (nextTier == 2) {
-            switch (difficulty) {
-                case DifficultyType::Easy:   return 240;
-                case DifficultyType::Normal: return 280;
-                case DifficultyType::Hard:   return 330;
-            }
-        }
+        return 999999;
+    };
+
+    if (buildableId == "dart_tower") {
+        return upgradePathIndex == 0
+            ? byDifficulty(180, 205, 210)
+            : byDifficulty(80, 90, 95);
+    }
+
+    if (buildableId == "track_tower") {
+        return upgradePathIndex == 0
+            ? byDifficulty(180, 205, 210)
+            : byDifficulty(90, 100, 105);
+    }
+
+    if (buildableId == "iceball_tower") {
+        return upgradePathIndex == 0
+            ? byDifficulty(270, 305, 310)
+            : byDifficulty(180, 205, 210);
+    }
+
+    if (buildableId == "cannon_tower" || buildableId == "bomb_tower") {
+        return upgradePathIndex == 0
+            ? byDifficulty(380, 430, 435)
+            : byDifficulty(180, 205, 210);
+    }
+
+    if (buildableId == "boomerang_tower") {
+        return upgradePathIndex == 0
+            ? byDifficulty(270, 305, 310)
+            : byDifficulty(135, 155, 155);
+    }
+
+    if (buildableId == "super_tower") {
+        return upgradePathIndex == 0
+            ? byDifficulty(2160, 2450, 2495)
+            : byDifficulty(4050, 4590, 4680);
     }
 
     return 999999;

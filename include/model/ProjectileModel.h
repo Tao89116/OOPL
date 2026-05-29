@@ -12,7 +12,9 @@ public:
         int damage,
         const std::string& spriteKey,
         const std::shared_ptr<EnemyModel>& target,
-        const EnemyModel::DamageOptions& damageOptions = {}
+        const EnemyModel::DamageOptions& damageOptions = {},
+        int maxPierce = 1,
+        float renderScale = 1.0f
     );
 
     virtual ~ProjectileModel() = default;
@@ -47,6 +49,8 @@ protected:
     EnemyModel::DamageOptions m_DamageOptions = {};
     float m_Rotation = 0.0f;
     float m_RenderScale = 1.0f;
+    int m_MaxPierce = 1;
+    std::unordered_set<const EnemyModel*> m_HitEnemies;
 };
 
 class DirectionalProjectile : public ProjectileModel {
@@ -59,7 +63,9 @@ public:
         float maxDistance,
         float speed = 0.7f,
         float hitRadius = 10.0f,
-        const EnemyModel::DamageOptions& damageOptions = {}
+        const EnemyModel::DamageOptions& damageOptions = {},
+        int maxPierce = 1,
+        float renderScale = 1.0f
     );
 
     void Update(
@@ -83,7 +89,8 @@ public:
         float maxRadius,
         float expandDurationMs,
         float freezeDurationMs,
-        const EnemyModel::DamageOptions& damageOptions = {}
+        const EnemyModel::DamageOptions& damageOptions = {},
+        float renderScale = 1.0f
     );
 
     void Update(
@@ -100,6 +107,7 @@ protected:
     float m_ExpandDurationMs = 350.0f;
     float m_ElapsedMs = 0.0f;
     float m_FreezeDurationMs = 1200.0f;
+    float m_RenderScaleMultiplier = 1.0f;
     bool m_HasAppliedEffect = false;
     std::unordered_set<const EnemyModel*> m_AffectedEnemies;
 };
@@ -163,7 +171,9 @@ public:
         int damage,
         const std::string& spriteKey,
         const std::shared_ptr<EnemyModel>& target,
-        const EnemyModel::DamageOptions& damageOptions = {}
+        const EnemyModel::DamageOptions& damageOptions = {},
+        float explosionRadius = 75.0f,
+        float renderScale = 1.0f
     );
 
 protected:

@@ -113,6 +113,40 @@ void UIView::InitializeButtons() {
 }
 
 
+
+void UIView::InitializeActionButtons() {
+    m_ButtonSell = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_sell"), 90.0f);
+    m_ButtonSell->m_Transform.translation = {535.0f, -220.0f};
+    m_ButtonSell->m_Transform.scale *= 0.65f;
+
+    m_ButtonUpgrade1 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_upgrade_1"), 90.0f);
+    m_ButtonUpgrade1->m_Transform.translation = {500.0f, -165.0f};
+    m_ButtonUpgrade1->m_Transform.scale *= 0.55f;
+
+    m_ButtonUpgrade2 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_upgrade_2"), 90.0f);
+    m_ButtonUpgrade2->m_Transform.translation = {570.0f, -165.0f};
+    m_ButtonUpgrade2->m_Transform.scale *= 0.55f;
+
+    m_ButtonSellText = m_Resources.CreateText("default", 16, "", Util::Color(255, 255, 255));
+    m_ButtonSellTextObj = std::make_shared<Util::GameObject>(m_ButtonSellText, 100.0f);
+    m_ButtonSellTextObj->m_Transform.translation = {535.0f, -220.0f};
+
+    m_ButtonUpgrade1Text = m_Resources.CreateText("default", 14, "", Util::Color(255, 255, 255));
+    m_ButtonUpgrade1TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade1Text, 100.0f);
+    m_ButtonUpgrade1TextObj->m_Transform.translation = {500.0f, -165.0f};
+
+    m_ButtonUpgrade2Text = m_Resources.CreateText("default", 14, "", Util::Color(255, 255, 255));
+    m_ButtonUpgrade2TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade2Text, 100.0f);
+    m_ButtonUpgrade2TextObj->m_Transform.translation = {570.0f, -165.0f};
+
+    m_ButtonSell->SetVisible(false);
+    m_ButtonUpgrade1->SetVisible(false);
+    m_ButtonUpgrade2->SetVisible(false);
+    m_ButtonSellTextObj->SetVisible(false);
+    m_ButtonUpgrade1TextObj->SetVisible(false);
+    m_ButtonUpgrade2TextObj->SetVisible(false);
+}
+
 void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_Button1);
     m_Renderer.AddChild(m_Button2);
@@ -123,6 +157,12 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_Button7);
     m_Renderer.AddChild(m_Button8);
     m_Renderer.AddChild(m_ButtonStart);
+    m_Renderer.AddChild(m_ButtonSell);
+    m_Renderer.AddChild(m_ButtonUpgrade1);
+    m_Renderer.AddChild(m_ButtonUpgrade2);
+    m_Renderer.AddChild(m_ButtonSellTextObj);
+    m_Renderer.AddChild(m_ButtonUpgrade1TextObj);
+    m_Renderer.AddChild(m_ButtonUpgrade2TextObj);
 
     m_Renderer.AddChild(m_HudObject);
     m_Renderer.AddChild(m_HudBuyItemObj);
@@ -142,6 +182,7 @@ void UIView::Initialize() {
     InitializeHelpText();
     InitializeMessageText();
     InitializeButtons();
+    InitializeActionButtons();
     RegisterObjectsToRenderer();
 
     m_Initialized = true;
@@ -186,11 +227,41 @@ void UIView::SyncSelectedInfoText(const GameModel& model) {
 }
 
 
+
+void UIView::SyncActionButtons(const GameModel& model) {
+    const bool hasSelectedTower = static_cast<bool>(model.GetSelectedPlacedTower());
+    const bool showActions = hasSelectedTower && !model.GetPlacement().IsActive();
+
+    m_ButtonSell->SetVisible(showActions);
+    m_ButtonSellTextObj->SetVisible(showActions);
+    if (showActions) {
+        m_ButtonSellText->SetText("Sell\n$" + std::to_string(model.GetSelectedTowerSellRefund()));
+    }
+
+    const bool showUpgrade1 = showActions && model.GetSelectedPlacedTower()->IsUpgradeable() &&
+        model.GetSelectedTowerUpgradeCost(0) < 999999;
+    const bool showUpgrade2 = showActions && model.GetSelectedPlacedTower()->IsUpgradeable() &&
+        model.GetSelectedTowerUpgradeCost(1) < 999999;
+
+    m_ButtonUpgrade1->SetVisible(showUpgrade1);
+    m_ButtonUpgrade1TextObj->SetVisible(showUpgrade1);
+    if (showUpgrade1) {
+        m_ButtonUpgrade1Text->SetText("UP1\n$" + std::to_string(model.GetSelectedTowerUpgradeCost(0)));
+    }
+
+    m_ButtonUpgrade2->SetVisible(showUpgrade2);
+    m_ButtonUpgrade2TextObj->SetVisible(showUpgrade2);
+    if (showUpgrade2) {
+        m_ButtonUpgrade2Text->SetText("UP2\n$" + std::to_string(model.GetSelectedTowerUpgradeCost(1)));
+    }
+}
+
 void UIView::Sync(const GameModel& model) {
     Initialize();
 
     SyncHudText(model);
     SyncSelectedInfoText(model);
+    SyncActionButtons(model);
 
 }
 

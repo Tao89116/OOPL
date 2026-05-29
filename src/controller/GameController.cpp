@@ -18,6 +18,11 @@ constexpr float kHorizontalGap = 80.0f;
 constexpr float kHorizontalInterval = 50.0f;
 const glm::vec2 kStartButtonCenter = {535.0f, -275.0f};
 const glm::vec2 kStartButtonHalfSize = {73.5f, 25.2f};
+const glm::vec2 kSellButtonCenter = {535.0f, -220.0f};
+const glm::vec2 kSellButtonHalfSize = {60.0f, 24.0f};
+const glm::vec2 kUpgrade1ButtonCenter = {500.0f, -165.0f};
+const glm::vec2 kUpgrade2ButtonCenter = {570.0f, -165.0f};
+const glm::vec2 kUpgradeButtonHalfSize = {34.0f, 28.0f};
 
 const std::array<TowerButtonBinding, 8> kTowerButtons = {{
     {{kVerticalPos,                       2 * kHorizontalInterval + kHorizontalGap}, {22.5f, 22.5f}, "dart_tower",      Util::Keycode::NUM_1},
@@ -107,6 +112,23 @@ void GameController::HandleInput(GameModel& model) {
     if (Util::Input::IsKeyUp(Util::Keycode::R)) model.Reset();
     if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) model.CancelPlacement();
     if (Util::Input::IsKeyUp(Util::Keycode::X)) model.SellSelectedTower();
+
+    if (isMouseLeftUp && !consumedByHudButton && model.GetSelectedPlacedTower()) {
+        if (model.GetSelectedPlacedTower()->IsUpgradeable() &&
+            model.GetSelectedTowerUpgradeCost(0) < 999999 &&
+            IsInRect(mousePos, kUpgrade1ButtonCenter, kUpgradeButtonHalfSize)) {
+            model.UpgradeSelectedTower(0);
+            consumedByHudButton = true;
+        } else if (model.GetSelectedPlacedTower()->IsUpgradeable() &&
+                   model.GetSelectedTowerUpgradeCost(1) < 999999 &&
+                   IsInRect(mousePos, kUpgrade2ButtonCenter, kUpgradeButtonHalfSize)) {
+            model.UpgradeSelectedTower(1);
+            consumedByHudButton = true;
+        } else if (IsInRect(mousePos, kSellButtonCenter, kSellButtonHalfSize)) {
+            model.SellSelectedTower();
+            consumedByHudButton = true;
+        }
+    }
 
     if (isMouseLeftUp && !consumedByHudButton && model.SelectPlacedTowerAt(mousePos)) {
         consumedByHudButton = true;
