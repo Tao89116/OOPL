@@ -101,7 +101,7 @@ inline const ButtonBinding& GetUpgradeButton(int pathIndex) {
 }
 
 inline glm::vec2 GetSelectedInfoPosition() {
-    return {530.0f, -35.0f};
+    return {530.0f, 20.0f};
 }
 
 inline glm::vec2 GetSellPriceLabelPosition() {
