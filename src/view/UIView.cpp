@@ -148,7 +148,7 @@ void UIView::InitializeMessageText() {
 
 void UIView::InitializeHoverTooltip() {
     m_HoverTooltipText = m_Resources.CreateText("default", 16, "", Util::Color(20, 20, 20));
-    m_HoverTooltipObject = std::make_shared<Util::GameObject>(m_HoverTooltipText, 110.0f);
+    m_HoverTooltipObject = std::make_shared<Util::GameObject>(m_HoverTooltipText, 100.0f);
     m_HoverTooltipObject->m_Transform.translation = {530.0f, 15.0f};
     m_HoverTooltipObject->SetVisible(false);
 }
