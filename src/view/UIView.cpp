@@ -8,7 +8,6 @@
 #include "Util/Color.hpp"
 #include "model/DifficultyModel.h"
 #include "model/IBuildable.h"
-#include <iostream>
 
 UIView::UIView(Util::Renderer& renderer)
     : m_Renderer(renderer) {
@@ -59,70 +58,64 @@ void UIView::InitializeMessageText() {
 
 
 void UIView::InitializeButtons() {
+    const auto& towerButtons = GameUILayout::GetTowerButtons();
+    for (std::size_t index = 0; index < towerButtons.size(); ++index) {
+        const auto& binding = towerButtons[index];
+        auto button = std::make_shared<Util::GameObject>(
+            m_Resources.GetImage(binding.spriteKey),
+            80.0f
+        );
+        button->m_Transform.translation = binding.hitArea.center;
+        button->m_Transform.scale *= binding.renderScale;
+        m_TowerButtons[index] = button;
+    }
 
-    m_Button1 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_1"), 80.0f);
-    m_Button1->m_Transform.translation = {verticalPos, 2*horizontalInterval+horizontalGap};
-    m_Button1->m_Transform.scale *=0.35;
-
-    m_Button2 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_2"), 80.0f);
-    m_Button2->m_Transform.translation = {verticalPos + verticalInterval, 2*horizontalInterval+horizontalGap};
-    m_Button2->m_Transform.scale *=0.35;
-
-    m_Button3 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_3"), 80.0f);
-    m_Button3->m_Transform.translation = {verticalPos + 2 * verticalInterval, 2*horizontalInterval+horizontalGap};
-    m_Button3->m_Transform.scale *=0.35;
-
-    m_Button4 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_4"), 80.0f);
-    m_Button4->m_Transform.translation = {verticalPos + 3 * verticalInterval, 2*horizontalInterval+horizontalGap};
-    m_Button4->m_Transform.scale *=0.35;
-
-    m_Button5 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_5"), 80.0f);
-    m_Button5->m_Transform.translation = {verticalPos, 1*horizontalInterval+horizontalGap};
-    m_Button5->m_Transform.scale *=0.35;
-
-    m_Button6 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_6"), 80.0f);
-    m_Button6->m_Transform.translation = {verticalPos + verticalInterval, 1*horizontalInterval+horizontalGap};
-    m_Button6->m_Transform.scale *=0.35;
-
-    m_Button7 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_7"), 80.0f);
-    m_Button7->m_Transform.translation = {verticalPos + 2 * verticalInterval, 1*horizontalInterval+horizontalGap};
-    m_Button7->m_Transform.scale *=0.35;
-
-    m_Button8 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_tower_8"), 80.0f);
-    m_Button8->m_Transform.translation = {verticalPos + 3 * verticalInterval, 1*horizontalInterval + horizontalGap};
-    m_Button8->m_Transform.scale *=0.35;
-
-    m_ButtonStart = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_start"), 80.0f);
-    m_ButtonStart->m_Transform.translation = {535.0f, -275.0f};
-    m_ButtonStart->m_Transform.scale *=0.7;
+    const auto& startButton = GameUILayout::GetStartRoundButton();
+    m_ButtonStart = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage(startButton.spriteKey),
+        80.0f
+    );
+    m_ButtonStart->m_Transform.translation = startButton.hitArea.center;
+    m_ButtonStart->m_Transform.scale *= startButton.renderScale;
 }
 
 
-
 void UIView::InitializeActionButtons() {
-    m_ButtonSell = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_sell"), 90.0f);
-    m_ButtonSell->m_Transform.translation = {535.0f, -220.0f};
-    m_ButtonSell->m_Transform.scale *= 0.65f;
+    const auto& sellButton = GameUILayout::GetSellButton();
+    m_ButtonSell = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage(sellButton.spriteKey),
+        90.0f
+    );
+    m_ButtonSell->m_Transform.translation = sellButton.hitArea.center;
+    m_ButtonSell->m_Transform.scale *= sellButton.renderScale;
 
-    m_ButtonUpgrade1 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_upgrade_1"), 90.0f);
-    m_ButtonUpgrade1->m_Transform.translation = {500.0f, -120.0f};
-    m_ButtonUpgrade1->m_Transform.scale *= 0.6f;
+    const auto& upgradeButton1 = GameUILayout::GetUpgradeButton(0);
+    m_ButtonUpgrade1 = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage(upgradeButton1.spriteKey),
+        90.0f
+    );
+    m_ButtonUpgrade1->m_Transform.translation = upgradeButton1.hitArea.center;
+    m_ButtonUpgrade1->m_Transform.scale *= upgradeButton1.renderScale;
 
-    m_ButtonUpgrade2 = std::make_shared<Util::GameObject>(m_Resources.GetImage("btn_upgrade_2"), 90.0f);
-    m_ButtonUpgrade2->m_Transform.translation = {570.0f, -120.0f};
-    m_ButtonUpgrade2->m_Transform.scale *= 0.6f;
+    const auto& upgradeButton2 = GameUILayout::GetUpgradeButton(1);
+    m_ButtonUpgrade2 = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage(upgradeButton2.spriteKey),
+        90.0f
+    );
+    m_ButtonUpgrade2->m_Transform.translation = upgradeButton2.hitArea.center;
+    m_ButtonUpgrade2->m_Transform.scale *= upgradeButton2.renderScale;
 
     m_ButtonSellText = m_Resources.CreateText("default", 16, "", Util::Color(255, 255, 255));
     m_ButtonSellTextObj = std::make_shared<Util::GameObject>(m_ButtonSellText, 100.0f);
-    m_ButtonSellTextObj->m_Transform.translation = {570.0f, -220.0f};
+    m_ButtonSellTextObj->m_Transform.translation = GameUILayout::GetSellPriceLabelPosition();
 
     m_ButtonUpgrade1Text = m_Resources.CreateText("default", 14, "", Util::Color(255, 255, 255));
     m_ButtonUpgrade1TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade1Text, 100.0f);
-    m_ButtonUpgrade1TextObj->m_Transform.translation = {500.0f, -165.0f};
+    m_ButtonUpgrade1TextObj->m_Transform.translation = GameUILayout::GetUpgradePriceLabelPosition(0);
 
     m_ButtonUpgrade2Text = m_Resources.CreateText("default", 14, "", Util::Color(255, 255, 255));
     m_ButtonUpgrade2TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade2Text, 100.0f);
-    m_ButtonUpgrade2TextObj->m_Transform.translation = {570.0f, -165.0f};
+    m_ButtonUpgrade2TextObj->m_Transform.translation = GameUILayout::GetUpgradePriceLabelPosition(1);
 
     m_ButtonSell->SetVisible(false);
     m_ButtonUpgrade1->SetVisible(false);
@@ -133,14 +126,9 @@ void UIView::InitializeActionButtons() {
 }
 
 void UIView::RegisterObjectsToRenderer() {
-    m_Renderer.AddChild(m_Button1);
-    m_Renderer.AddChild(m_Button2);
-    m_Renderer.AddChild(m_Button3);
-    m_Renderer.AddChild(m_Button4);
-    m_Renderer.AddChild(m_Button5);
-    m_Renderer.AddChild(m_Button6);
-    m_Renderer.AddChild(m_Button7);
-    m_Renderer.AddChild(m_Button8);
+    for (const auto& button : m_TowerButtons) {
+        m_Renderer.AddChild(button);
+    }
     m_Renderer.AddChild(m_ButtonStart);
     m_Renderer.AddChild(m_ButtonSell);
     m_Renderer.AddChild(m_ButtonUpgrade1);

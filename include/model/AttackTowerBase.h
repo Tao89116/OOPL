@@ -23,7 +23,11 @@ public:
     bool IsUpgradeable() const override { return true; }
     int GetUpgradeTier(int pathIndex) const override;
     std::string GetUpgradeName(int pathIndex) const override;
-    bool ApplyUpgrade(int pathIndex) override;
+    bool ApplyUpgrade(int pathIndex) override = 0;
+
+protected:
+    bool CanApplyUpgrade(int pathIndex) const;
+    void MarkUpgradeApplied(int pathIndex);
 
 protected:
     void UpdateCooldown(float deltaTimeMs);

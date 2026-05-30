@@ -7,6 +7,7 @@
 class DartTower : public AttackTowerBase {
 public:
     explicit DartTower(const glm::vec2& position);
+    bool ApplyUpgrade(int pathIndex) override;
 
 protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(
@@ -43,6 +44,7 @@ private:
 class IceBallTower : public AttackTowerBase {
 public:
     explicit IceBallTower(const glm::vec2& position);
+    bool ApplyUpgrade(int pathIndex) override;
 
 protected:
     void Update(
@@ -57,7 +59,6 @@ protected:
 
 private:
     float m_FreezeDurationMs = 1250.0f;
-    bool ApplyUpgrade(int pathIndex) override;
 };
 
 class CannonTower : public AttackTowerBase {
@@ -92,6 +93,7 @@ private:
 class SuperTower : public AttackTowerBase {
 public:
     explicit SuperTower(const glm::vec2& position);
+    bool ApplyUpgrade(int pathIndex) override;
 
 protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(

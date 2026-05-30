@@ -15,6 +15,7 @@
 #include "Util/Renderer.hpp"
 #include "Util/Text.hpp"
 #include "model/GameModel.h"
+#include "view/GameUILayout.h"
 
 class UIView {
 public:
@@ -29,7 +30,6 @@ private:
     //void InitializeHelpText();
     void InitializeMessageText();
     void InitializeButtons();
-    void InitializeButtonLabels();
     void InitializeActionButtons();
     void RegisterObjectsToRenderer();
 
@@ -55,14 +55,7 @@ private:
     std::shared_ptr<Util::Text> m_MessageText = nullptr;
     std::shared_ptr<Util::GameObject> m_MessageObject = nullptr;
 
-    std::shared_ptr<Util::GameObject> m_Button1 = nullptr;
-    std::shared_ptr<Util::GameObject> m_Button2 = nullptr;
-    std::shared_ptr<Util::GameObject> m_Button3 = nullptr;
-    std::shared_ptr<Util::GameObject> m_Button4 = nullptr;
-    std::shared_ptr<Util::GameObject> m_Button5 = nullptr;
-    std::shared_ptr<Util::GameObject> m_Button6 = nullptr;
-    std::shared_ptr<Util::GameObject> m_Button7 = nullptr;
-    std::shared_ptr<Util::GameObject> m_Button8 = nullptr;
+    std::array<std::shared_ptr<Util::GameObject>, GameUILayout::TowerButtonCount> m_TowerButtons{};
     std::shared_ptr<Util::GameObject> m_ButtonStart = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonSell = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade1 = nullptr;
@@ -77,10 +70,6 @@ private:
 
     std::shared_ptr<Util::GameObject> m_HudImg = nullptr;
 
-    float verticalPos = 462.5f;
-    const float verticalInterval = 45.0f;
-    float horizontalGap = 80.0f;
-    const float horizontalInterval = 50.0f;
 };
 
 #endif
