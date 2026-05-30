@@ -29,10 +29,13 @@ private:
     void InitializeMessageText();
     void InitializeButtons();
     void InitializeActionButtons();
+    void InitializeHoverTooltip();
     void RegisterObjectsToRenderer();
 
     void SyncHudText(const GameModel& model);
     void SyncActionButtons(const GameModel& model);
+    void SyncHoverTooltip(const GameModel& model);
+    std::string BuildTooltipText(const GameModel& model) const;
 
 private:
     Util::Renderer& m_Renderer;
@@ -52,6 +55,9 @@ private:
 
     std::shared_ptr<Util::Text> m_MessageText = nullptr;
     std::shared_ptr<Util::GameObject> m_MessageObject = nullptr;
+    std::shared_ptr<Util::Text> m_HoverTooltipText = nullptr;
+    std::shared_ptr<Util::GameObject> m_HoverTooltipObject = nullptr;
+    std::string m_LastHoverTooltipText;
 
     std::array<std::shared_ptr<Util::GameObject>, GameUILayout::TowerButtonCount> m_TowerButtons{};
     std::shared_ptr<Util::GameObject> m_ButtonStart = nullptr;

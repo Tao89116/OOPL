@@ -41,6 +41,7 @@ void GameModel::Reset() {
     m_Lose = false;
 
     m_SelectedBuildableEntry = BuildableRegistry::GetInstance().FindById("dart_tower");
+    m_HoveredBuildableEntry = nullptr;
     m_Message = "Click tower button (button-0~7) or press 1~7, then click map to place.";
     m_SelectedPlacedTower.reset();
 
@@ -349,6 +350,8 @@ bool GameModel::ConfirmPlacement() {
 
     m_Towers.push_back(buildable);
     m_Gold -= buildCost;
+    m_SelectedPlacedTower = buildable;
+    m_Placement.Cancel();
 
     m_Message = "Built " + buildable->GetDisplayName();
     return true;

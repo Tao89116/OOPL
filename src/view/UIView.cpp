@@ -2,9 +2,10 @@
 // Created by polyunicorn on 2026/3/13.
 //
 
-#include "View/UIView.h"
+#include "view/UIView.h"
 
 #include "Util/Color.hpp"
+#include "model/DifficultyModel.h"
 
 UIView::UIView(Util::Renderer& renderer)
     : m_Renderer(renderer) {
@@ -46,6 +47,13 @@ void UIView::InitializeMessageText() {
     m_MessageText = m_Resources.CreateText("default", 18, "", Util::Color(255, 255, 0));
     m_MessageObject = std::make_shared<Util::GameObject>(m_MessageText, 100.0f);
     m_MessageObject->m_Transform.translation = {0.0f, -330.0f};
+}
+
+void UIView::InitializeHoverTooltip() {
+    m_HoverTooltipText = m_Resources.CreateText("default", 16, "", Util::Color(20, 20, 20));
+    m_HoverTooltipObject = std::make_shared<Util::GameObject>(m_HoverTooltipText, 110.0f);
+    m_HoverTooltipObject->m_Transform.translation = {530.0f, 15.0f};
+    m_HoverTooltipObject->SetVisible(false);
 }
 
 
@@ -140,6 +148,7 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_BuyItemUnderlineObject);
     m_Renderer.AddChild(m_HudImg);
     m_Renderer.AddChild(m_MessageObject);
+    m_Renderer.AddChild(m_HoverTooltipObject);
 }
 
 void UIView::Initialize() {
@@ -149,6 +158,7 @@ void UIView::Initialize() {
 
     InitializeHud();
     InitializeMessageText();
+    InitializeHoverTooltip();
     InitializeButtons();
     InitializeActionButtons();
     RegisterObjectsToRenderer();
@@ -201,11 +211,49 @@ void UIView::SyncActionButtons(const GameModel& model) {
     }
 }
 
+std::string UIView::BuildTooltipText(const GameModel& model) const {
+    const auto* entry = model.GetHoveredBuildableEntry();
+    if (!entry) {
+        return "";
+    }
+
+    const auto buildable = entry->factory({0.0f, 0.0f});
+    if (!buildable) {
+        return "";
+    }
+
+    std::string text = buildable->GetDisplayName() +
+        "\nCost: " + std::to_string(DifficultyModel::GetBuildCost(model.GetDifficulty(), buildable->GetId())) +
+        "\nSpeed: " + buildable->GetSpeedText() +
+        "\n" + buildable->GetDescription();
+
+    const std::string upgradeSummary = buildable->GetUpgradeSummary();
+    if (!upgradeSummary.empty()) {
+        text += "\n" + upgradeSummary;
+    }
+
+    return text;
+}
+
+void UIView::SyncHoverTooltip(const GameModel& model) {
+    const std::string tooltipText = BuildTooltipText(model);
+    const bool showTooltip = !tooltipText.empty();
+
+    m_HoverTooltipObject->SetVisible(showTooltip);
+    if (!showTooltip || tooltipText == m_LastHoverTooltipText) {
+        return;
+    }
+
+    m_LastHoverTooltipText = tooltipText;
+    m_HoverTooltipText->SetText(tooltipText);
+}
+
 void UIView::Sync(const GameModel& model) {
     Initialize();
 
     SyncHudText(model);
     SyncActionButtons(model);
+    SyncHoverTooltip(model);
 
 }
 

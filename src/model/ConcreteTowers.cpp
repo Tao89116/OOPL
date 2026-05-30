@@ -7,6 +7,8 @@ DartTower::DartTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "dart_tower";
     m_DisplayName = "Dart Tower";
+    m_SpeedText = "Medium";
+    m_Description = "Shoots a single dart.";
 
     m_SpriteKey = "tower_dart";
     m_PreviewSpriteKey = "tower_dart";
@@ -63,6 +65,8 @@ TrackTower::TrackTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "track_tower";
     m_DisplayName = "Track Tower";
+    m_SpeedText = "Slow";
+    m_Description = "Fires sharp tacks in eight directions.";
 
     m_SpriteKey = "tower_track";
     m_PreviewSpriteKey = "tower_track";
@@ -177,6 +181,8 @@ IceBallTower::IceBallTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "iceball_tower";
     m_DisplayName = "Ice Ball Tower";
+    m_SpeedText = "Very Slow";
+    m_Description = "Freezes nearby bloons with icy blasts.";
 
     m_SpriteKey = "tower_ice";
     m_PreviewSpriteKey = "tower_ice";
@@ -271,6 +277,8 @@ CannonTower::CannonTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "cannon_tower";
     m_DisplayName = "Cannon Tower";
+    m_SpeedText = "Slow";
+    m_Description = "Launches bombs that explode on impact.";
 
     m_SpriteKey = "tower_cannon";
     m_PreviewSpriteKey = "tower_cannon";
@@ -327,6 +335,8 @@ SuperTower::SuperTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "super_tower";
     m_DisplayName = "Super Tower";
+    m_SpeedText = "Very Fast";
+    m_Description = "Rapidly fires powerful projectiles.";
 
     m_SpriteKey = "tower_super";
     m_PreviewSpriteKey = "tower_super";
@@ -384,6 +394,8 @@ BoomerangTower::BoomerangTower(const glm::vec2& position)
     : AttackTowerBase(position) {
     m_Id = "boomerang_tower";
     m_DisplayName = "Boomerang Tower";
+    m_SpeedText = "Slow";
+    m_Description = "Throws boomerangs through multiple bloons.";
 
     m_SpriteKey = "tower_boom";
     m_PreviewSpriteKey = "tower_boom";
@@ -444,6 +456,8 @@ SpikeTrap::SpikeTrap(const glm::vec2& position)
     : TrapBase(position) {
     m_Id = "spike_trap";
     m_DisplayName = "Spike Trap";
+    m_SpeedText = "On Contact";
+    m_Description = "Damages bloons that pass over the spikes.";
 
     m_SpriteKey = "tower_spikes";
     m_PreviewSpriteKey = "tower_spikes";
@@ -477,6 +491,8 @@ GlueTrap::GlueTrap(const glm::vec2& position)
     : TrapBase(position) {
     m_Id = "glue_trap";
     m_DisplayName = "Glue Trap";
+    m_SpeedText = "On Contact";
+    m_Description = "Slows bloons that step into the glue.";
 
     m_SpriteKey = "tower_glues";
     m_PreviewSpriteKey = "tower_glues";

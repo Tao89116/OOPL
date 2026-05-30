@@ -51,6 +51,20 @@ bool ExecuteButtonCommand(const GameUILayout::ButtonBinding& binding, GameModel&
     return false;
 }
 
+
+void UpdateHoveredBuildable(const glm::vec2& mousePos, GameModel& model) {
+    const BuildableRegistry::Entry* hoveredEntry = nullptr;
+
+    for (const auto& binding : GameUILayout::GetTowerButtons()) {
+        if (binding.hitArea.Contains(mousePos) && binding.buildableId[0] != '\0') {
+            hoveredEntry = BuildableRegistry::GetInstance().FindById(binding.buildableId);
+            break;
+        }
+    }
+
+    model.SetHoveredBuildable(hoveredEntry);
+}
+
 bool TryExecuteClickedButton(const glm::vec2& mousePos, GameModel& model) {
     for (const auto& binding : GameUILayout::GetTowerButtons()) {
         if (binding.hitArea.Contains(mousePos)) {
@@ -130,6 +144,7 @@ void GameController::HandleInput(GameModel& model) {
     ExecuteTowerHotkeys(model);
 
     const glm::vec2 mousePos = Util::Input::GetCursorPosition();
+    UpdateHoveredBuildable(mousePos, model);
     const bool isMouseLeftUp = Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB);
     bool consumedByHudButton = false;
 
