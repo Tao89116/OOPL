@@ -10,6 +10,8 @@ public:
 
     std::string GetId() const override { return m_Id; }
     std::string GetDisplayName() const override { return m_DisplayName; }
+    std::string GetDescription() const override { return m_Description; }
+    std::string GetSpeedText() const override { return m_SpeedText; }
 
     int GetCost() const override { return m_Cost; }
     float GetFootprintRadius() const override { return m_FootprintRadius; }
@@ -33,6 +35,8 @@ protected:
 protected:
     std::string m_Id;
     std::string m_DisplayName;
+    std::string m_Description;
+    std::string m_SpeedText = "-";
 
     int m_Cost = 0;
     float m_FootprintRadius = 20.0f;

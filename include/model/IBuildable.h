@@ -23,6 +23,9 @@ public:
     // 基本資料
     virtual std::string GetId() const = 0;
     virtual std::string GetDisplayName() const = 0;
+    virtual std::string GetDescription() const = 0;
+    virtual std::string GetSpeedText() const = 0;
+    virtual std::string GetUpgradeSummary() const;
 
     virtual int GetCost() const = 0;
     virtual float GetFootprintRadius() const = 0;
@@ -49,5 +52,26 @@ public:
     virtual std::string GetUpgradeName(int pathIndex) const { (void)pathIndex; return ""; }
     virtual bool ApplyUpgrade(int pathIndex) { (void)pathIndex; return false; }
 };
+
+inline std::string IBuildable::GetUpgradeSummary() const {
+    if (!IsUpgradeable()) {
+        return "";
+    }
+
+    std::string summary;
+    for (int pathIndex = 0; pathIndex < 2; ++pathIndex) {
+        const std::string upgradeName = GetUpgradeName(pathIndex);
+        if (upgradeName.empty()) {
+            continue;
+        }
+
+        if (!summary.empty()) {
+            summary += " and\n";
+        }
+        summary += upgradeName;
+    }
+
+    return summary.empty() ? "" : "Can upgrade to\n" + summary;
+}
 
 #endif

@@ -23,6 +23,7 @@ public:
     void Update(float deltaTimeMs);
 
     void SelectBuildable(const BuildableRegistry::Entry* entry);
+    void SetHoveredBuildable(const BuildableRegistry::Entry* entry) { m_HoveredBuildableEntry = entry; }
     void SetMessage(const std::string& message) { m_Message = message; }
 
     void BeginPlacement(const BuildableRegistry::Entry* entry);
@@ -64,6 +65,7 @@ public:
 
     DifficultyType GetDifficulty() const { return m_Difficulty; }
     const BuildableRegistry::Entry* GetSelectedBuildableEntry() const { return m_SelectedBuildableEntry; }
+    const BuildableRegistry::Entry* GetHoveredBuildableEntry() const { return m_HoveredBuildableEntry; }
     const std::string& GetMessage() const { return m_Message; }
     const std::shared_ptr<IBuildable>& GetSelectedPlacedTower() const { return m_SelectedPlacedTower; }
     int GetSelectedTowerSellRefund() const;
@@ -114,6 +116,7 @@ private:
     bool m_Lose = false;
 
     const BuildableRegistry::Entry* m_SelectedBuildableEntry = nullptr;
+    const BuildableRegistry::Entry* m_HoveredBuildableEntry = nullptr;
     std::string m_Message = "Click tower button (button-0~7) or press 1~7, then click map to place.";
     std::shared_ptr<IBuildable> m_SelectedPlacedTower;
 
