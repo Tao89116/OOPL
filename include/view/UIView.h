@@ -42,6 +42,10 @@ private:
 
     std::shared_ptr<Util::Text> m_HudText = nullptr;
     std::shared_ptr<Util::GameObject> m_HudObject = nullptr;
+    std::shared_ptr<Util::Text> m_BuyItemText = nullptr;
+    std::shared_ptr<Util::GameObject> m_BuyItemObject = nullptr;
+    std::shared_ptr<Util::Text> m_BuyItemUnderlineText = nullptr;
+    std::shared_ptr<Util::GameObject> m_BuyItemUnderlineObject = nullptr;
 
     std::shared_ptr<Util::Text> m_SelectedText = nullptr;
     std::shared_ptr<Util::GameObject> m_SelectedObject = nullptr;
