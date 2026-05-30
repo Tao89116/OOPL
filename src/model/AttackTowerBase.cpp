@@ -22,37 +22,20 @@ std::string AttackTowerBase::GetUpgradeName(int pathIndex) const {
     return m_UpgradeNames[static_cast<std::size_t>(pathIndex)];
 }
 
-bool AttackTowerBase::ApplyUpgrade(int pathIndex) {
+bool AttackTowerBase::CanApplyUpgrade(int pathIndex) const {
     if (pathIndex < 0 || pathIndex >= static_cast<int>(m_UpgradeTiers.size())) {
         return false;
     }
 
-    auto& tier = m_UpgradeTiers[static_cast<std::size_t>(pathIndex)];
-    if (tier >= 1) {
-        return false;
+    return m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] < 1;
+}
+
+void AttackTowerBase::MarkUpgradeApplied(int pathIndex) {
+    if (pathIndex < 0 || pathIndex >= static_cast<int>(m_UpgradeTiers.size())) {
+        return;
     }
 
-    if (m_Id == "dart_tower") {
-        if (pathIndex == 0) {
-            m_Pierce += 1;
-        } else {
-            m_Range += 25.0f;
-            m_PreviewRange = m_Range;
-        }
-    } else if (m_Id == "super_tower") {
-        if (pathIndex == 0) {
-            m_Range += 100.0f;
-            m_PreviewRange = m_Range;
-        } else {
-            m_Pierce += 1;
-            m_CanPopFrozen = true;
-        }
-    } else {
-        return false;
-    }
-
-    tier = 1;
-    return true;
+    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
 }
 
 void AttackTowerBase::Update(
