@@ -56,6 +56,7 @@ private:
     std::shared_ptr<Util::Text> m_MessageText = nullptr;
     std::shared_ptr<Util::GameObject> m_MessageObject = nullptr;
     std::shared_ptr<Util::Text> m_HoverTooltipText = nullptr;
+    std::shared_ptr<Util::GameObject> m_HoverTooltipBackgroundObject = nullptr;
     std::shared_ptr<Util::GameObject> m_HoverTooltipObject = nullptr;
     std::string m_LastHoverTooltipText;
 
