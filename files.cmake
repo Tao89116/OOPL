@@ -51,6 +51,7 @@ set(INCLUDE_FILES
         view/StartView.h
         view/DifficultyView.h
         view/GameView.h
+        view/GameUILayout.h
         view/ResultView.h
         view/UIView.h
 

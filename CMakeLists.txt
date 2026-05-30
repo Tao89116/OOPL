@@ -51,6 +51,7 @@ add_executable(${PROJECT_NAME}
         include/View/UIView.h
         src/View/UIView.cpp
         include/View/GameView.h
+        include/view/GameUILayout.h
         src/View/GameView.cpp
         include/Controller/GameController.h
         src/Controller/GameController.cpp

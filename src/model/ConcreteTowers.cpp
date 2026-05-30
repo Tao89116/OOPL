@@ -24,6 +24,24 @@ DartTower::DartTower(const glm::vec2& position)
     m_UpgradeNames = {"Piercing Darts", "Long Range Darts"};
 }
 
+bool DartTower::ApplyUpgrade(int pathIndex) {
+    if (!CanApplyUpgrade(pathIndex)) {
+        return false;
+    }
+
+    if (pathIndex == 0) {
+        m_Pierce += 1;
+    } else if (pathIndex == 1) {
+        m_Range += 25.0f;
+        m_PreviewRange = m_Range;
+    } else {
+        return false;
+    }
+
+    MarkUpgradeApplied(pathIndex);
+    return true;
+}
+
 std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
@@ -63,7 +81,7 @@ TrackTower::TrackTower(const glm::vec2& position)
 }
 
 bool TrackTower::ApplyUpgrade(int pathIndex) {
-    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+    if (!CanApplyUpgrade(pathIndex)) {
         return false;
     }
 
@@ -76,7 +94,7 @@ bool TrackTower::ApplyUpgrade(int pathIndex) {
         m_TackRenderScale *= 1.3f;
     }
 
-    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    MarkUpgradeApplied(pathIndex);
     return true;
 }
 
@@ -177,7 +195,7 @@ IceBallTower::IceBallTower(const glm::vec2& position)
 }
 
 bool IceBallTower::ApplyUpgrade(int pathIndex) {
-    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+    if (!CanApplyUpgrade(pathIndex)) {
         return false;
     }
 
@@ -188,7 +206,7 @@ bool IceBallTower::ApplyUpgrade(int pathIndex) {
         m_PreviewRange = m_Range;
     }
 
-    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    MarkUpgradeApplied(pathIndex);
     return true;
 }
 
@@ -271,7 +289,7 @@ CannonTower::CannonTower(const glm::vec2& position)
 }
 
 bool CannonTower::ApplyUpgrade(int pathIndex) {
-    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+    if (!CanApplyUpgrade(pathIndex)) {
         return false;
     }
 
@@ -283,7 +301,7 @@ bool CannonTower::ApplyUpgrade(int pathIndex) {
         m_PreviewRange = m_Range;
     }
 
-    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    MarkUpgradeApplied(pathIndex);
     return true;
 }
 
@@ -326,6 +344,25 @@ SuperTower::SuperTower(const glm::vec2& position)
     m_UpgradeNames = {"Epic Range", "Laser Vision"};
 }
 
+bool SuperTower::ApplyUpgrade(int pathIndex) {
+    if (!CanApplyUpgrade(pathIndex)) {
+        return false;
+    }
+
+    if (pathIndex == 0) {
+        m_Range += 100.0f;
+        m_PreviewRange = m_Range;
+    } else if (pathIndex == 1) {
+        m_Pierce += 1;
+        m_CanPopFrozen = true;
+    } else {
+        return false;
+    }
+
+    MarkUpgradeApplied(pathIndex);
+    return true;
+}
+
 std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
@@ -365,7 +402,7 @@ BoomerangTower::BoomerangTower(const glm::vec2& position)
 }
 
 bool BoomerangTower::ApplyUpgrade(int pathIndex) {
-    if (pathIndex < 0 || pathIndex > 1 || m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] >= 1) {
+    if (!CanApplyUpgrade(pathIndex)) {
         return false;
     }
 
@@ -375,7 +412,7 @@ bool BoomerangTower::ApplyUpgrade(int pathIndex) {
         m_CanPopFrozen = true;
     }
 
-    m_UpgradeTiers[static_cast<std::size_t>(pathIndex)] = 1;
+    MarkUpgradeApplied(pathIndex);
     return true;
 }
 
