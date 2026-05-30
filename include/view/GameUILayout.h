@@ -100,6 +100,14 @@ inline const ButtonBinding& GetUpgradeButton(int pathIndex) {
     return buttons[static_cast<std::size_t>(pathIndex)];
 }
 
+inline glm::vec2 GetBuyItemLabelPosition() {
+    return {530.0f, 225.0f};
+}
+
+inline glm::vec2 GetBuyItemUnderlinePosition() {
+    return {530.0f, 215.0f};
+}
+
 inline glm::vec2 GetSelectedInfoPosition() {
     return {530.0f, 20.0f};
 }

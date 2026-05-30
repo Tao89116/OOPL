@@ -22,6 +22,24 @@ void UIView::InitializeHud() {
     );
     m_HudObject = std::make_shared<Util::GameObject>(m_HudText, 100.0f);
     m_HudObject->m_Transform.translation = {505.0f, 295.0f};
+
+    m_BuyItemText = m_Resources.CreateText(
+        "default",
+        32,
+        "BUY ITEM",
+        Util::Color(255, 255, 255)
+    );
+    m_BuyItemObject = std::make_shared<Util::GameObject>(m_BuyItemText, 100.0f);
+    m_BuyItemObject->m_Transform.translation = GameUILayout::GetBuyItemLabelPosition();
+
+    m_BuyItemUnderlineText = m_Resources.CreateText(
+        "default",
+        28,
+        "_____________",
+        Util::Color(255, 255, 255)
+    );
+    m_BuyItemUnderlineObject = std::make_shared<Util::GameObject>(m_BuyItemUnderlineText, 100.0f);
+    m_BuyItemUnderlineObject->m_Transform.translation = GameUILayout::GetBuyItemUnderlinePosition();
 }
 
 void UIView::InitializeMessageText() {
@@ -118,6 +136,8 @@ void UIView::RegisterObjectsToRenderer() {
 
     m_Renderer.AddChild(m_SelectedObject);
     m_Renderer.AddChild(m_HudObject);
+    m_Renderer.AddChild(m_BuyItemObject);
+    m_Renderer.AddChild(m_BuyItemUnderlineObject);
     m_Renderer.AddChild(m_HudImg);
     m_Renderer.AddChild(m_MessageObject);
 }
