@@ -35,7 +35,7 @@ void UIView::InitializeHud() {
     m_BuyItemUnderlineText = m_Resources.CreateText(
         "default",
         28,
-        "________",
+        "_____________",
         Util::Color(255, 255, 255)
     );
     m_BuyItemUnderlineObject = std::make_shared<Util::GameObject>(m_BuyItemUnderlineText, 100.0f);
