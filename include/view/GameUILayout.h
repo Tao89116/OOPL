@@ -81,7 +81,7 @@ inline const ButtonBinding& GetSellButton() {
     static const ButtonBinding button = {
         "btn_sell",
         CommandType::SellSelectedTower,
-        {{535.0f, -220.0f}, {62.0f, 12.0f}},
+        {{535.0f, -220.0f}, {64.0f, 12.0f}},
         "",
         -1,
         Util::Keycode::UNKNOWN,
@@ -92,9 +92,9 @@ inline const ButtonBinding& GetSellButton() {
 
 inline const ButtonBinding& GetUpgradeButton(int pathIndex) {
     static const std::array<ButtonBinding, 2> buttons = {{
-        {"btn_upgrade_1", CommandType::UpgradeSelectedTower, {{500.0f, -120.0f}, {28.0f, 56.0f}},
+        {"btn_upgrade_1", CommandType::UpgradeSelectedTower, {{500.0f, -120.0f}, {30.0f, 56.0f}},
          "", 0, Util::Keycode::UNKNOWN, kActionButtonScale},
-        {"btn_upgrade_2", CommandType::UpgradeSelectedTower, {{570.0f, -120.0f}, {28.0f, 56.0f}},
+        {"btn_upgrade_2", CommandType::UpgradeSelectedTower, {{570.0f, -120.0f}, {30.0f, 56.0f}},
          "", 1, Util::Keycode::UNKNOWN, kActionButtonScale}
     }};
     return buttons[static_cast<std::size_t>(pathIndex)];
