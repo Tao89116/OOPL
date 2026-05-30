@@ -7,6 +7,103 @@
 #include "Util/Color.hpp"
 #include "model/DifficultyModel.h"
 
+namespace {
+
+constexpr std::size_t kHoverTooltipMaxLineLength = 20;
+
+void AppendWrappedWord(std::string& wrappedText, std::string& currentLine, const std::string& word) {
+    if (word.empty()) {
+        return;
+    }
+
+    if (word.size() > kHoverTooltipMaxLineLength) {
+        if (!currentLine.empty()) {
+            wrappedText += currentLine + "\n";
+            currentLine.clear();
+        }
+
+        for (std::size_t index = 0; index < word.size(); index += kHoverTooltipMaxLineLength) {
+            const std::string chunk = word.substr(index, kHoverTooltipMaxLineLength);
+            if (index + kHoverTooltipMaxLineLength < word.size()) {
+                wrappedText += chunk + "\n";
+            } else {
+                currentLine = chunk;
+            }
+        }
+        return;
+    }
+
+    if (currentLine.empty()) {
+        currentLine = word;
+        return;
+    }
+
+    if (currentLine.size() + 1 + word.size() <= kHoverTooltipMaxLineLength) {
+        currentLine += " " + word;
+        return;
+    }
+
+    wrappedText += currentLine + "\n";
+    currentLine = word;
+}
+
+std::string WrapTooltipLine(const std::string& line) {
+    std::string wrappedText;
+    std::string currentLine;
+
+    std::size_t wordStart = 0;
+    while (wordStart < line.size()) {
+        while (wordStart < line.size() && line[wordStart] == ' ') {
+            ++wordStart;
+        }
+
+        const std::size_t wordEnd = line.find(' ', wordStart);
+        const std::string word = line.substr(
+            wordStart,
+            wordEnd == std::string::npos ? std::string::npos : wordEnd - wordStart
+        );
+        AppendWrappedWord(wrappedText, currentLine, word);
+
+        if (wordEnd == std::string::npos) {
+            break;
+        }
+        wordStart = wordEnd + 1;
+    }
+
+    if (!currentLine.empty()) {
+        wrappedText += currentLine;
+    }
+
+    return wrappedText;
+}
+
+std::string WrapTooltipText(const std::string& text) {
+    std::string wrappedText;
+    std::size_t lineStart = 0;
+
+    while (lineStart <= text.size()) {
+        const std::size_t lineEnd = text.find('\n', lineStart);
+        const std::string line = text.substr(
+            lineStart,
+            lineEnd == std::string::npos ? std::string::npos : lineEnd - lineStart
+        );
+
+        if (!wrappedText.empty()) {
+            wrappedText += "\n";
+        }
+        wrappedText += WrapTooltipLine(line);
+
+        if (lineEnd == std::string::npos) {
+            break;
+        }
+        lineStart = lineEnd + 1;
+    }
+
+    return wrappedText;
+}
+
+} // namespace
+
 UIView::UIView(Util::Renderer& renderer)
     : m_Renderer(renderer) {
 }
@@ -232,7 +329,7 @@ std::string UIView::BuildTooltipText(const GameModel& model) const {
         text += "\n" + upgradeSummary;
     }
 
-    return text;
+    return WrapTooltipText(text);
 }
 
 void UIView::SyncHoverTooltip(const GameModel& model) {
