@@ -20,8 +20,8 @@ namespace GameConfig {
     // bloon row and resize the bloons so they can cover the title text in
     // the background image. Coordinates use the game-world origin at the
     // center of the window; positive Y is upward.
-    constexpr std::array<float, 3> StartBloonRowY = {195.0f, 60.0f, -85.0f};
-    constexpr std::array<int, 3> StartBloonsPerRow = {11, 11, 12};
+    constexpr std::array<float, 3> StartBloonRowY = {195.0f, 35.0f, -110.0f};
+    constexpr std::array<int, 3> StartBloonsPerRow = {6, 5, 7};
     static_assert(StartBloonRowY.size() == StartBloonsPerRow.size());
     constexpr float StartBloonStartX = -470.0f;
     constexpr float StartBloonEndX = 470.0f;

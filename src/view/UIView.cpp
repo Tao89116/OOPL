@@ -147,9 +147,16 @@ void UIView::InitializeMessageText() {
 }
 
 void UIView::InitializeHoverTooltip() {
+    m_HoverTooltipBackgroundObject = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage("whiteground"),
+        99.0f
+    );
+    m_HoverTooltipBackgroundObject->m_Transform.translation = {530.0f, -40.0f};
+    m_HoverTooltipBackgroundObject->SetVisible(false);
+
     m_HoverTooltipText = m_Resources.CreateText("default", 16, "", Util::Color(20, 20, 20));
     m_HoverTooltipObject = std::make_shared<Util::GameObject>(m_HoverTooltipText, 100.0f);
-    m_HoverTooltipObject->m_Transform.translation = {530.0f, 15.0f};
+    m_HoverTooltipObject->m_Transform.translation = {530.0f, 5.0f};
     m_HoverTooltipObject->SetVisible(false);
 }
 
@@ -214,8 +221,8 @@ void UIView::InitializeActionButtons() {
     m_ButtonUpgrade2TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade2Text, 100.0f);
     m_ButtonUpgrade2TextObj->m_Transform.translation = GameUILayout::GetUpgradePriceLabelPosition(1);
 
-    m_SelectedText = m_Resources.CreateText("default", 16, "", Util::Color(255, 255, 255));
-    m_SelectedObject = std::make_shared<Util::GameObject>(m_SelectedText, 100.0f);
+    m_SelectedText = m_Resources.CreateText("default", 20, "", Util::Color(255, 255, 255));
+    m_SelectedObject = std::make_shared<Util::GameObject>(m_SelectedText, 98.0f);
     m_SelectedObject->m_Transform.translation = GameUILayout::GetSelectedInfoPosition();
 
     m_ButtonSell->SetVisible(false);
@@ -245,6 +252,7 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_BuyItemUnderlineObject);
     m_Renderer.AddChild(m_HudImg);
     m_Renderer.AddChild(m_MessageObject);
+    m_Renderer.AddChild(m_HoverTooltipBackgroundObject);
     m_Renderer.AddChild(m_HoverTooltipObject);
 }
 
@@ -336,6 +344,7 @@ void UIView::SyncHoverTooltip(const GameModel& model) {
     const std::string tooltipText = BuildTooltipText(model);
     const bool showTooltip = !tooltipText.empty();
 
+    m_HoverTooltipBackgroundObject->SetVisible(showTooltip);
     m_HoverTooltipObject->SetVisible(showTooltip);
     if (!showTooltip || tooltipText == m_LastHoverTooltipText) {
         return;
