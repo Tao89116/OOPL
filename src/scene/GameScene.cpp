@@ -46,6 +46,10 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
     if (ImGui::Button("Pause")) {
         m_Model->TogglePause();
     }
+    ImGui::SameLine();
+    if (ImGui::Button("Reset")) {
+        m_Model->Reset();
+    }
 
     if (ImGui::Button("Force Win")) m_Model->ForceWin();
     ImGui::SameLine();

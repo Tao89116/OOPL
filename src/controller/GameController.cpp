@@ -152,10 +152,10 @@ void GameController::HandleInput(GameModel& model) {
         consumedByHudButton = TryExecuteClickedButton(mousePos, model);
     }
 
-    if (Util::Input::IsKeyUp(Util::Keycode::SPACE)) model.StartRound();
-    if (Util::Input::IsKeyUp(Util::Keycode::R)) model.Reset();
-    if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) model.CancelPlacement();
-    if (Util::Input::IsKeyUp(Util::Keycode::X)) model.SellSelectedTower();
+    //if (Util::Input::IsKeyUp(Util::Keycode::SPACE)) model.StartRound();
+    //if (Util::Input::IsKeyUp(Util::Keycode::R)) model.Reset();
+    //if (Util::Input::IsKeyUp(Util::Keycode::ESCAPE)) model.CancelPlacement();
+    //if (Util::Input::IsKeyUp(Util::Keycode::X)) model.SellSelectedTower();
 
     if (isMouseLeftUp && !consumedByHudButton && model.SelectPlacedTowerAt(mousePos)) {
         consumedByHudButton = true;
