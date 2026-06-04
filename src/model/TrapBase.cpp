@@ -1,8 +1,19 @@
 #include "model/TrapBase.h"
 #include <algorithm>
+#include <utility>
 
 TrapBase::TrapBase(const glm::vec2& position)
     : TowerBase(position) {
+}
+
+std::vector<HitEffectEvent> TrapBase::ConsumeHitEffectEvents() {
+    std::vector<HitEffectEvent> events = std::move(m_HitEffectEvents);
+    m_HitEffectEvents.clear();
+    return events;
+}
+
+void TrapBase::AddHitEffectEvent(HitEffectEvent event) {
+    m_HitEffectEvents.push_back(std::move(event));
 }
 
 bool TrapBase::OnRoundEnded() {

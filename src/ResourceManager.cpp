@@ -72,6 +72,7 @@ void ResourceManager::Initialize() {
 
     m_ImagePaths["hit"] = root + "/BTD1_dart_hitbit.png";
     m_ImagePaths["pop"] = root + "/pop.png";
+    m_ImagePaths["tower3_explosion"] = root + "/tower3_explosion.png";
 
     // Towers / slots
     m_ImagePaths["tower_basic"]  = root + "/tower-0.png";
@@ -100,6 +101,8 @@ void ResourceManager::Initialize() {
     m_SoundPaths["pop_02"] = root + "/Pop02.wav";
     m_SoundPaths["pop_03"] = root + "/Pop03.wav";
     m_SoundPaths["pop_04"] = root + "/Pop04.wav";
+    m_SoundPaths["bombsnd"] = root + "/BombSnd.wav";
+    m_SoundPaths["splat"] = root + "/splat.wav";
 
     // Json
     RegisterJson("map_paths", "map_paths.json");

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <glm/gtc/constants.hpp>
+#include <utility>
 
 ProjectileModel::ProjectileModel(
     const glm::vec2& startPos,
@@ -70,6 +71,16 @@ void ProjectileModel::Update(
     const glm::vec2 normalized = direction / distance;
     m_Rotation = std::atan2(normalized.y, normalized.x);
     m_Position += normalized * m_Speed * deltaTimeMs;
+}
+
+std::vector<HitEffectEvent> ProjectileModel::ConsumeHitEffectEvents() {
+    std::vector<HitEffectEvent> events = std::move(m_HitEffectEvents);
+    m_HitEffectEvents.clear();
+    return events;
+}
+
+void ProjectileModel::AddHitEffectEvent(HitEffectEvent event) {
+    m_HitEffectEvents.push_back(std::move(event));
 }
 
 void ProjectileModel::OnHit(
@@ -324,6 +335,14 @@ void CannonProjectile::OnHit(
     }
 
     const glm::vec2 center = target->GetPosition();
+
+    AddHitEffectEvent({
+        "tower3_explosion",
+        "bombsnd",
+        center,
+        std::max(m_ExplosionRadius / 75.0f, 0.1f),
+        220.0f
+    });
 
     for (const auto& enemy : enemies) {
         if (!enemy || !enemy->CanBeTargeted()) {

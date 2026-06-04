@@ -39,6 +39,8 @@ add_executable(${PROJECT_NAME}
         src/ResourceManager.cpp
         include/GameConfig.h
         include/model/EnemyModel.h
+        include/model/HitEffectEvent.h
+        include/model/HitEffectEmitter.h
         src/model/EnemyModel.cpp
         include/model/ProjectileModel.h
         src/model/ProjectileModel.cpp

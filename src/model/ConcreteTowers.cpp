@@ -516,6 +516,7 @@ void GlueTrap::TriggerOn(const std::shared_ptr<EnemyModel>& enemy) {
 
     enemy->TakeDamage(m_Damage);
     enemy->ApplySlow(m_SlowMultiplier,m_SlowDurationMs);
+    AddHitEffectEvent({"", "splat", enemy->GetPosition(), 1.0f, 0.0f});
     --m_RemainingCharges;
 
     if (m_RemainingCharges <= 0) {

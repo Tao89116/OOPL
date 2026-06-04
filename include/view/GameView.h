@@ -16,6 +16,7 @@
 #include "Util/Renderer.hpp"
 #include "Util/SFX.hpp"
 #include "model/GameModel.h"
+#include "model/HitEffectEvent.h"
 #include "model/IBuildable.h"
 #include "view/UIView.h"
 #include <unordered_set>
@@ -28,6 +29,7 @@ public:
     void Render(const GameModel& model);
     void PlayPopSounds(int popCount);
     void QueuePopEffects(const std::vector<GameModel::PoppedEnemyEvent>& events);
+    void QueueHitEffects(const std::vector<HitEffectEvent>& events);
 
 private:
     void InitializeBackground(const GameModel& model);
@@ -39,6 +41,8 @@ private:
     void SyncProjectileObjects(const GameModel& model);
     void CreatePopEffectAt(const glm::vec2& position);
     void SyncPopEffects(float deltaTimeMs);
+    void CreateHitEffect(const HitEffectEvent& event);
+    void SyncHitEffects(float deltaTimeMs);
 
     void SyncPlacementPreviewObjects(const GameModel& model);
     void SyncSelectedTowerRangeObject(const GameModel& model);
@@ -65,12 +69,14 @@ private:
     std::unordered_map<const EnemyModel*, std::shared_ptr<Util::GameObject>> m_EnemyObjects;
     std::unordered_map<const ProjectileModel*, std::shared_ptr<Util::GameObject>> m_ProjectileObjects;
     std::vector<PopEffect> m_PopEffects;
+    std::vector<PopEffect> m_HitEffects;
     std::unordered_set<const EnemyModel*> m_PendingPopEffects;
 
     std::shared_ptr<Util::GameObject> m_PreviewTowerObject = nullptr;
     std::shared_ptr<Util::GameObject> m_PreviewRangeObject = nullptr;
     std::shared_ptr<Util::GameObject> m_SelectedTowerRangeObject = nullptr;
     std::vector<std::shared_ptr<Util::SFX>> m_PopSounds;
+    std::unordered_map<std::string, std::shared_ptr<Util::SFX>> m_HitSounds;
     std::size_t m_NextPopSoundIndex = 0;
 
     std::string m_LastPreviewBuildableId;
