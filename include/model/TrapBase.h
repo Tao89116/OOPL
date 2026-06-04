@@ -25,12 +25,6 @@ protected:
     float m_TriggerRadius = 40.0f;
     bool m_Expired = false;
     std::unordered_set<const EnemyModel*> m_TriggeredEnemies;
-
-    // TODO:
-    // TriggerOn()：
-    // SpikeTrap: 直接傷害
-    // GlueTrap : 套 SlowEffect
-    // BombTrap : 範圍傷害
 };
 
 #endif
