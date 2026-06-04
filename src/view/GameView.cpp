@@ -181,6 +181,31 @@ void GameView::SyncEnemyObjects(const GameModel& model) {
         }
 
         found->second->m_Transform.translation = enemy->GetPosition();
+
+        auto icedFound = m_IcedEnemyObjects.find(key);
+        if (enemy->IsFrozen()) {
+            if (icedFound == m_IcedEnemyObjects.end()) {
+                auto obj = std::make_shared<Util::GameObject>(
+                    m_Resources.GetImage("iced"),
+                    31.0f
+                );
+
+                m_Renderer.AddChild(obj);
+                m_IcedEnemyObjects[key] = obj;
+                icedFound = m_IcedEnemyObjects.find(key);
+            }
+
+            icedFound->second->m_Transform.translation = enemy->GetPosition();
+
+            auto enemyImage = m_Resources.GetImage(enemy->GetSpriteKey());
+            auto icedImage = m_Resources.GetImage("iced");
+            const float scaleX = (enemyImage->GetSize().x * 0.6f) / std::max(icedImage->GetSize().x, 1.0f);
+            const float scaleY = (enemyImage->GetSize().y * 0.6f) / std::max(icedImage->GetSize().y, 1.0f);
+            icedFound->second->m_Transform.scale = {scaleX, scaleY};
+        } else if (icedFound != m_IcedEnemyObjects.end()) {
+            m_Renderer.RemoveChild(icedFound->second);
+            m_IcedEnemyObjects.erase(icedFound);
+        }
     }
 
     for (auto it = m_EnemyObjects.begin(); it != m_EnemyObjects.end();) {
@@ -190,6 +215,15 @@ void GameView::SyncEnemyObjects(const GameModel& model) {
             }
             m_Renderer.RemoveChild(it->second);
             it = m_EnemyObjects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+
+    for (auto it = m_IcedEnemyObjects.begin(); it != m_IcedEnemyObjects.end();) {
+        if (live.find(it->first) == live.end()) {
+            m_Renderer.RemoveChild(it->second);
+            it = m_IcedEnemyObjects.erase(it);
         } else {
             ++it;
         }

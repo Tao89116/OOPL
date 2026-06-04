@@ -19,6 +19,7 @@
 #include "model/HitEffectEvent.h"
 #include "model/IBuildable.h"
 #include "view/UIView.h"
+#include <unordered_map>
 #include <unordered_set>
 
 class GameView {
@@ -67,6 +68,7 @@ private:
 
     std::unordered_map<const IBuildable*, std::shared_ptr<Util::GameObject>> m_TowerObjects;
     std::unordered_map<const EnemyModel*, std::shared_ptr<Util::GameObject>> m_EnemyObjects;
+    std::unordered_map<const EnemyModel*, std::shared_ptr<Util::GameObject>> m_IcedEnemyObjects;
     std::unordered_map<const ProjectileModel*, std::shared_ptr<Util::GameObject>> m_ProjectileObjects;
     std::vector<PopEffect> m_PopEffects;
     std::vector<PopEffect> m_HitEffects;

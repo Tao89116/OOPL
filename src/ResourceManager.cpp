@@ -60,6 +60,7 @@ void ResourceManager::Initialize() {
     m_ImagePaths["bloon_6"] = root + "/enemy-6.png";
     m_ImagePaths["bloon_7"] = root + "/enemy-7.png";
     m_ImagePaths["bloon_default"] = root + "/enemy.png";
+    m_ImagePaths["iced"] = root + "/iced.png";
 
     // Projectiles
     m_ImagePaths["projectile_0"] = root + "/projectile-0.png";
