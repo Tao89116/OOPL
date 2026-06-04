@@ -29,7 +29,7 @@ int DifficultyModel::GetBuildCost(
         }
     }
 
-    if (buildableId == "cannon_tower" || buildableId == "bomb_tower") {
+    if (buildableId == "cannon_tower") {
         switch (difficulty) {
             case DifficultyType::Easy:   return 520;
             case DifficultyType::Normal: return 585;
@@ -117,7 +117,7 @@ int DifficultyModel::GetUpgradeCost(
             : byDifficulty(180, 205, 210);
     }
 
-    if (buildableId == "cannon_tower" || buildableId == "bomb_tower") {
+    if (buildableId == "cannon_tower") {
         return upgradePathIndex == 0
             ? byDifficulty(380, 430, 435)
             : byDifficulty(180, 205, 210);
