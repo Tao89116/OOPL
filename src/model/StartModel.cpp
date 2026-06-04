@@ -31,16 +31,11 @@ void StartModel::InitializeBloons() {
     std::size_t spriteIndex = 0;
     for (int row = 0; row < kRowCount; ++row) {
         const int bloonCount = GameConfig::StartBloonsPerRow[row];
-        const float startX = GameConfig::StartBloonStartX;
-        const float endX = GameConfig::StartBloonEndX;
-        const float gap = (bloonCount == 1)
-            ? 0.0f
-            : (endX - startX) / static_cast<float>(bloonCount - 1);
 
         for (int column = 0; column < bloonCount; ++column) {
             Bloon bloon;
             bloon.position = {
-                startX + gap * static_cast<float>(column),
+                GameConfig::StartBloonRowX[row][column],
                 GameConfig::StartBloonRowY[row],
             };
             bloon.spriteKey = kBloonSprites[spriteIndex % kBloonSprites.size()];
