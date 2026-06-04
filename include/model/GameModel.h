@@ -5,6 +5,7 @@
 #include "SceneType.h"
 #include "model/BuildableRegistry.h"
 #include "model/EnemyModel.h"
+#include "model/HitEffectEvent.h"
 #include "model/IBuildable.h"
 #include "model/MapModel.h"
 #include "model/PlacementModel.h"
@@ -16,6 +17,8 @@ public:
         const EnemyModel* enemy = nullptr;
         glm::vec2 position = {0.0f, 0.0f};
     };
+
+    using HitEffectEvent = ::HitEffectEvent;
 
     explicit GameModel(DifficultyType difficulty);
 
@@ -50,6 +53,7 @@ public:
 
     int ConsumePoppedBloonCount();
     std::vector<PoppedEnemyEvent> ConsumePoppedEnemyEvents();
+    std::vector<HitEffectEvent> ConsumeHitEffectEvents();
 
     int GetHP() const { return m_HP; }
     int GetGold() const { return m_Gold; }
@@ -130,6 +134,7 @@ private:
     float m_SpawnIntervalMs = 900.0f;
     int m_PoppedBloonCount = 0;
     std::vector<PoppedEnemyEvent> m_PoppedEnemyEvents;
+    std::vector<HitEffectEvent> m_HitEffectEvents;
     bool m_CheatMode = false;
 };
 

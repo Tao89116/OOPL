@@ -3,9 +3,10 @@
 
 #include "pch.hpp"
 #include "model/EnemyModel.h"
+#include "model/HitEffectEmitter.h"
 #include <unordered_set>
 
-class ProjectileModel {
+class ProjectileModel : public HitEffectEmitter {
 public:
     ProjectileModel(
         const glm::vec2& startPos,
@@ -30,6 +31,7 @@ public:
     virtual float GetRotation() const { return m_Rotation; }
     virtual float GetRenderScale() const { return m_RenderScale; }
     virtual float GetVisualRadius() const { return -1.0f; }
+    std::vector<HitEffectEvent> ConsumeHitEffectEvents() override;
 
 protected:
     virtual void OnHit(
@@ -38,6 +40,7 @@ protected:
     );
 
     virtual void OnMissOrInvalidTarget();
+    void AddHitEffectEvent(HitEffectEvent event);
 
 protected:
     glm::vec2 m_Position;
@@ -51,6 +54,7 @@ protected:
     float m_RenderScale = 1.0f;
     int m_MaxPierce = 1;
     std::unordered_set<const EnemyModel*> m_HitEnemies;
+    std::vector<HitEffectEvent> m_HitEffectEvents;
 };
 
 class DirectionalProjectile : public ProjectileModel {

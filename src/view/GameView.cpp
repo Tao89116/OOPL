@@ -42,6 +42,24 @@ void GameView::QueuePopEffects(const std::vector<GameModel::PoppedEnemyEvent>& e
     }
 }
 
+void GameView::QueueHitEffects(const std::vector<HitEffectEvent>& events) {
+    for (const auto& event : events) {
+        if (!event.soundKey.empty()) {
+            auto found = m_HitSounds.find(event.soundKey);
+            if (found == m_HitSounds.end()) {
+                auto sound = std::make_shared<Util::SFX>(m_Resources.GetSoundPath(event.soundKey));
+                sound->SetVolume(96);
+                found = m_HitSounds.emplace(event.soundKey, sound).first;
+            }
+            found->second->Play();
+        }
+
+        if (!event.imageKey.empty() && event.durationMs > 0.0f) {
+            CreateHitEffect(event);
+        }
+    }
+}
+
 void GameView::PlayPopSounds(int popCount) {
     if (m_PopSounds.empty()) {
         return;
@@ -90,7 +108,9 @@ void GameView::Render(const GameModel& model) {
     SyncTowerObjects(model);
     SyncEnemyObjects(model);
     SyncProjectileObjects(model);
-    SyncPopEffects(Util::Time::GetDeltaTimeMs());
+    const float deltaTimeMs = Util::Time::GetDeltaTimeMs();
+    SyncPopEffects(deltaTimeMs);
+    SyncHitEffects(deltaTimeMs);
     SyncSelectedTowerRangeObject(model);
     SyncPlacementPreviewObjects(model);
 
@@ -199,6 +219,34 @@ void GameView::SyncPopEffects(float deltaTimeMs) {
                 m_Renderer.RemoveChild(it->object);
             }
             it = m_PopEffects.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void GameView::CreateHitEffect(const HitEffectEvent& event) {
+    auto obj = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage(event.imageKey),
+        32.0f
+    );
+
+    const float effectScale = std::max(event.scale, 0.1f);
+    obj->m_Transform.translation = event.position;
+    obj->m_Transform.scale = {effectScale, effectScale};
+    m_Renderer.AddChild(obj);
+
+    m_HitEffects.push_back({obj, event.durationMs});
+}
+
+void GameView::SyncHitEffects(float deltaTimeMs) {
+    for (auto it = m_HitEffects.begin(); it != m_HitEffects.end();) {
+        it->remainingMs -= deltaTimeMs;
+        if (it->remainingMs <= 0.0f) {
+            if (it->object) {
+                m_Renderer.RemoveChild(it->object);
+            }
+            it = m_HitEffects.erase(it);
         } else {
             ++it;
         }

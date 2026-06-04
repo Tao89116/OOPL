@@ -1,8 +1,10 @@
 #include "model/GameModel.h"
 #include "GameConfig.h"
 #include "model/DifficultyModel.h"
+#include "model/HitEffectEmitter.h"
 #include "model/WaveConfig.h"
 #include <limits>
+#include <utility>
 
 GameModel::GameModel(DifficultyType difficulty)
     : m_Difficulty(difficulty), m_Map(difficulty) {
@@ -54,6 +56,7 @@ void GameModel::Reset() {
     m_SpawnTimerMs = 0.0f;
     m_PoppedBloonCount = 0;
     m_PoppedEnemyEvents.clear();
+    m_HitEffectEvents.clear();
 
     SetupDifficulty();
     m_SpawnIntervalMs = static_cast<float>(WaveConfig::GetInstance().GetSpawnIntervalMs());
@@ -429,6 +432,11 @@ void GameModel::UpdateTowers(float deltaTimeMs) {
         }
 
         tower->Update(deltaTimeMs, m_Enemies, m_Projectiles);
+        auto emitter = std::dynamic_pointer_cast<HitEffectEmitter>(tower);
+        if (emitter) {
+            auto events = emitter->ConsumeHitEffectEvents();
+            m_HitEffectEvents.insert(m_HitEffectEvents.end(), events.begin(), events.end());
+        }
     }
 }
 
@@ -444,6 +452,8 @@ void GameModel::UpdateProjectiles(float deltaTimeMs) {
     for (const auto& projectile : m_Projectiles) {
         if (projectile) {
             projectile->Update(deltaTimeMs, m_Enemies);
+            auto events = projectile->ConsumeHitEffectEvents();
+            m_HitEffectEvents.insert(m_HitEffectEvents.end(), events.begin(), events.end());
         }
     }
 }
@@ -457,6 +467,12 @@ int GameModel::ConsumePoppedBloonCount() {
 std::vector<GameModel::PoppedEnemyEvent> GameModel::ConsumePoppedEnemyEvents() {
     std::vector<PoppedEnemyEvent> events = std::move(m_PoppedEnemyEvents);
     m_PoppedEnemyEvents.clear();
+    return events;
+}
+
+std::vector<GameModel::HitEffectEvent> GameModel::ConsumeHitEffectEvents() {
+    std::vector<HitEffectEvent> events = std::move(m_HitEffectEvents);
+    m_HitEffectEvents.clear();
     return events;
 }
 

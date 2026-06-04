@@ -41,6 +41,8 @@ set(INCLUDE_FILES
         scene/ResultScene.h
 
         model/EnemyModel.h
+        model/HitEffectEvent.h
+        model/HitEffectEmitter.h
         model/TowerModel.h
         model/ProjectileModel.h
         model/MapModel.h
