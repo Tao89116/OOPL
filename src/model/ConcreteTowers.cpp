@@ -61,8 +61,8 @@ std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
         "projectile_0",
         direction,
         m_Range,
-        1.0f,
-        12.0f,
+        2.0f,
+        24.0f,
         GetDamageOptions(),
         m_Pierce
     );
@@ -357,7 +357,7 @@ SuperTower::SuperTower(const glm::vec2& position)
     m_PreviewRange = 252.0f;
 
     m_Range = 252.0f;
-    m_AttackIntervalMs = 50.0f;
+    m_AttackIntervalMs = 100.0f;
     m_Damage = 1;
     m_UpgradeNames = {"Epic Range", "Laser Vision"};
 }
@@ -398,8 +398,8 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
         "projectile_5",
         direction,
         m_Range,
-        1.0f,
-        12.0f,
+        2.0f,
+        24.0f,
         GetDamageOptions(),
         m_Pierce
     );
