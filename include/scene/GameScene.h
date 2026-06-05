@@ -19,6 +19,9 @@ public:
     void Update(SceneManager& sceneManager) override;
 
 private:
+    bool HandleReturnToDifficulty(SceneManager& sceneManager);
+    void UpdateGameFrame(float deltaTimeMs);
+    void HandleResultTransition(SceneManager& sceneManager);
     void DrawCheatGui(SceneManager& sceneManager);
 
     ResourceManager& m_Resources = ResourceManager::GetInstance();

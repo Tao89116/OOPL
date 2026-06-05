@@ -200,11 +200,7 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
 }
 
 void EnemyModel::TakeDamage(int damage, const DamageOptions& options) {
-    if (!m_Alive || damage <= 0) {
-        return;
-    }
-
-    if (IsFrozen() && !options.canPopFrozen) {
+    if (damage <= 0 || !CanReceiveDamage(options)) {
         return;
     }
 
@@ -215,6 +211,26 @@ void EnemyModel::TakeDamage(int damage, const DamageOptions& options) {
         m_ReachedGoal = false;
         m_ChildrenToSpawn = GetChildrenByType(m_Type);
     }
+}
+
+bool EnemyModel::CanReceiveDamage(const DamageOptions& options) const {
+    if (!CanBeTargeted()) {
+        return false;
+    }
+
+    if (IsFrozen() && !options.canPopFrozen) {
+        return false;
+    }
+
+    if (m_Type == EnemyType::Lead && !options.canPopLead) {
+        return false;
+    }
+
+    if (m_Type == EnemyType::Black && options.isCannonDamage) {
+        return false;
+    }
+
+    return true;
 }
 
 std::optional<EnemyModel::DeathEvent> EnemyModel::ConsumeDeathEvent() {
@@ -250,7 +266,7 @@ int EnemyModel::GetRBE(EnemyType type) {
 }
 
 void EnemyModel::ApplyFreeze(float durationMs) {
-    if (!m_Alive || durationMs <= 0.0f) {
+    if (!m_Alive || durationMs <= 0.0f || m_Type == EnemyType::White) {
         return;
     }
 

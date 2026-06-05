@@ -35,7 +35,7 @@ protected:
         const std::vector<std::shared_ptr<EnemyModel>>& enemies
     );
     bool CanTargetEnemy(const std::shared_ptr<EnemyModel>& enemy) const;
-    virtual EnemyModel::DamageOptions GetDamageOptions() const { return {m_CanPopFrozen}; }
+    virtual EnemyModel::DamageOptions GetDamageOptions() const;
 
     virtual void Attack(
         const std::shared_ptr<EnemyModel>& target,

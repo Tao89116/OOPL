@@ -28,7 +28,9 @@ public:
     };
 
     struct DamageOptions {
-        bool canPopFrozen;
+        bool canPopFrozen = false;
+        bool canPopLead = false;
+        bool isCannonDamage = false;
     };
 
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex);
@@ -36,6 +38,7 @@ public:
 
     void Update(float deltaTimeMs, const std::vector<glm::vec2>& path);
     void TakeDamage(int damage, const DamageOptions& options = {});
+    bool CanReceiveDamage(const DamageOptions& options = {}) const;
     void ApplyFreeze(float durationMs);
     void ApplySlow(float speedMultiplier, float durationMs);
 

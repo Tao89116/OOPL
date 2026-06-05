@@ -321,6 +321,13 @@ bool CannonTower::ApplyUpgrade(int pathIndex) {
     return true;
 }
 
+EnemyModel::DamageOptions CannonTower::GetDamageOptions() const {
+    EnemyModel::DamageOptions options = AttackTowerBase::GetDamageOptions();
+    options.canPopLead = true;
+    options.isCannonDamage = true;
+    return options;
+}
+
 std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
@@ -373,6 +380,7 @@ bool SuperTower::ApplyUpgrade(int pathIndex) {
     } else if (pathIndex == 1) {
         m_Pierce += 1;
         m_CanPopFrozen = true;
+        m_ProjectileSpriteKey = "projectile_laser";
     } else {
         return false;
     }
@@ -395,7 +403,7 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
     return std::make_shared<DirectionalProjectile>(
         m_Position,
         m_Damage,
-        "projectile_5",
+        m_ProjectileSpriteKey,
         direction,
         m_Range,
         2.0f,

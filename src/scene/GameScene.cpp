@@ -65,26 +65,27 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
     ImGui::End();
 }
 
-void GameScene::Update(SceneManager& sceneManager) {
-    const float deltaTimeMs = Util::Time::GetDeltaTimeMs();
-
-    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
-        m_View.IsReturnButtonHit(Util::Input::GetCursorPosition())) {
-        sceneManager.SetGameSession(nullptr);
-        sceneManager.RequestSceneChange(SceneType::Difficulty);
-        return;
+bool GameScene::HandleReturnToDifficulty(SceneManager& sceneManager) {
+    if (!Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) ||
+        !m_View.IsReturnButtonHit(Util::Input::GetCursorPosition())) {
+        return false;
     }
 
+    sceneManager.SetGameSession(nullptr);
+    sceneManager.RequestSceneChange(SceneType::Difficulty);
+    return true;
+}
+
+void GameScene::UpdateGameFrame(float deltaTimeMs) {
     m_Controller.HandleInput(*m_Model);
     m_Model->Update(deltaTimeMs);
     m_View.QueuePopEffects(m_Model->ConsumePoppedEnemyEvents());
     m_View.QueueHitEffects(m_Model->ConsumeHitEffectEvents());
     m_View.PlayPopSounds(m_Model->ConsumePoppedBloonCount());
     m_View.Render(*m_Model);
-    DrawCheatGui(sceneManager);
+}
 
-    sceneManager.SetGameSession(m_Model);
-
+void GameScene::HandleResultTransition(SceneManager& sceneManager) {
     if (m_Model->IsWin()) {
         sceneManager.SetResult(ResultType::Win);
         sceneManager.RequestSceneChange(SceneType::Result);
@@ -92,4 +93,18 @@ void GameScene::Update(SceneManager& sceneManager) {
         sceneManager.SetResult(ResultType::Lose);
         sceneManager.RequestSceneChange(SceneType::Result);
     }
+}
+
+void GameScene::Update(SceneManager& sceneManager) {
+    const float deltaTimeMs = Util::Time::GetDeltaTimeMs();
+
+    if (HandleReturnToDifficulty(sceneManager)) {
+        return;
+    }
+
+    UpdateGameFrame(deltaTimeMs);
+    DrawCheatGui(sceneManager);
+
+    sceneManager.SetGameSession(m_Model);
+    HandleResultTransition(sceneManager);
 }
