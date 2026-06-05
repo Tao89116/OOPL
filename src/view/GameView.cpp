@@ -13,7 +13,7 @@
 namespace {
 
 const glm::vec2 kReturnButtonCenter = {600.0f, -325.0f};
-const glm::vec2 kReturnButtonHalfSize = {65.0f, 25.0f};
+const glm::vec2 kReturnButtonHalfSize = {45.0f, 18.0f};
 constexpr float kReturnButtonScale = 0.55f;
 
 bool IsInsideRect(const glm::vec2& point, const glm::vec2& center, const glm::vec2& halfSize) {

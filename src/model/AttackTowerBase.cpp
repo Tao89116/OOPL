@@ -89,12 +89,11 @@ bool AttackTowerBase::CanTargetEnemy(const std::shared_ptr<EnemyModel>& enemy) c
         return false;
     }
 
-    const EnemyModel::DamageOptions damageOptions = GetDamageOptions();
-    if (enemy->IsFrozen() && !damageOptions.canPopFrozen) {
-        return false;
+    if (!enemy->IsFrozen()) {
+        return true;
     }
 
-    return true;
+    return GetDamageOptions().canPopFrozen;
 }
 
 void AttackTowerBase::Attack(

@@ -51,11 +51,18 @@ std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
         return nullptr;
     }
 
-    return std::make_shared<ProjectileModel>(
+    const glm::vec2 toEnemy = target->GetPosition() - m_Position;
+    const float len = glm::length(toEnemy);
+    const glm::vec2 direction = (len > 0.0001f) ? toEnemy / len : glm::vec2(1.0f, 0.0f);
+
+    return std::make_shared<DirectionalProjectile>(
         m_Position,
         m_Damage,
         "projectile_0",
-        target,
+        direction,
+        m_Range,
+        1.0f,
+        12.0f,
         GetDamageOptions(),
         m_Pierce
     );
@@ -381,11 +388,18 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
         return nullptr;
     }
 
-    return std::make_shared<ProjectileModel>(
+    const glm::vec2 toEnemy = target->GetPosition() - m_Position;
+    const float len = glm::length(toEnemy);
+    const glm::vec2 direction = (len > 0.0001f) ? toEnemy / len : glm::vec2(1.0f, 0.0f);
+
+    return std::make_shared<DirectionalProjectile>(
         m_Position,
         m_Damage,
         "projectile_5",
-        target,
+        direction,
+        m_Range,
+        1.0f,
+        12.0f,
         GetDamageOptions(),
         m_Pierce
     );
