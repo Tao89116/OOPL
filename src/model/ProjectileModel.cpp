@@ -31,6 +31,11 @@ void ProjectileModel::Update(
         return;
     }
 
+    if (m_IsPiercing) {
+        UpdatePiercingFlight(deltaTimeMs, enemies);
+        return;
+    }
+
     auto target = m_Target.lock();
     if (!target || !target->CanBeTargeted()) {
         OnMissOrInvalidTarget();
@@ -44,33 +49,25 @@ void ProjectileModel::Update(
     if (distance < 8.0f) {
         OnHit(target, enemies);
         m_HitEnemies.insert(target.get());
+
         if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
             m_Active = false;
             return;
         }
 
-        for (const auto& enemy : enemies) {
-            if (!enemy || enemy == target || !enemy->CanBeTargeted() ||
-                m_HitEnemies.find(enemy.get()) != m_HitEnemies.end()) {
-                continue;
-            }
-
-            if (glm::distance(enemy->GetPosition(), m_Position) <= 24.0f * m_RenderScale) {
-                enemy->TakeDamage(m_Damage, m_DamageOptions);
-                m_HitEnemies.insert(enemy.get());
-                if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
-                    break;
-                }
-            }
-        }
-
-        m_Active = false;
+        m_IsPiercing = true;
+        m_Target.reset();
+        UpdatePiercingFlight(deltaTimeMs, enemies);
         return;
     }
 
     const glm::vec2 normalized = direction / distance;
+    m_PierceDirection = normalized;
     m_Rotation = std::atan2(normalized.y, normalized.x);
-    m_Position += normalized * m_Speed * deltaTimeMs;
+
+    const float step = m_Speed * deltaTimeMs;
+    m_Position += normalized * step;
+    m_PierceTraveledDistance += step;
 }
 
 std::vector<HitEffectEvent> ProjectileModel::ConsumeHitEffectEvents() {
@@ -81,6 +78,38 @@ std::vector<HitEffectEvent> ProjectileModel::ConsumeHitEffectEvents() {
 
 void ProjectileModel::AddHitEffectEvent(HitEffectEvent event) {
     m_HitEffectEvents.push_back(std::move(event));
+}
+
+
+void ProjectileModel::UpdatePiercingFlight(
+    float deltaTimeMs,
+    std::vector<std::shared_ptr<EnemyModel>>& enemies
+) {
+    const float step = m_Speed * deltaTimeMs;
+    m_Position += m_PierceDirection * step;
+    m_PierceTraveledDistance += step;
+    m_Rotation = std::atan2(m_PierceDirection.y, m_PierceDirection.x);
+
+    const float hitRadius = 12.0f * std::max(m_RenderScale, 1.0f);
+    for (const auto& enemy : enemies) {
+        if (!enemy || !enemy->CanBeTargeted() ||
+            m_HitEnemies.find(enemy.get()) != m_HitEnemies.end()) {
+            continue;
+        }
+
+        if (glm::distance(enemy->GetPosition(), m_Position) <= hitRadius) {
+            OnHit(enemy, enemies);
+            m_HitEnemies.insert(enemy.get());
+            if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
+                m_Active = false;
+                return;
+            }
+        }
+    }
+
+    if (m_PierceTraveledDistance >= m_MaxPierceTravelDistance) {
+        m_Active = false;
+    }
 }
 
 void ProjectileModel::OnHit(
@@ -134,7 +163,8 @@ void DirectionalProjectile::Update(
     m_TraveledDistance += step;
 
     for (const auto& enemy : enemies) {
-        if (!enemy || !enemy->CanBeTargeted()) {
+        if (!enemy || !enemy->CanBeTargeted() ||
+            m_HitEnemies.find(enemy.get()) != m_HitEnemies.end()) {
             continue;
         }
 

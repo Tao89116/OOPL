@@ -19,12 +19,14 @@ public:
     void Render(const StartModel& model);
     void PlayPopSounds(int popCount);
     void QueuePopEffects(const std::vector<StartModel::PoppedBloonEvent>& events);
+    bool IsPlayButtonHit(const glm::vec2& point) const;
 
 private:
     void InitializeBackground();
     void InitializeBananaCat();
     void InitializeBloons(const StartModel& model);
     void InitializePopSounds();
+    void InitializePlayButton();
     void RegisterToRenderer();
     void SyncWithModel(const StartModel& model);
     void CreatePopEffectAt(const glm::vec2& position);
@@ -44,6 +46,7 @@ private:
     std::shared_ptr<Util::GameObject> m_Background = nullptr;
     std::shared_ptr<Util::Animation> m_BananaCatAnimation = nullptr;
     std::shared_ptr<Util::GameObject> m_BananaCatObj = nullptr;
+    std::shared_ptr<Util::GameObject> m_PlayButton = nullptr;
     std::vector<std::shared_ptr<Util::GameObject>> m_BloonObjs;
     std::vector<PopEffect> m_PopEffects;
     std::vector<std::shared_ptr<Util::SFX>> m_PopSounds;
