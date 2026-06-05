@@ -21,14 +21,13 @@ public:
 private:
     bool HandleReturnToDifficulty(SceneManager& sceneManager);
     void UpdateGameFrame(float deltaTimeMs);
-    void HandleResultTransition(SceneManager& sceneManager);
+    bool TransitionToResultIfFinished(SceneManager& sceneManager);
     void DrawCheatGui(SceneManager& sceneManager);
 
     ResourceManager& m_Resources = ResourceManager::GetInstance();
     std::shared_ptr<GameModel> m_Model;
     GameView m_View;
     GameController m_Controller;
-    bool m_ResultTransitionRequested = false;
 
     int m_GoldInput = 0;
     int m_HPInput = 0;
