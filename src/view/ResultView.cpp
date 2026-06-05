@@ -65,15 +65,14 @@ void ResultView::Initialize() {
     m_Initialized = true;
 }
 
-float ResultView::PlayResultSoundOnce() {
+void ResultView::PlayResultSoundOnce() {
     Initialize();
     if (!m_ResultSound || m_ResultSoundPlayed) {
-        return 0.0f;
+        return;
     }
 
     m_ResultSound->Play();
     m_ResultSoundPlayed = true;
-    return static_cast<float>(m_ResultSound->GetDurationMs());
 }
 
 void ResultView::Render(const ResultModel& model) {

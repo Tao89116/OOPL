@@ -20,7 +20,8 @@ ResultScene::ResultScene(
 
 void ResultScene::Update(SceneManager& sceneManager) {
     if (!m_Started) {
-        m_Model.Start(m_View.PlayResultSoundOnce());
+        m_Model.Start();
+        m_View.PlayResultSoundOnce();
         m_Started = true;
     }
 

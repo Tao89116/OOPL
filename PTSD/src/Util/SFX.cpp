@@ -22,27 +22,6 @@ int SFX::GetVolume() const {
     return Mix_VolumeChunk(m_Chunk.get(), -1);
 }
 
-int SFX::GetDurationMs() const {
-    if (m_Chunk == nullptr) {
-        return 0;
-    }
-
-    int frequency = 0;
-    Uint16 format = 0;
-    int channels = 0;
-    if (Mix_QuerySpec(&frequency, &format, &channels) == 0 || frequency <= 0 || channels <= 0) {
-        return 0;
-    }
-
-    const int bytesPerSample = (SDL_AUDIO_BITSIZE(format) / 8) * channels;
-    if (bytesPerSample <= 0) {
-        return 0;
-    }
-
-    const double sampleCount = static_cast<double>(m_Chunk->alen) / static_cast<double>(bytesPerSample);
-    return static_cast<int>((sampleCount * 1000.0) / static_cast<double>(frequency));
-}
-
 void SFX::SetVolume(const int volume) {
     Mix_VolumeChunk(m_Chunk.get(), volume);
 }

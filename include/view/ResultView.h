@@ -19,7 +19,7 @@ public:
     explicit ResultView(ResultType result);
     void Initialize();
     void Render(const ResultModel& model);
-    float PlayResultSoundOnce();
+    void PlayResultSoundOnce();
 
 private:
     void InitializeResultImage();

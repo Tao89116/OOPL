@@ -4,17 +4,15 @@
 
 namespace {
 constexpr float kEnterDurationMs = 1200.0f;
-constexpr float kReturnDelayAfterSoundMs = 3000.0f;
 }
 
 ResultModel::ResultModel(ResultType result)
     : m_Result(result) {
 }
 
-void ResultModel::Start(float soundDurationMs) {
+void ResultModel::Start() {
     m_Phase = Phase::Entering;
     m_ElapsedMs = 0.0f;
-    m_SoundDurationMs = std::max(soundDurationMs, kEnterDurationMs);
 }
 
 void ResultModel::Update(float deltaTimeMs) {
@@ -28,7 +26,7 @@ void ResultModel::Update(float deltaTimeMs) {
         m_Phase = Phase::Holding;
     }
 
-    if (m_ElapsedMs >= m_SoundDurationMs + kReturnDelayAfterSoundMs) {
+    if (m_Phase == Phase::Holding) {
         m_Phase = Phase::Finished;
     }
 }

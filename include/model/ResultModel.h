@@ -13,7 +13,7 @@ public:
 
     explicit ResultModel(ResultType result);
 
-    void Start(float soundDurationMs);
+    void Start();
     void Update(float deltaTimeMs);
 
     ResultType GetResult() const { return m_Result; }
@@ -26,7 +26,6 @@ private:
     ResultType m_Result;
     Phase m_Phase = Phase::Entering;
     float m_ElapsedMs = 0.0f;
-    float m_SoundDurationMs = 0.0f;
 };
 
 #endif
