@@ -38,7 +38,7 @@ void DifficultyView::InitializeInfoText() {
     m_InfoText = m_Resources.CreateText(
         "default", 20,
         "Click a phrame to start  |  BACKSPACE to return",
-        Util::Color(255, 240, 180));
+        Util::Color(9, 5, 247));
     m_InfoObj = std::make_shared<Util::GameObject>(m_InfoText, 100.0f);
     m_InfoObj->m_Transform.translation = {0.0f, -280.0f};
 }
@@ -67,7 +67,7 @@ void DifficultyView::InitializeDifficultyCards() {
         card.phrame->m_Transform.scale = phrameScale;
 
         card.labelText = m_Resources.CreateText(
-            "default", 28, option.label, Util::Color(255, 255, 255));
+            "default", 28, option.label, Util::Color(9, 5, 247));
         card.label = std::make_shared<Util::GameObject>(card.labelText, 40.0f);
         card.label->m_Transform.translation = {
             option.cardCenter.x,
