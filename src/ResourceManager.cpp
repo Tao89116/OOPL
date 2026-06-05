@@ -49,6 +49,8 @@ void ResourceManager::Initialize() {
     m_ImagePaths["btn_sell"] = root + "/btn_sell.png";
     m_ImagePaths["btn_upgrade_1"] = root + "/btn_upgrade_1.png";
     m_ImagePaths["btn_upgrade_2"] = root + "/btn_upgrade_2.png";
+    m_ImagePaths["btn_play"] = root + "/play.png";
+    m_ImagePaths["btn_end"] = root + "/end.png";
 
     // Enemies
     m_ImagePaths["bloon_0"] = root + "/enemy-0.png";

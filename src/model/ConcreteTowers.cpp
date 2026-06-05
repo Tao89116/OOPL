@@ -293,6 +293,7 @@ CannonTower::CannonTower(const glm::vec2& position)
     m_Range = 216.0f;
     m_AttackIntervalMs = 1200.0f;
     m_Damage = 1;
+    m_CanPopFrozen = true;
     m_UpgradeNames = {"Bigger Bombs", "Extra Range Bombs"};
 }
 

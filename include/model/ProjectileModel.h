@@ -41,6 +41,10 @@ protected:
 
     virtual void OnMissOrInvalidTarget();
     void AddHitEffectEvent(HitEffectEvent event);
+    void UpdatePiercingFlight(
+        float deltaTimeMs,
+        std::vector<std::shared_ptr<EnemyModel>>& enemies
+    );
 
 protected:
     glm::vec2 m_Position;
@@ -53,6 +57,10 @@ protected:
     float m_Rotation = 0.0f;
     float m_RenderScale = 1.0f;
     int m_MaxPierce = 1;
+    bool m_IsPiercing = false;
+    glm::vec2 m_PierceDirection = {1.0f, 0.0f};
+    float m_PierceTraveledDistance = 0.0f;
+    float m_MaxPierceTravelDistance = 900.0f;
     std::unordered_set<const EnemyModel*> m_HitEnemies;
     std::vector<HitEffectEvent> m_HitEffectEvents;
 };

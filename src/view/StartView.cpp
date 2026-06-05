@@ -41,6 +41,19 @@ void StartView::InitializeBananaCat() {
     m_BananaCatObj->m_Transform.scale = {0.75f, 0.75f};
 }
 
+namespace {
+
+const glm::vec2 kPlayButtonCenter = {540.0f, -285.0f};
+const glm::vec2 kPlayButtonHalfSize = {70.0f, 45.0f};
+constexpr float kPlayButtonScale = 0.7f;
+
+bool IsInsideRect(const glm::vec2& point, const glm::vec2& center, const glm::vec2& halfSize) {
+    return point.x >= center.x - halfSize.x && point.x <= center.x + halfSize.x &&
+           point.y >= center.y - halfSize.y && point.y <= center.y + halfSize.y;
+}
+
+} // namespace
+
 void StartView::InitializeBloons(const StartModel& model) {
     m_BloonObjs.clear();
     for (const auto& bloon : model.GetBloons()) {
@@ -55,6 +68,15 @@ void StartView::InitializeBloons(const StartModel& model) {
         bloonObj->SetVisible(!bloon.popped);
         m_BloonObjs.push_back(bloonObj);
     }
+}
+
+void StartView::InitializePlayButton() {
+    m_PlayButton = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage("btn_play"),
+        90.0f
+    );
+    m_PlayButton->m_Transform.translation = kPlayButtonCenter;
+    m_PlayButton->m_Transform.scale *= kPlayButtonScale;
 }
 
 void StartView::InitializePopSounds() {
@@ -72,6 +94,7 @@ void StartView::RegisterToRenderer() {
         m_Renderer.AddChild(bloonObj);
     }
     m_Renderer.AddChild(m_BananaCatObj);
+    m_Renderer.AddChild(m_PlayButton);
 }
 
 void StartView::Initialize(const StartModel& model) {
@@ -82,6 +105,7 @@ void StartView::Initialize(const StartModel& model) {
     InitializeBackground();
     InitializeBloons(model);
     InitializeBananaCat();
+    InitializePlayButton();
     InitializePopSounds();
     SyncWithModel(model);
     RegisterToRenderer();
@@ -150,4 +174,8 @@ void StartView::PlayPopSounds(int popCount) {
         m_PopSounds[m_NextPopSoundIndex]->Play();
         m_NextPopSoundIndex = (m_NextPopSoundIndex + 1) % m_PopSounds.size();
     }
+}
+
+bool StartView::IsPlayButtonHit(const glm::vec2& point) const {
+    return IsInsideRect(point, kPlayButtonCenter, kPlayButtonHalfSize);
 }

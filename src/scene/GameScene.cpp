@@ -1,6 +1,8 @@
 #include "scene/GameScene.h"
 
 #include "scene/SceneManager.h"
+#include "Util/Input.hpp"
+#include "Util/Keycode.hpp"
 #include "Util/Time.hpp"
 
 GameScene::GameScene(DifficultyType difficulty, const std::shared_ptr<GameModel>& sharedModel)
@@ -65,6 +67,13 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
 
 void GameScene::Update(SceneManager& sceneManager) {
     const float deltaTimeMs = Util::Time::GetDeltaTimeMs();
+
+    if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
+        m_View.IsReturnButtonHit(Util::Input::GetCursorPosition())) {
+        sceneManager.SetGameSession(m_Model);
+        sceneManager.RequestSceneChange(SceneType::Difficulty);
+        return;
+    }
 
     m_Controller.HandleInput(*m_Model);
     m_Model->Update(deltaTimeMs);
