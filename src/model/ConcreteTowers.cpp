@@ -51,11 +51,18 @@ std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
         return nullptr;
     }
 
-    return std::make_shared<ProjectileModel>(
+    const glm::vec2 toEnemy = target->GetPosition() - m_Position;
+    const float len = glm::length(toEnemy);
+    const glm::vec2 direction = (len > 0.0001f) ? toEnemy / len : glm::vec2(1.0f, 0.0f);
+
+    return std::make_shared<DirectionalProjectile>(
         m_Position,
         m_Damage,
         "projectile_0",
-        target,
+        direction,
+        m_Range,
+        2.0f,
+        24.0f,
         GetDamageOptions(),
         m_Pierce
     );
@@ -350,7 +357,7 @@ SuperTower::SuperTower(const glm::vec2& position)
     m_PreviewRange = 252.0f;
 
     m_Range = 252.0f;
-    m_AttackIntervalMs = 50.0f;
+    m_AttackIntervalMs = 100.0f;
     m_Damage = 1;
     m_UpgradeNames = {"Epic Range", "Laser Vision"};
 }
@@ -381,11 +388,18 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
         return nullptr;
     }
 
-    return std::make_shared<ProjectileModel>(
+    const glm::vec2 toEnemy = target->GetPosition() - m_Position;
+    const float len = glm::length(toEnemy);
+    const glm::vec2 direction = (len > 0.0001f) ? toEnemy / len : glm::vec2(1.0f, 0.0f);
+
+    return std::make_shared<DirectionalProjectile>(
         m_Position,
         m_Damage,
         "projectile_5",
-        target,
+        direction,
+        m_Range,
+        2.0f,
+        24.0f,
         GetDamageOptions(),
         m_Pierce
     );

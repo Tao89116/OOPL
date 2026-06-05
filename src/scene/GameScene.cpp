@@ -70,7 +70,7 @@ void GameScene::Update(SceneManager& sceneManager) {
 
     if (Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) &&
         m_View.IsReturnButtonHit(Util::Input::GetCursorPosition())) {
-        sceneManager.SetGameSession(m_Model);
+        sceneManager.SetGameSession(nullptr);
         sceneManager.RequestSceneChange(SceneType::Difficulty);
         return;
     }

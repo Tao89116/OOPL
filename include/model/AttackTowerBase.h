@@ -55,14 +55,6 @@ protected:
     bool m_CanPopFrozen = false;
     std::array<int, 2> m_UpgradeTiers = {0, 0};
     std::array<std::string, 2> m_UpgradeNames = {"", ""};
-
-    // TODO:
-    // 新攻擊塔若有特殊攻擊放在：
-    // 1. Attack() override
-    // 2. 或 CreateProjectile() 建立特殊 Projectile
-    // 預計:
-    // IceBallTower -> 建立 IceBallProjectile，命中後凍結
-    // CannonTower  -> 建立 CannonProjectile，命中後範圍爆炸
 };
 
 #endif
