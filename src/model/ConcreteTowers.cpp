@@ -63,7 +63,7 @@ std::shared_ptr<ProjectileModel> DartTower::CreateProjectile(
         m_Range,
         2.0f,
         24.0f,
-        GetDamageOptions(),
+        GetDamageRule(),
         m_Pierce
     );
 }
@@ -121,7 +121,7 @@ std::shared_ptr<ProjectileModel> TrackTower::CreateProjectile(
         125.0f,
         0.9f,
         m_TackHitRadius,
-        GetDamageOptions(),
+        GetDamageRule(),
         1,
         m_TackRenderScale
     );
@@ -177,7 +177,7 @@ void TrackTower::Attack(
             m_Range,
             0.9f,
             m_TackHitRadius,
-            GetDamageOptions(),
+            GetDamageRule(),
             1,
             m_TackRenderScale
         ));
@@ -235,7 +235,7 @@ std::shared_ptr<ProjectileModel> IceBallTower::CreateProjectile(
         m_Range,
         380.0f,
         m_FreezeDurationMs,
-        GetDamageOptions(),
+        GetDamageRule(),
         (m_Range > 110.0f) ? 1.2f : 1.0f
     );
 }
@@ -249,7 +249,7 @@ void IceBallTower::Update(
 
     bool hasEnemyInRange = false;
     for (const auto& enemy : enemies) {
-        if (!CanTargetEnemy(enemy)) {
+        if (!enemy || !enemy->CanReceiveFreeze()) {
             continue;
         }
 
@@ -270,7 +270,7 @@ void IceBallTower::Update(
         m_Range,
         380.0f,
         m_FreezeDurationMs,
-        GetDamageOptions(),
+        GetDamageRule(),
         (m_Range > 110.0f) ? 1.2f : 1.0f
     );
     if (effect) {
@@ -321,6 +321,10 @@ bool CannonTower::ApplyUpgrade(int pathIndex) {
     return true;
 }
 
+const EnemyModel::DamageRule& CannonTower::GetDamageRule() const {
+    return EnemyModel::ExplosiveDamageRule();
+}
+
 std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
     const std::shared_ptr<EnemyModel>& target
 ) {
@@ -333,7 +337,7 @@ std::shared_ptr<ProjectileModel> CannonTower::CreateProjectile(
         m_Damage,
         "projectile_3",
         target,
-        GetDamageOptions(),
+        GetDamageRule(),
         m_ExplosionRadius,
         m_ProjectileScale
     );
@@ -373,6 +377,7 @@ bool SuperTower::ApplyUpgrade(int pathIndex) {
     } else if (pathIndex == 1) {
         m_Pierce += 1;
         m_CanPopFrozen = true;
+        m_ProjectileSpriteKey = "projectile_laser";
     } else {
         return false;
     }
@@ -395,12 +400,12 @@ std::shared_ptr<ProjectileModel> SuperTower::CreateProjectile(
     return std::make_shared<DirectionalProjectile>(
         m_Position,
         m_Damage,
-        "projectile_5",
+        m_ProjectileSpriteKey,
         direction,
         m_Range,
         2.0f,
         24.0f,
-        GetDamageOptions(),
+        GetDamageRule(),
         m_Pierce
     );
 }
@@ -463,7 +468,7 @@ std::shared_ptr<ProjectileModel> BoomerangTower::CreateProjectile(
         diameter,
         300.0f,
         m_BoomerangPierce,
-        GetDamageOptions()
+        GetDamageRule()
     );
 }
 

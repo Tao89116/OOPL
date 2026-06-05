@@ -103,6 +103,46 @@ const EnemyProfile& GetProfile(EnemyType type) {
 }
 }
 
+namespace {
+class BasicDamageRule final : public EnemyModel::DamageRule {
+public:
+    bool CanDamage(const EnemyModel& enemy) const override {
+        return enemy.CanBeTargeted() &&
+               !enemy.IsFrozen() &&
+               enemy.GetType() != EnemyType::Lead;
+    }
+};
+
+class FrozenCapableDamageRule final : public EnemyModel::DamageRule {
+public:
+    bool CanDamage(const EnemyModel& enemy) const override {
+        return enemy.CanBeTargeted() && enemy.GetType() != EnemyType::Lead;
+    }
+};
+
+class ExplosiveDamageRule final : public EnemyModel::DamageRule {
+public:
+    bool CanDamage(const EnemyModel& enemy) const override {
+        return enemy.CanBeTargeted() && enemy.GetType() != EnemyType::Black;
+    }
+};
+}
+
+const EnemyModel::DamageRule& EnemyModel::BasicDamageRule() {
+    static const ::BasicDamageRule rule;
+    return rule;
+}
+
+const EnemyModel::DamageRule& EnemyModel::FrozenCapableDamageRule() {
+    static const ::FrozenCapableDamageRule rule;
+    return rule;
+}
+
+const EnemyModel::DamageRule& EnemyModel::ExplosiveDamageRule() {
+    static const ::ExplosiveDamageRule rule;
+    return rule;
+}
+
 EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex)
     : m_Type(type),
       m_Position(spawnPosition),
@@ -199,12 +239,8 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
     m_Position += normalized * moveDistance;
 }
 
-void EnemyModel::TakeDamage(int damage, const DamageOptions& options) {
-    if (!m_Alive || damage <= 0) {
-        return;
-    }
-
-    if (IsFrozen() && !options.canPopFrozen) {
+void EnemyModel::TakeDamage(int damage, const DamageRule& damageRule) {
+    if (damage <= 0 || !CanReceiveDamage(damageRule)) {
         return;
     }
 
@@ -215,6 +251,14 @@ void EnemyModel::TakeDamage(int damage, const DamageOptions& options) {
         m_ReachedGoal = false;
         m_ChildrenToSpawn = GetChildrenByType(m_Type);
     }
+}
+
+bool EnemyModel::CanReceiveDamage(const DamageRule& damageRule) const {
+    return damageRule.CanDamage(*this);
+}
+
+bool EnemyModel::CanReceiveFreeze() const {
+    return CanBeTargeted() && m_Type != EnemyType::White;
 }
 
 std::optional<EnemyModel::DeathEvent> EnemyModel::ConsumeDeathEvent() {
@@ -250,7 +294,7 @@ int EnemyModel::GetRBE(EnemyType type) {
 }
 
 void EnemyModel::ApplyFreeze(float durationMs) {
-    if (!m_Alive || durationMs <= 0.0f) {
+    if (durationMs <= 0.0f || !CanReceiveFreeze()) {
         return;
     }
 

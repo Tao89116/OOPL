@@ -10,7 +10,7 @@ ProjectileModel::ProjectileModel(
     int damage,
     const std::string& spriteKey,
     const std::shared_ptr<EnemyModel>& target,
-    const EnemyModel::DamageOptions& damageOptions,
+    const EnemyModel::DamageRule& damageRule,
     int maxPierce,
     float renderScale
 )
@@ -18,7 +18,7 @@ ProjectileModel::ProjectileModel(
       m_Damage(damage),
       m_SpriteKey(spriteKey),
       m_Target(target),
-      m_DamageOptions(damageOptions),
+      m_DamageRule(&damageRule),
       m_RenderScale(renderScale),
       m_MaxPierce(std::max(1, maxPierce)) {
 }
@@ -120,7 +120,7 @@ void ProjectileModel::OnHit(
         return;
     }
 
-    target->TakeDamage(m_Damage, m_DamageOptions);
+    target->TakeDamage(m_Damage, *m_DamageRule);
 }
 
 void ProjectileModel::OnMissOrInvalidTarget() {
@@ -135,11 +135,11 @@ DirectionalProjectile::DirectionalProjectile(
     float maxDistance,
     float speed,
     float hitRadius,
-    const EnemyModel::DamageOptions& damageOptions,
+    const EnemyModel::DamageRule& damageRule,
     int maxPierce,
     float renderScale
 )
-    : ProjectileModel(startPos, damage, spriteKey, nullptr, damageOptions, maxPierce, renderScale),
+    : ProjectileModel(startPos, damage, spriteKey, nullptr, damageRule, maxPierce, renderScale),
       m_MaxDistance(maxDistance),
       m_HitRadius(hitRadius) {
     const float dirLen = glm::length(direction);
@@ -169,7 +169,7 @@ void DirectionalProjectile::Update(
         }
 
         if (glm::distance(enemy->GetPosition(), m_Position) <= m_HitRadius) {
-            enemy->TakeDamage(m_Damage, m_DamageOptions);
+            enemy->TakeDamage(m_Damage, *m_DamageRule);
             m_HitEnemies.insert(enemy.get());
             if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
                 m_Active = false;
@@ -190,10 +190,10 @@ ExpandingAoEProjectile::ExpandingAoEProjectile(
     float maxRadius,
     float expandDurationMs,
     float freezeDurationMs,
-    const EnemyModel::DamageOptions& damageOptions,
+    const EnemyModel::DamageRule& damageRule,
     float renderScale
 )
-    : ProjectileModel(centerPos, damage, spriteKey, nullptr, damageOptions, 1, renderScale),
+    : ProjectileModel(centerPos, damage, spriteKey, nullptr, damageRule, 1, renderScale),
       m_Center(centerPos),
       m_MaxRadius(maxRadius),
       m_ExpandDurationMs(expandDurationMs),
@@ -233,7 +233,7 @@ void ExpandingAoEProjectile::Update(
 
             const float dist = glm::distance(enemy->GetPosition(), m_Center);
             if (dist <= m_MaxRadius) {
-                enemy->TakeDamage(m_Damage, m_DamageOptions);
+                enemy->TakeDamage(m_Damage, *m_DamageRule);
                 enemy->ApplyFreeze(m_FreezeDurationMs);
                 m_AffectedEnemies.insert(key);
             }
@@ -254,9 +254,9 @@ BoomerangProjectile::BoomerangProjectile(
     float diameter,
     float lifetimeMs,
     int maxPierce,
-    const EnemyModel::DamageOptions& damageOptions
+    const EnemyModel::DamageRule& damageRule
 )
-    : ProjectileModel(startPos, damage, spriteKey, nullptr, damageOptions),
+    : ProjectileModel(startPos, damage, spriteKey, nullptr, damageRule),
       m_Origin(startPos),
       m_Radius(diameter * 0.5f),
       m_LifetimeMs(lifetimeMs),
@@ -303,7 +303,7 @@ void BoomerangProjectile::Update(
         }
 
         if (glm::distance(enemy->GetPosition(), m_Position) <= m_HitRadius) {
-            enemy->TakeDamage(m_Damage, m_DamageOptions);
+            enemy->TakeDamage(m_Damage, *m_DamageRule);
             m_HitEnemies.insert(key);
             if (static_cast<int>(m_HitEnemies.size()) >= m_MaxPierce) {
                 m_Active = false;
@@ -325,9 +325,9 @@ IceBallProjectile::IceBallProjectile(
     int damage,
     const std::string& spriteKey,
     const std::shared_ptr<EnemyModel>& target,
-    const EnemyModel::DamageOptions& damageOptions
+    const EnemyModel::DamageRule& damageRule
 )
-    : ProjectileModel(startPos, damage, spriteKey, target, damageOptions) {
+    : ProjectileModel(startPos, damage, spriteKey, target, damageRule) {
 }
 
 void IceBallProjectile::OnHit(
@@ -348,11 +348,11 @@ CannonProjectile::CannonProjectile(
     int damage,
     const std::string& spriteKey,
     const std::shared_ptr<EnemyModel>& target,
-    const EnemyModel::DamageOptions& damageOptions,
+    const EnemyModel::DamageRule& damageRule,
     float explosionRadius,
     float renderScale
 )
-    : ProjectileModel(startPos, damage, spriteKey, target, damageOptions, 1, renderScale),
+    : ProjectileModel(startPos, damage, spriteKey, target, damageRule, 1, renderScale),
       m_ExplosionRadius(explosionRadius) {
 }
 
@@ -381,7 +381,7 @@ void CannonProjectile::OnHit(
 
         const float dist = glm::distance(enemy->GetPosition(), center);
         if (dist <= m_ExplosionRadius) {
-            enemy->TakeDamage(m_Damage, m_DamageOptions);
+            enemy->TakeDamage(m_Damage, *m_DamageRule);
         }
     }
 }
@@ -393,9 +393,9 @@ GlueProjectile::GlueProjectile(
     int damage,
     const std::string& spriteKey,
     const std::shared_ptr<EnemyModel>& target,
-    const EnemyModel::DamageOptions& damageOptions
+    const EnemyModel::DamageRule& damageRule
 )
-    : ProjectileModel(startPos, damage, spriteKey, target, damageOptions) {
+    : ProjectileModel(startPos, damage, spriteKey, target, damageRule) {
 }
 
 void GlueProjectile::OnHit(

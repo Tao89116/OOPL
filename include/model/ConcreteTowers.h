@@ -67,6 +67,7 @@ public:
     bool ApplyUpgrade(int pathIndex) override;
 
 protected:
+    const EnemyModel::DamageRule& GetDamageRule() const override;
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;
@@ -99,6 +100,9 @@ protected:
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;
+
+private:
+    std::string m_ProjectileSpriteKey = "projectile_5";
 };
 
 class BoomerangTower : public AttackTowerBase {
