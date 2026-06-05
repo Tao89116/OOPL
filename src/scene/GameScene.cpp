@@ -86,19 +86,27 @@ void GameScene::UpdateGameFrame(float deltaTimeMs) {
 }
 
 void GameScene::HandleResultTransition(SceneManager& sceneManager) {
-    if (m_Model->IsWin()) {
-        sceneManager.SetResult(ResultType::Win);
-        sceneManager.SetGameSession(m_Model);
-        sceneManager.RequestSceneChange(SceneType::Result);
-    } else if (m_Model->IsLose()) {
-        sceneManager.SetResult(ResultType::Lose);
-        sceneManager.SetGameSession(m_Model);
-        sceneManager.RequestSceneChange(SceneType::Result);
+    if (m_ResultTransitionRequested || !m_Model) {
+        return;
     }
+
+    if (!m_Model->IsWin() && !m_Model->IsLose()) {
+        return;
+    }
+
+    sceneManager.SetResult(m_Model->IsWin() ? ResultType::Win : ResultType::Lose);
+    sceneManager.SetGameSession(m_Model);
+    sceneManager.RequestSceneChange(SceneType::Result);
+    m_ResultTransitionRequested = true;
 }
 
 void GameScene::Update(SceneManager& sceneManager) {
     const float deltaTimeMs = Util::Time::GetDeltaTimeMs();
+
+    if (m_ResultTransitionRequested) {
+        m_View.Render(*m_Model);
+        return;
+    }
 
     if (m_Model->IsWin() || m_Model->IsLose()) {
         m_View.Render(*m_Model);

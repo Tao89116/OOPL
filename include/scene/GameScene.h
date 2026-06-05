@@ -28,6 +28,7 @@ private:
     std::shared_ptr<GameModel> m_Model;
     GameView m_View;
     GameController m_Controller;
+    bool m_ResultTransitionRequested = false;
 
     int m_GoldInput = 0;
     int m_HPInput = 0;

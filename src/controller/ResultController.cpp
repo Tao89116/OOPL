@@ -8,8 +8,11 @@
 #include "scene/SceneManager.h"
 
 void ResultController::Update(ResultModel& model, SceneManager& sceneManager) {
-    if (model.IsFinished()) {
-        sceneManager.SetGameSession(nullptr);
-        sceneManager.RequestSceneChange(SceneType::Difficulty);
+    if (m_ReturnRequested || !model.IsFinished()) {
+        return;
     }
+
+    sceneManager.SetGameSession(nullptr);
+    sceneManager.RequestSceneChange(SceneType::Difficulty);
+    m_ReturnRequested = true;
 }
