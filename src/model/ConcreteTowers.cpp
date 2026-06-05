@@ -2,6 +2,7 @@
 #include "model/ProjectileModel.h"
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 DartTower::DartTower(const glm::vec2& position)
     : AttackTowerBase(position) {
@@ -319,6 +320,42 @@ bool CannonTower::ApplyUpgrade(int pathIndex) {
 
     MarkUpgradeApplied(pathIndex);
     return true;
+}
+
+void CannonTower::Update(
+    float deltaTimeMs,
+    std::vector<std::shared_ptr<EnemyModel>>& enemies,
+    std::vector<std::shared_ptr<ProjectileModel>>& projectiles
+) {
+    UpdateCooldown(deltaTimeMs);
+
+    std::shared_ptr<EnemyModel> target = nullptr;
+    for (const auto& enemy : enemies) {
+        // Black bloons are immune to cannon explosions, so ignore them while
+        // choosing an aim target instead of letting them block valid targets.
+        if (!CanTargetEnemy(enemy) || enemy->GetType() == EnemyType::Black) {
+            continue;
+        }
+
+        if (glm::distance(enemy->GetPosition(), m_Position) <= m_Range) {
+            target = enemy;
+            break;
+        }
+    }
+
+    if (!target) {
+        return;
+    }
+
+    const glm::vec2 direction = target->GetPosition() - m_Position;
+    if (glm::length(direction) > 0.0001f) {
+        SetRotation(std::atan2(direction.y, direction.x));
+    }
+
+    if (m_CooldownMs <= 0.0f) {
+        Attack(target, projectiles);
+        m_CooldownMs = m_AttackIntervalMs;
+    }
 }
 
 const EnemyModel::DamageRule& CannonTower::GetDamageRule() const {
