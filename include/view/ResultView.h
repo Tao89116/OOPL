@@ -10,18 +10,20 @@
 #include "ResourceManager.h"
 #include "Util/GameObject.hpp"
 #include "Util/Renderer.hpp"
+#include "Util/SFX.hpp"
 #include "Util/Text.hpp"
+#include "model/ResultModel.h"
 
 class ResultView {
 public:
     explicit ResultView(ResultType result);
     void Initialize();
-    void Render();
+    void Render(const ResultModel& model);
+    void PlayResultSoundOnce();
 
 private:
-    void InitializeBackground();
-    void InitializeTitle();
-    void InitializeInfoText();
+    void InitializeResultImage();
+    void InitializeResultSound();
     void RegisterToRenderer();
 
 private:
@@ -31,11 +33,9 @@ private:
     ResourceManager& m_Resources = ResourceManager::GetInstance();
 
     bool m_Initialized = false;
-    std::shared_ptr<Util::GameObject> m_Background = nullptr;
-    std::shared_ptr<Util::Text> m_TitleText = nullptr;
-    std::shared_ptr<Util::GameObject> m_TitleObj = nullptr;
-    std::shared_ptr<Util::Text> m_InfoText = nullptr;
-    std::shared_ptr<Util::GameObject> m_InfoObj = nullptr;
+    bool m_ResultSoundPlayed = false;
+    std::shared_ptr<Util::GameObject> m_ResultImage = nullptr;
+    std::shared_ptr<Util::SFX> m_ResultSound = nullptr;
 };
 
 #endif

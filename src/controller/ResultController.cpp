@@ -4,12 +4,15 @@
 #include "controller/ResultController.h"
 
 #include "SceneType.h"
+#include "model/ResultModel.h"
 #include "scene/SceneManager.h"
-#include "Util/Input.hpp"
-#include "Util/Keycode.hpp"
 
-void ResultController::HandleInput(SceneManager& sceneManager) {
-    if (Util::Input::IsKeyUp(Util::Keycode::RETURN)) {
-        sceneManager.RequestSceneChange(SceneType::Difficulty);
+void ResultController::Update(ResultModel& model, SceneManager& sceneManager) {
+    if (m_ReturnRequested || !model.IsFinished()) {
+        return;
     }
+
+    sceneManager.SetGameSession(nullptr);
+    sceneManager.RequestSceneChange(SceneType::Difficulty);
+    m_ReturnRequested = true;
 }

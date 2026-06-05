@@ -38,10 +38,12 @@ void SceneManager::CreateScene(SceneType sceneType) {
             }
             m_CurrentScene = std::make_unique<GameScene>(m_Difficulty, m_GameSession);
             break;
-        case SceneType::Result:
+        case SceneType::Result: {
+            auto finishedGame = m_GameSession;
             m_GameSession.reset();
-            m_CurrentScene = std::make_unique<ResultScene>(m_Result);
+            m_CurrentScene = std::make_unique<ResultScene>(m_Result, m_Difficulty, finishedGame);
             break;
+        }
     }
 }
 

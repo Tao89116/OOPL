@@ -23,6 +23,8 @@ void ResourceManager::Initialize() {
     m_ImagePaths["bg_normal"] = root + "/background-2.png";
     m_ImagePaths["bg_hard"]   = root + "/background-3.png";
     m_ImagePaths["bg_result"] = root + "/background-0.png";
+    m_ImagePaths["result_win"] = root + "/win.png";
+    m_ImagePaths["result_gameover"] = root + "/gameover.png";
     m_ImagePaths["bg_game"]   = root + "/background.png";
     m_ImagePaths["difficulty_phrame"] = root + "/phrame.png";
 
@@ -106,6 +108,8 @@ void ResourceManager::Initialize() {
     m_SoundPaths["pop_04"] = root + "/Pop04.wav";
     m_SoundPaths["bombsnd"] = root + "/BombSnd.wav";
     m_SoundPaths["splat"] = root + "/splat.wav";
+    m_SoundPaths["result_win"] = root + "/win.mp3";
+    m_SoundPaths["result_gameover"] = root + "/gameover.mp3";
 
     // Json
     RegisterJson("map_paths", "map_paths.json");

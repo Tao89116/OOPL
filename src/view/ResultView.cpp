@@ -5,47 +5,52 @@
 #include "View/ResultView.h"
 
 #include "GameConfig.h"
-#include "Util/Color.hpp"
+#include <algorithm>
+#include <cmath>
+
+namespace {
+constexpr float kStartYOffset = -260.0f;
+constexpr float kFinalYOffset = 0.0f;
+constexpr float kMaxDisplayWidth = 900.0f;
+constexpr float kMaxDisplayHeight = 420.0f;
+
+std::string GetResultImageKey(ResultType result) {
+    return (result == ResultType::Win) ? "result_win" : "result_gameover";
+}
+
+std::string GetResultSoundKey(ResultType result) {
+    return (result == ResultType::Win) ? "result_win" : "result_gameover";
+}
+
+float EaseOutCubic(float value) {
+    const float clamped = std::clamp(value, 0.0f, 1.0f);
+    return 1.0f - std::pow(1.0f - clamped, 3.0f);
+}
+}
 
 ResultView::ResultView(ResultType result)
     : m_Result(result) {
 }
 
-void ResultView::InitializeBackground() {
-    auto image = m_Resources.GetImage("bg_result");
-    m_Background = std::make_shared<Util::GameObject>(image, 0.0f);
+void ResultView::InitializeResultImage() {
+    auto image = m_Resources.GetImage(GetResultImageKey(m_Result));
+    m_ResultImage = std::make_shared<Util::GameObject>(image, 120.0f);
 
-    const float scaleX = static_cast<float>(GameConfig::WindowWidth) / image->GetSize().x;
-    const float scaleY = static_cast<float>(GameConfig::WindowHeight) / image->GetSize().y;
+    const float scaleX = kMaxDisplayWidth / std::max(image->GetSize().x, 1.0f);
+    const float scaleY = kMaxDisplayHeight / std::max(image->GetSize().y, 1.0f);
+    const float imageScale = std::min({scaleX, scaleY, 1.0f});
 
-    m_Background->m_Transform.translation = {0.0f, 0.0f};
-    m_Background->m_Transform.scale = {scaleX, scaleY};
+    m_ResultImage->m_Transform.translation = {0.0f, kStartYOffset};
+    m_ResultImage->m_Transform.scale = {imageScale, imageScale};
 }
 
-void ResultView::InitializeTitle() {
-    const std::string title = (m_Result == ResultType::Win) ? "YOU WIN!" : "GAME OVER";
-    const Util::Color color = (m_Result == ResultType::Win)
-        ? Util::Color(150, 255, 150)
-        : Util::Color(255, 150, 150);
-
-    m_TitleText = m_Resources.CreateText("default", 40, title, color);
-    m_TitleObj = std::make_shared<Util::GameObject>(m_TitleText, 100.0f);
-    m_TitleObj->m_Transform.translation = {0.0f, 0.0f};
-}
-
-void ResultView::InitializeInfoText() {
-    m_InfoText = m_Resources.CreateText(
-        "default", 24,
-        "Press ENTER to return to Start",
-        Util::Color(255, 240, 180));
-    m_InfoObj = std::make_shared<Util::GameObject>(m_InfoText, 100.0f);
-    m_InfoObj->m_Transform.translation = {450.0f, 300.0f};
+void ResultView::InitializeResultSound() {
+    m_ResultSound = std::make_shared<Util::SFX>(m_Resources.GetSoundPath(GetResultSoundKey(m_Result)));
+    m_ResultSound->SetVolume(112);
 }
 
 void ResultView::RegisterToRenderer() {
-    m_Renderer.AddChild(m_Background);
-    m_Renderer.AddChild(m_TitleObj);
-    m_Renderer.AddChild(m_InfoObj);
+    m_Renderer.AddChild(m_ResultImage);
 }
 
 void ResultView::Initialize() {
@@ -53,15 +58,31 @@ void ResultView::Initialize() {
         return;
     }
 
-    InitializeBackground();
-    InitializeTitle();
-    InitializeInfoText();
+    InitializeResultImage();
+    InitializeResultSound();
     RegisterToRenderer();
 
     m_Initialized = true;
 }
 
-void ResultView::Render() {
+void ResultView::PlayResultSoundOnce() {
     Initialize();
+    if (!m_ResultSound || m_ResultSoundPlayed) {
+        return;
+    }
+
+    m_ResultSound->Play();
+    m_ResultSoundPlayed = true;
+}
+
+void ResultView::Render(const ResultModel& model) {
+    Initialize();
+
+    if (m_ResultImage) {
+        const float easedProgress = EaseOutCubic(model.GetEnterProgress());
+        const float y = kStartYOffset + (kFinalYOffset - kStartYOffset) * easedProgress;
+        m_ResultImage->m_Transform.translation = {0.0f, y};
+    }
+
     m_Renderer.Update();
 }
