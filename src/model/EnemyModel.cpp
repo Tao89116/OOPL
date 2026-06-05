@@ -103,6 +103,16 @@ const EnemyProfile& GetProfile(EnemyType type) {
 }
 }
 
+EnemyModel::DamageOptions::DamageOptions(
+    bool canPopFrozen,
+    bool canPopLead,
+    bool isCannonDamage
+)
+    : canPopFrozen(canPopFrozen),
+      canPopLead(canPopLead),
+      isCannonDamage(isCannonDamage) {
+}
+
 EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex)
     : m_Type(type),
       m_Position(spawnPosition),

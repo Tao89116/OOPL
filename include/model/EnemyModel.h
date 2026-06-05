@@ -28,9 +28,15 @@ public:
     };
 
     struct DamageOptions {
-        bool canPopFrozen = false;
-        bool canPopLead = false;
-        bool isCannonDamage = false;
+        DamageOptions(
+            bool canPopFrozen = false,
+            bool canPopLead = false,
+            bool isCannonDamage = false
+        );
+
+        bool canPopFrozen;
+        bool canPopLead;
+        bool isCannonDamage;
     };
 
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex);
