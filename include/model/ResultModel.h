@@ -26,6 +26,7 @@ private:
     ResultType m_Result;
     Phase m_Phase = Phase::Entering;
     float m_ElapsedMs = 0.0f;
+    float m_HoldElapsedMs = 0.0f;
 };
 
 #endif

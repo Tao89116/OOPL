@@ -4,6 +4,7 @@
 
 namespace {
 constexpr float kEnterDurationMs = 1200.0f;
+constexpr float kHoldDurationMs = 2000.0f;
 }
 
 ResultModel::ResultModel(ResultType result)
@@ -13,6 +14,7 @@ ResultModel::ResultModel(ResultType result)
 void ResultModel::Start() {
     m_Phase = Phase::Entering;
     m_ElapsedMs = 0.0f;
+    m_HoldElapsedMs = 0.0f;
 }
 
 void ResultModel::Update(float deltaTimeMs) {
@@ -24,10 +26,15 @@ void ResultModel::Update(float deltaTimeMs) {
 
     if (m_Phase == Phase::Entering && m_ElapsedMs >= kEnterDurationMs) {
         m_Phase = Phase::Holding;
+        m_HoldElapsedMs = 0.0f;
+        return;
     }
 
     if (m_Phase == Phase::Holding) {
-        m_Phase = Phase::Finished;
+        m_HoldElapsedMs += std::max(deltaTimeMs, 0.0f);
+        if (m_HoldElapsedMs >= kHoldDurationMs) {
+            m_Phase = Phase::Finished;
+        }
     }
 }
 
