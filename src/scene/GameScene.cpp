@@ -82,36 +82,23 @@ void GameScene::UpdateGameFrame(float deltaTimeMs) {
     m_View.QueuePopEffects(m_Model->ConsumePoppedEnemyEvents());
     m_View.QueueHitEffects(m_Model->ConsumeHitEffectEvents());
     m_View.PlayPopSounds(m_Model->ConsumePoppedBloonCount());
-    m_View.Render(*m_Model);
 }
 
-void GameScene::HandleResultTransition(SceneManager& sceneManager) {
-    if (m_ResultTransitionRequested || !m_Model) {
-        return;
-    }
-
-    if (!m_Model->IsWin() && !m_Model->IsLose()) {
-        return;
+bool GameScene::TransitionToResultIfFinished(SceneManager& sceneManager) {
+    if (!m_Model || (!m_Model->IsWin() && !m_Model->IsLose())) {
+        return false;
     }
 
     sceneManager.SetResult(m_Model->IsWin() ? ResultType::Win : ResultType::Lose);
-    sceneManager.SetGameSession(m_Model);
+    sceneManager.SetGameSession(nullptr);
     sceneManager.RequestSceneChange(SceneType::Result);
-    m_ResultTransitionRequested = true;
+    return true;
 }
 
 void GameScene::Update(SceneManager& sceneManager) {
     const float deltaTimeMs = Util::Time::GetDeltaTimeMs();
 
-    if (m_ResultTransitionRequested) {
-        m_View.Render(*m_Model);
-        return;
-    }
-
-    if (m_Model->IsWin() || m_Model->IsLose()) {
-        m_View.Render(*m_Model);
-        sceneManager.SetGameSession(m_Model);
-        HandleResultTransition(sceneManager);
+    if (TransitionToResultIfFinished(sceneManager)) {
         return;
     }
 
@@ -120,8 +107,17 @@ void GameScene::Update(SceneManager& sceneManager) {
     }
 
     UpdateGameFrame(deltaTimeMs);
+
+    if (TransitionToResultIfFinished(sceneManager)) {
+        return;
+    }
+
+    m_View.Render(*m_Model);
     DrawCheatGui(sceneManager);
 
+    if (TransitionToResultIfFinished(sceneManager)) {
+        return;
+    }
+
     sceneManager.SetGameSession(m_Model);
-    HandleResultTransition(sceneManager);
 }

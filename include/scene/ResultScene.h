@@ -9,25 +9,17 @@
 #include "SceneType.h"
 #include "view/ResultView.h"
 #include "controller/ResultController.h"
-#include "model/GameModel.h"
 #include "model/ResultModel.h"
-#include "view/GameView.h"
 
 class ResultScene : public IScene {
 public:
-    explicit ResultScene(
-        ResultType result,
-        DifficultyType difficulty,
-        const std::shared_ptr<GameModel>& finishedGame = nullptr
-    );
+    explicit ResultScene(ResultType result);
 
     void Update(SceneManager& sceneManager) override;
 
 private:
     ResultModel m_Model;
     ResultView m_View;
-    std::shared_ptr<GameModel> m_FinishedGame = nullptr;
-    std::unique_ptr<GameView> m_GameBackdrop = nullptr;
     ResultController m_Controller;
     bool m_Started = false;
 };

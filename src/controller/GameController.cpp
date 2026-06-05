@@ -139,10 +139,6 @@ void GameController::HandleCheatModeInput(GameModel& model) {
 }
 
 void GameController::HandleInput(GameModel& model) {
-    if (model.IsWin() || model.IsLose()) {
-        return;
-    }
-
     ConsumeCheatSequenceInput(model);
 
     ExecuteTowerHotkeys(model);
