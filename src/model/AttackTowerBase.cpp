@@ -85,13 +85,13 @@ std::shared_ptr<EnemyModel> AttackTowerBase::FindTarget(
 }
 
 bool AttackTowerBase::CanTargetEnemy(const std::shared_ptr<EnemyModel>& enemy) const {
-    return enemy && enemy->CanBeTargeted() && enemy->CanReceiveDamage(GetDamageOptions());
+    return enemy && enemy->CanBeTargeted() && enemy->CanReceiveDamage(GetDamageRule());
 }
 
-EnemyModel::DamageOptions AttackTowerBase::GetDamageOptions() const {
-    EnemyModel::DamageOptions options;
-    options.canPopFrozen = m_CanPopFrozen;
-    return options;
+const EnemyModel::DamageRule& AttackTowerBase::GetDamageRule() const {
+    return m_CanPopFrozen
+        ? EnemyModel::FrozenCapableDamageRule()
+        : EnemyModel::BasicDamageRule();
 }
 
 void AttackTowerBase::Attack(

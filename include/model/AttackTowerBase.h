@@ -35,7 +35,7 @@ protected:
         const std::vector<std::shared_ptr<EnemyModel>>& enemies
     );
     bool CanTargetEnemy(const std::shared_ptr<EnemyModel>& enemy) const;
-    virtual EnemyModel::DamageOptions GetDamageOptions() const;
+    virtual const EnemyModel::DamageRule& GetDamageRule() const;
 
     virtual void Attack(
         const std::shared_ptr<EnemyModel>& target,

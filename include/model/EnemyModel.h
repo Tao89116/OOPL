@@ -27,24 +27,23 @@ public:
         std::vector<EnemyType> childrenToSpawn;
     };
 
-    struct DamageOptions {
-        DamageOptions(
-            bool canPopFrozen = false,
-            bool canPopLead = false,
-            bool isCannonDamage = false
-        );
-
-        bool canPopFrozen;
-        bool canPopLead;
-        bool isCannonDamage;
+    class DamageRule {
+    public:
+        virtual ~DamageRule() = default;
+        virtual bool CanDamage(const EnemyModel& enemy) const = 0;
     };
+
+    static const DamageRule& BasicDamageRule();
+    static const DamageRule& FrozenCapableDamageRule();
+    static const DamageRule& ExplosiveDamageRule();
 
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex);
     EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex, int pathIndex);
 
     void Update(float deltaTimeMs, const std::vector<glm::vec2>& path);
-    void TakeDamage(int damage, const DamageOptions& options = {});
-    bool CanReceiveDamage(const DamageOptions& options = {}) const;
+    void TakeDamage(int damage, const DamageRule& damageRule = BasicDamageRule());
+    bool CanReceiveDamage(const DamageRule& damageRule = BasicDamageRule()) const;
+    bool CanReceiveFreeze() const;
     void ApplyFreeze(float durationMs);
     void ApplySlow(float speedMultiplier, float durationMs);
 

@@ -67,7 +67,7 @@ public:
     bool ApplyUpgrade(int pathIndex) override;
 
 protected:
-    EnemyModel::DamageOptions GetDamageOptions() const override;
+    const EnemyModel::DamageRule& GetDamageRule() const override;
     std::shared_ptr<ProjectileModel> CreateProjectile(
         const std::shared_ptr<EnemyModel>& target
     ) override;

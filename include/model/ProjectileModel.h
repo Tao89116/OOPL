@@ -13,7 +13,7 @@ public:
         int damage,
         const std::string& spriteKey,
         const std::shared_ptr<EnemyModel>& target,
-        const EnemyModel::DamageOptions& damageOptions = {},
+        const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule(),
         int maxPierce = 1,
         float renderScale = 1.0f
     );
@@ -53,7 +53,7 @@ protected:
     bool m_Active = true;
     std::string m_SpriteKey;
     std::weak_ptr<EnemyModel> m_Target;
-    EnemyModel::DamageOptions m_DamageOptions = {};
+    const EnemyModel::DamageRule* m_DamageRule;
     float m_Rotation = 0.0f;
     float m_RenderScale = 1.0f;
     int m_MaxPierce = 1;
@@ -75,7 +75,7 @@ public:
         float maxDistance,
         float speed = 0.7f,
         float hitRadius = 10.0f,
-        const EnemyModel::DamageOptions& damageOptions = {},
+        const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule(),
         int maxPierce = 1,
         float renderScale = 1.0f
     );
@@ -101,7 +101,7 @@ public:
         float maxRadius,
         float expandDurationMs,
         float freezeDurationMs,
-        const EnemyModel::DamageOptions& damageOptions = {},
+        const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule(),
         float renderScale = 1.0f
     );
 
@@ -134,7 +134,7 @@ public:
         float diameter,
         float lifetimeMs,
         int maxPierce,
-        const EnemyModel::DamageOptions& damageOptions = {}
+        const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule()
     );
 
     void Update(
@@ -163,7 +163,7 @@ public:
         int damage,
         const std::string& spriteKey,
         const std::shared_ptr<EnemyModel>& target,
-        const EnemyModel::DamageOptions& damageOptions = {}
+        const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule()
     );
 
 protected:
@@ -183,7 +183,7 @@ public:
         int damage,
         const std::string& spriteKey,
         const std::shared_ptr<EnemyModel>& target,
-        const EnemyModel::DamageOptions& damageOptions = {},
+        const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule(),
         float explosionRadius = 75.0f,
         float renderScale = 1.0f
     );
@@ -206,7 +206,7 @@ public:
         int damage,
         const std::string& spriteKey,
         const std::shared_ptr<EnemyModel>& target,
-        const EnemyModel::DamageOptions& damageOptions = {}
+        const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule()
     );
 
 protected:

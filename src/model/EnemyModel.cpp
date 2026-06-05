@@ -103,14 +103,44 @@ const EnemyProfile& GetProfile(EnemyType type) {
 }
 }
 
-EnemyModel::DamageOptions::DamageOptions(
-    bool canPopFrozen,
-    bool canPopLead,
-    bool isCannonDamage
-)
-    : canPopFrozen(canPopFrozen),
-      canPopLead(canPopLead),
-      isCannonDamage(isCannonDamage) {
+namespace {
+class BasicDamageRule final : public EnemyModel::DamageRule {
+public:
+    bool CanDamage(const EnemyModel& enemy) const override {
+        return enemy.CanBeTargeted() &&
+               !enemy.IsFrozen() &&
+               enemy.GetType() != EnemyType::Lead;
+    }
+};
+
+class FrozenCapableDamageRule final : public EnemyModel::DamageRule {
+public:
+    bool CanDamage(const EnemyModel& enemy) const override {
+        return enemy.CanBeTargeted() && enemy.GetType() != EnemyType::Lead;
+    }
+};
+
+class ExplosiveDamageRule final : public EnemyModel::DamageRule {
+public:
+    bool CanDamage(const EnemyModel& enemy) const override {
+        return enemy.CanBeTargeted() && enemy.GetType() != EnemyType::Black;
+    }
+};
+}
+
+const EnemyModel::DamageRule& EnemyModel::BasicDamageRule() {
+    static const ::BasicDamageRule rule;
+    return rule;
+}
+
+const EnemyModel::DamageRule& EnemyModel::FrozenCapableDamageRule() {
+    static const ::FrozenCapableDamageRule rule;
+    return rule;
+}
+
+const EnemyModel::DamageRule& EnemyModel::ExplosiveDamageRule() {
+    static const ::ExplosiveDamageRule rule;
+    return rule;
 }
 
 EnemyModel::EnemyModel(EnemyType type, const glm::vec2& spawnPosition, int pathBranchIndex)
@@ -209,8 +239,8 @@ void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
     m_Position += normalized * moveDistance;
 }
 
-void EnemyModel::TakeDamage(int damage, const DamageOptions& options) {
-    if (damage <= 0 || !CanReceiveDamage(options)) {
+void EnemyModel::TakeDamage(int damage, const DamageRule& damageRule) {
+    if (damage <= 0 || !CanReceiveDamage(damageRule)) {
         return;
     }
 
@@ -223,24 +253,12 @@ void EnemyModel::TakeDamage(int damage, const DamageOptions& options) {
     }
 }
 
-bool EnemyModel::CanReceiveDamage(const DamageOptions& options) const {
-    if (!CanBeTargeted()) {
-        return false;
-    }
+bool EnemyModel::CanReceiveDamage(const DamageRule& damageRule) const {
+    return damageRule.CanDamage(*this);
+}
 
-    if (IsFrozen() && !options.canPopFrozen) {
-        return false;
-    }
-
-    if (m_Type == EnemyType::Lead && !options.canPopLead) {
-        return false;
-    }
-
-    if (m_Type == EnemyType::Black && options.isCannonDamage) {
-        return false;
-    }
-
-    return true;
+bool EnemyModel::CanReceiveFreeze() const {
+    return CanBeTargeted() && m_Type != EnemyType::White;
 }
 
 std::optional<EnemyModel::DeathEvent> EnemyModel::ConsumeDeathEvent() {
@@ -276,7 +294,7 @@ int EnemyModel::GetRBE(EnemyType type) {
 }
 
 void EnemyModel::ApplyFreeze(float durationMs) {
-    if (!m_Alive || durationMs <= 0.0f || m_Type == EnemyType::White) {
+    if (durationMs <= 0.0f || !CanReceiveFreeze()) {
         return;
     }
 
