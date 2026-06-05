@@ -34,7 +34,7 @@ ResultView::ResultView(ResultType result)
 
 void ResultView::InitializeResultImage() {
     auto image = m_Resources.GetImage(GetResultImageKey(m_Result));
-    m_ResultImage = std::make_shared<Util::GameObject>(image, 120.0f);
+    m_ResultImage = std::make_shared<Util::GameObject>(image, 100.0f);
 
     const float scaleX = kMaxDisplayWidth / std::max(image->GetSize().x, 1.0f);
     const float scaleY = kMaxDisplayHeight / std::max(image->GetSize().y, 1.0f);
