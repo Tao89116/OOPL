@@ -45,7 +45,7 @@ namespace {
 
 const glm::vec2 kPlayButtonCenter = {540.0f, -285.0f};
 const glm::vec2 kPlayButtonHalfSize = {70.0f, 45.0f};
-constexpr float kPlayButtonScale = 0.7f;
+constexpr float kPlayButtonScale = 1.5f;
 
 bool IsInsideRect(const glm::vec2& point, const glm::vec2& center, const glm::vec2& halfSize) {
     return point.x >= center.x - halfSize.x && point.x <= center.x + halfSize.x &&

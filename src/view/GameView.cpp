@@ -12,7 +12,7 @@
 
 namespace {
 
-const glm::vec2 kReturnButtonCenter = {535.0f, -325.0f};
+const glm::vec2 kReturnButtonCenter = {600.0f, -325.0f};
 const glm::vec2 kReturnButtonHalfSize = {65.0f, 25.0f};
 constexpr float kReturnButtonScale = 0.55f;
 
