@@ -9,6 +9,7 @@
 #include "SceneType.h"
 #include "view/ResultView.h"
 #include "controller/ResultController.h"
+#include "model/ResultModel.h"
 
 class ResultScene : public IScene {
 public:
@@ -17,8 +18,10 @@ public:
     void Update(SceneManager& sceneManager) override;
 
 private:
+    ResultModel m_Model;
     ResultView m_View;
     ResultController m_Controller;
+    bool m_Started = false;
 };
 
 #endif

@@ -43,6 +43,12 @@ public:
     int GetVolume() const;
 
     /**
+     * @brief Gets the approximate duration of this sound effect in milliseconds.
+     * @return Duration in milliseconds, or 0 when SDL_mixer cannot report it.
+     */
+    int GetDurationMs() const;
+
+    /**
      * @brief Sets the volume of the background music.
      * @param volume The desired volume level for the background music. The
      *                          valid range is [0, 128].<br>

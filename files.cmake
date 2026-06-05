@@ -8,6 +8,7 @@ set(SRC_FILES
         model/GameModel.cpp
         model/WaveConfig.cpp
         model/StartModel.cpp
+        model/ResultModel.cpp
 
         view/StartView.cpp
         view/DifficultyView.cpp
@@ -49,6 +50,7 @@ set(INCLUDE_FILES
         model/GameModel.h
         model/WaveConfig.h
         model/StartModel.h
+        model/ResultModel.h
 
         view/StartView.h
         view/DifficultyView.h

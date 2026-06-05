@@ -85,13 +85,32 @@ void GameScene::UpdateGameFrame(float deltaTimeMs) {
     m_View.Render(*m_Model);
 }
 
-void GameScene::HandleResultTransition(SceneManager& sceneManager) {
-    if (m_Model->IsWin()) {
-        sceneManager.SetResult(ResultType::Win);
-        sceneManager.RequestSceneChange(SceneType::Result);
-    } else if (m_Model->IsLose()) {
-        sceneManager.SetResult(ResultType::Lose);
-        sceneManager.RequestSceneChange(SceneType::Result);
+void GameScene::StartResultState(ResultType result) {
+    m_ResultModel = std::make_unique<ResultModel>(result);
+    m_ResultModel->Start(m_View.StartResultOverlay(result));
+}
+
+void GameScene::UpdateResultState(SceneManager& sceneManager, float deltaTimeMs) {
+    if (!m_ResultModel) {
+        if (m_Model->IsWin()) {
+            sceneManager.SetResult(ResultType::Win);
+            StartResultState(ResultType::Win);
+        } else if (m_Model->IsLose()) {
+            sceneManager.SetResult(ResultType::Lose);
+            StartResultState(ResultType::Lose);
+        }
+    }
+
+    if (!m_ResultModel) {
+        return;
+    }
+
+    m_ResultModel->Update(deltaTimeMs);
+    m_View.RenderResultOverlay(*m_ResultModel);
+
+    if (m_ResultModel->IsFinished()) {
+        sceneManager.SetGameSession(nullptr);
+        sceneManager.RequestSceneChange(SceneType::Difficulty);
     }
 }
 
@@ -102,9 +121,13 @@ void GameScene::Update(SceneManager& sceneManager) {
         return;
     }
 
-    UpdateGameFrame(deltaTimeMs);
-    DrawCheatGui(sceneManager);
+    if (!m_ResultModel) {
+        UpdateGameFrame(deltaTimeMs);
+        DrawCheatGui(sceneManager);
+        sceneManager.SetGameSession(m_Model);
+    } else {
+        m_View.Render(*m_Model);
+    }
 
-    sceneManager.SetGameSession(m_Model);
-    HandleResultTransition(sceneManager);
+    UpdateResultState(sceneManager, deltaTimeMs);
 }

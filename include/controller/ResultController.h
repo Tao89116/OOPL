@@ -6,10 +6,11 @@
 #define RESULT_CONTROLLER_H
 
 class SceneManager;
+class ResultModel;
 
 class ResultController {
 public:
-    void HandleInput(SceneManager& sceneManager);
+    void Update(ResultModel& model, SceneManager& sceneManager);
 };
 
 #endif
