@@ -10,7 +10,6 @@
 #include "ResourceManager.h"
 #include "controller/GameController.h"
 #include "model/GameModel.h"
-#include "model/ResultModel.h"
 #include "view/GameView.h"
 
 class GameScene : public IScene {
@@ -22,15 +21,13 @@ public:
 private:
     bool HandleReturnToDifficulty(SceneManager& sceneManager);
     void UpdateGameFrame(float deltaTimeMs);
-    void UpdateResultState(SceneManager& sceneManager, float deltaTimeMs);
-    void StartResultState(ResultType result);
+    void HandleResultTransition(SceneManager& sceneManager);
     void DrawCheatGui(SceneManager& sceneManager);
 
     ResourceManager& m_Resources = ResourceManager::GetInstance();
     std::shared_ptr<GameModel> m_Model;
     GameView m_View;
     GameController m_Controller;
-    std::unique_ptr<ResultModel> m_ResultModel = nullptr;
 
     int m_GoldInput = 0;
     int m_HPInput = 0;

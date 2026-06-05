@@ -125,17 +125,6 @@ void GameView::SyncBackground(const GameModel& model) {
     InitializeBackground(model);
 }
 
-float GameView::StartResultOverlay(ResultType result) {
-    m_ResultOverlay = std::make_unique<ResultView>(result);
-    return m_ResultOverlay->PlayResultSoundOnce();
-}
-
-void GameView::RenderResultOverlay(const ResultModel& resultModel) {
-    if (m_ResultOverlay) {
-        m_ResultOverlay->Render(resultModel);
-    }
-}
-
 void GameView::Render(const GameModel& model) {
     Initialize(model);
     SyncBackground(model);

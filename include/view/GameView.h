@@ -16,7 +16,6 @@
 #include "Util/Renderer.hpp"
 #include "Util/SFX.hpp"
 #include "model/GameModel.h"
-#include "view/ResultView.h"
 #include "model/HitEffectEvent.h"
 #include "model/IBuildable.h"
 #include "view/UIView.h"
@@ -33,8 +32,6 @@ public:
     void QueuePopEffects(const std::vector<GameModel::PoppedEnemyEvent>& events);
     void QueueHitEffects(const std::vector<HitEffectEvent>& events);
     bool IsReturnButtonHit(const glm::vec2& point) const;
-    float StartResultOverlay(ResultType result);
-    void RenderResultOverlay(const ResultModel& resultModel);
 
 private:
     void InitializeBackground(const GameModel& model);
@@ -85,7 +82,6 @@ private:
     std::shared_ptr<Util::GameObject> m_ReturnButton = nullptr;
     std::vector<std::shared_ptr<Util::SFX>> m_PopSounds;
     std::unordered_map<std::string, std::shared_ptr<Util::SFX>> m_HitSounds;
-    std::unique_ptr<ResultView> m_ResultOverlay = nullptr;
     std::size_t m_NextPopSoundIndex = 0;
 
     std::string m_LastPreviewBuildableId;
