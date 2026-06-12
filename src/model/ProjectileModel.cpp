@@ -375,7 +375,7 @@ void CannonProjectile::OnHit(
         "tower3_explosion",
         "bombsnd",
         center,
-        std::max(m_ExplosionRadius / 75.0f, 0.1f),
+        std::max(m_ExplosionRadius / 40.0f, 0.1f),
         260.0f,
         13,
         20.0f
