@@ -2,9 +2,14 @@
 // Created by polyunicorn on 2026/3/13.
 //
 #include "model/EnemyModel.h"
+#include "model/StatusEffects/BurnEffect.h"
+#include "model/StatusEffects/FreezeEffect.h"
+#include "model/StatusEffects/PoisonEffect.h"
+#include "model/StatusEffects/SlowEffect.h"
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <unordered_map>
 
 namespace {
@@ -168,25 +173,31 @@ void EnemyModel::SetupStatsByType(EnemyType type) {
 }
 
 void EnemyModel::Update(float deltaTimeMs, const std::vector<glm::vec2>& path) {
-    if (!m_Alive || m_ReachedGoal || path.size() < 2) {
+    if (!m_Alive || m_ReachedGoal) {
         return;
     }
 
-    // 每幀先更新狀態時間，並套用速度倍率
+    // 每幀更新所有狀態效果、清除過期效果，並彙整速度倍率。
     m_SpeedMultiplier = 1.0f;
-
-    if (m_FreezeRemainMs > 0.0f) {
-        m_FreezeRemainMs = std::max(0.0f, m_FreezeRemainMs - deltaTimeMs);
-        m_SpeedMultiplier = 0.0f;
+    for (const auto& statusEffect : m_StatusEffects) {
+        statusEffect->Update(*this, deltaTimeMs);
     }
 
-    if (m_SlowRemainMs > 0.0f) {
-        m_SlowRemainMs = std::max(0.0f, m_SlowRemainMs - deltaTimeMs);
-        if (m_SpeedMultiplier > 0.0f) {
-            m_SpeedMultiplier = std::min(m_SpeedMultiplier, m_SlowMultiplier);
-        }
-    } else {
-        m_SlowMultiplier = 1.0f;
+    m_StatusEffects.erase(
+        std::remove_if(
+            m_StatusEffects.begin(),
+            m_StatusEffects.end(),
+            [](const std::unique_ptr<IStatusEffect>& statusEffect) {
+                return statusEffect->IsExpired();
+            }),
+        m_StatusEffects.end());
+
+    for (const auto& statusEffect : m_StatusEffects) {
+        m_SpeedMultiplier = std::min(m_SpeedMultiplier, statusEffect->GetSpeedMultiplier());
+    }
+
+    if (!m_Alive || m_ReachedGoal || path.size() < 2) {
+        return;
     }
 
     // 如果目前已經在最後一段之後，直接視為到終點
@@ -244,6 +255,14 @@ void EnemyModel::TakeDamage(int damage, const DamageRule& damageRule) {
         return;
     }
 
+    TakePureDamage(damage);
+}
+
+void EnemyModel::TakePureDamage(int damage) {
+    if (damage <= 0 || !CanBeTargeted()) {
+        return;
+    }
+
     m_HP -= damage;
     if (m_HP <= 0) {
         m_HP = 0;
@@ -298,20 +317,83 @@ void EnemyModel::ApplyFreeze(float durationMs) {
         return;
     }
 
-    m_FreezeRemainMs = std::max(m_FreezeRemainMs, durationMs);
+    AddStatusEffect(std::make_unique<FreezeEffect>(durationMs));
 }
 
 void EnemyModel::ApplySlow(float speedMultiplier, float durationMs) {
-    if (!m_Alive || durationMs <= 0.0f) {
-        m_isSlowed = false;
-        return;
-    }
-    if (durationMs > 0.0f && m_isSlowed == true) {
+    if (!CanBeTargeted() || durationMs <= 0.0f) {
         return;
     }
 
-    const float clampedMultiplier = std::clamp(speedMultiplier, 0.1f, 1.0f);
-    m_SlowMultiplier = std::min(m_SlowMultiplier, clampedMultiplier);
-    m_SlowRemainMs = std::max(m_SlowRemainMs, durationMs);
-    m_isSlowed = true;
+    AddStatusEffect(std::make_unique<SlowEffect>(speedMultiplier, durationMs));
+}
+
+void EnemyModel::AddStatusEffect(std::unique_ptr<IStatusEffect> statusEffect) {
+    if (!statusEffect || !CanBeTargeted()) {
+        return;
+    }
+
+    statusEffect->OnApply(*this);
+    if (!statusEffect->IsExpired()) {
+        m_StatusEffects.push_back(std::move(statusEffect));
+    }
+}
+
+bool EnemyModel::IsFrozen() const {
+    return std::any_of(
+        m_StatusEffects.begin(),
+        m_StatusEffects.end(),
+        [](const std::unique_ptr<IStatusEffect>& statusEffect) {
+            return !statusEffect->IsExpired() && statusEffect->BlocksDamage();
+        });
+}
+
+void FreezeEffect::OnApply(EnemyModel&) {
+}
+
+void FreezeEffect::Update(EnemyModel&, float deltaTimeMs) {
+    m_RemainingMs = std::max(0.0f, m_RemainingMs - deltaTimeMs);
+}
+
+void SlowEffect::OnApply(EnemyModel&) {
+}
+
+void SlowEffect::Update(EnemyModel&, float deltaTimeMs) {
+    m_RemainingMs = std::max(0.0f, m_RemainingMs - deltaTimeMs);
+}
+
+void BurnEffect::OnApply(EnemyModel&) {
+}
+
+void BurnEffect::Update(EnemyModel& enemy, float deltaTimeMs) {
+    if (IsExpired()) {
+        return;
+    }
+
+    const float appliedDeltaTimeMs = std::min(deltaTimeMs, m_RemainingMs);
+    m_RemainingMs = std::max(0.0f, m_RemainingMs - deltaTimeMs);
+    m_ElapsedSinceTickMs += appliedDeltaTimeMs;
+
+    while (m_ElapsedSinceTickMs >= m_TickIntervalMs && m_DamagePerTick > 0) {
+        enemy.TakePureDamage(m_DamagePerTick);
+        m_ElapsedSinceTickMs -= m_TickIntervalMs;
+    }
+}
+
+void PoisonEffect::OnApply(EnemyModel&) {
+}
+
+void PoisonEffect::Update(EnemyModel& enemy, float deltaTimeMs) {
+    if (IsExpired()) {
+        return;
+    }
+
+    const float appliedDeltaTimeMs = std::min(deltaTimeMs, m_RemainingMs);
+    m_RemainingMs = std::max(0.0f, m_RemainingMs - deltaTimeMs);
+    m_ElapsedSinceTickMs += appliedDeltaTimeMs;
+
+    while (m_ElapsedSinceTickMs >= m_TickIntervalMs && m_DamagePerTick > 0) {
+        enemy.TakePureDamage(m_DamagePerTick);
+        m_ElapsedSinceTickMs -= m_TickIntervalMs;
+    }
 }

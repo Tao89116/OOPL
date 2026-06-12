@@ -1,8 +1,11 @@
 #include "model/ProjectileModel.h"
+#include "model/StatusEffects/FreezeEffect.h"
+#include "model/StatusEffects/SlowEffect.h"
 
 #include <algorithm>
 #include <cmath>
 #include <glm/gtc/constants.hpp>
+#include <memory>
 #include <utility>
 
 ProjectileModel::ProjectileModel(
@@ -234,7 +237,9 @@ void ExpandingAoEProjectile::Update(
             const float dist = glm::distance(enemy->GetPosition(), m_Center);
             if (dist <= m_MaxRadius) {
                 enemy->TakeDamage(m_Damage, *m_DamageRule);
-                enemy->ApplyFreeze(m_FreezeDurationMs);
+                if (enemy->CanReceiveFreeze()) {
+                    enemy->AddStatusEffect(std::make_unique<FreezeEffect>(m_FreezeDurationMs));
+                }
                 m_AffectedEnemies.insert(key);
             }
         }
@@ -336,8 +341,8 @@ void IceBallProjectile::OnHit(
 ) {
     ProjectileModel::OnHit(target, enemies);
 
-    if (target) {
-        target->ApplyFreeze(m_FreezeDurationMs);
+    if (target && target->CanReceiveFreeze()) {
+        target->AddStatusEffect(std::make_unique<FreezeEffect>(m_FreezeDurationMs));
     }
 }
 
@@ -404,8 +409,8 @@ void GlueProjectile::OnHit(
 ) {
     ProjectileModel::OnHit(target, enemies);
 
-    if (target) {
-        target->ApplySlow(m_SlowMultiplier, m_SlowDurationMs);
+    if (target && target->CanBeTargeted()) {
+        target->AddStatusEffect(std::make_unique<SlowEffect>(m_SlowMultiplier, m_SlowDurationMs));
     }
 
     (void)enemies;
