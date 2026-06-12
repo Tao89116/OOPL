@@ -4,6 +4,7 @@
 #include "Util/Input.hpp"
 #include "Util/Keycode.hpp"
 #include "Util/Time.hpp"
+#include "view/GameUILayout.h"
 
 GameScene::GameScene(DifficultyType difficulty, const std::shared_ptr<GameModel>& sharedModel)
     : m_Model(sharedModel ? sharedModel : std::make_shared<GameModel>(difficulty)), m_View(difficulty) {
@@ -66,14 +67,25 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
 }
 
 bool GameScene::HandleReturnToDifficulty(SceneManager& sceneManager) {
+    const auto& returnButton = GameUILayout::GetReturnButton();
     if (!Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) ||
-        !m_View.IsReturnButtonHit(Util::Input::GetCursorPosition())) {
+        !returnButton.hitArea.Contains(Util::Input::GetCursorPosition())) {
         return false;
     }
 
-    sceneManager.SetGameSession(nullptr);
-    sceneManager.RequestSceneChange(SceneType::Difficulty);
-    return true;
+    switch (returnButton.command) {
+    case GameUILayout::CommandType::ReturnToDifficulty:
+        sceneManager.SetGameSession(nullptr);
+        sceneManager.RequestSceneChange(SceneType::Difficulty);
+        return true;
+    case GameUILayout::CommandType::SelectBuildable:
+    case GameUILayout::CommandType::StartRound:
+    case GameUILayout::CommandType::SellSelectedTower:
+    case GameUILayout::CommandType::UpgradeSelectedTower:
+        return false;
+    }
+
+    return false;
 }
 
 void GameScene::UpdateGameFrame(float deltaTimeMs) {

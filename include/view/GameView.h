@@ -31,13 +31,11 @@ public:
     void PlayPopSounds(int popCount);
     void QueuePopEffects(const std::vector<GameModel::PoppedEnemyEvent>& events);
     void QueueHitEffects(const std::vector<HitEffectEvent>& events);
-    bool IsReturnButtonHit(const glm::vec2& point) const;
 
 private:
     void InitializeBackground(const GameModel& model);
     void SyncBackground(const GameModel& model);
     void InitializePopSounds();
-    void InitializeReturnButton();
 
     void SyncTowerObjects(const GameModel& model);
     void SyncEnemyObjects(const GameModel& model);
@@ -79,7 +77,6 @@ private:
     std::shared_ptr<Util::GameObject> m_PreviewTowerObject = nullptr;
     std::shared_ptr<Util::GameObject> m_PreviewRangeObject = nullptr;
     std::shared_ptr<Util::GameObject> m_SelectedTowerRangeObject = nullptr;
-    std::shared_ptr<Util::GameObject> m_ReturnButton = nullptr;
     std::vector<std::shared_ptr<Util::SFX>> m_PopSounds;
     std::unordered_map<std::string, std::shared_ptr<Util::SFX>> m_HitSounds;
     std::size_t m_NextPopSoundIndex = 0;

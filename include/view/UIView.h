@@ -29,6 +29,7 @@ private:
     void InitializeMessageText();
     void InitializeButtons();
     void InitializeActionButtons();
+    void InitializeReturnButton();
     void InitializeHoverTooltip();
     void RegisterObjectsToRenderer();
 
@@ -65,6 +66,7 @@ private:
     std::shared_ptr<Util::GameObject> m_ButtonSell = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade1 = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade2 = nullptr;
+    std::shared_ptr<Util::GameObject> m_ReturnButton = nullptr;
 
     std::shared_ptr<Util::Text> m_ButtonSellText = nullptr;
     std::shared_ptr<Util::Text> m_ButtonUpgrade1Text = nullptr;

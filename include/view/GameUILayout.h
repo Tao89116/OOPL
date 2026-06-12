@@ -11,7 +11,8 @@ enum class CommandType {
     SelectBuildable,
     StartRound,
     SellSelectedTower,
-    UpgradeSelectedTower
+    UpgradeSelectedTower,
+    ReturnToDifficulty
 };
 
 struct Rect {
@@ -41,6 +42,7 @@ constexpr float kTowerButtonScale = 0.35f;
 constexpr float kActionButtonScale = 0.6f;
 constexpr float kSellButtonScale = 0.65f;
 constexpr float kStartButtonScale = 0.7f;
+constexpr float kReturnButtonScale = 0.55f;
 
 inline const std::array<ButtonBinding, TowerButtonCount>& GetTowerButtons() {
     static const std::array<ButtonBinding, TowerButtonCount> buttons = {{
@@ -73,6 +75,19 @@ inline const ButtonBinding& GetStartRoundButton() {
         -1,
         Util::Keycode::UNKNOWN,
         kStartButtonScale
+    };
+    return button;
+}
+
+inline const ButtonBinding& GetReturnButton() {
+    static const ButtonBinding button = {
+        "btn_end",
+        CommandType::ReturnToDifficulty,
+        {{600.0f, -325.0f}, {8.0f, 8.0f}},
+        "",
+        -1,
+        Util::Keycode::UNKNOWN,
+        kReturnButtonScale
     };
     return button;
 }

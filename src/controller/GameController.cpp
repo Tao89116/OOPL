@@ -20,6 +20,8 @@ bool IsActionAvailable(const GameUILayout::ButtonBinding& binding, const GameMod
     case GameUILayout::CommandType::SelectBuildable:
     case GameUILayout::CommandType::StartRound:
         return true;
+    case GameUILayout::CommandType::ReturnToDifficulty:
+        return false;
     }
 
     return false;
@@ -46,6 +48,8 @@ bool ExecuteButtonCommand(const GameUILayout::ButtonBinding& binding, GameModel&
     case GameUILayout::CommandType::UpgradeSelectedTower:
         model.UpgradeSelectedTower(binding.upgradePathIndex);
         return true;
+    case GameUILayout::CommandType::ReturnToDifficulty:
+        return false;
     }
 
     return false;

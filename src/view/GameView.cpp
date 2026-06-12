@@ -10,19 +10,6 @@
 #include <algorithm>
 #include <unordered_set>
 
-namespace {
-
-const glm::vec2 kReturnButtonCenter = {600.0f, -325.0f};
-const glm::vec2 kReturnButtonHalfSize = {45.0f, 18.0f};
-constexpr float kReturnButtonScale = 0.55f;
-
-bool IsInsideRect(const glm::vec2& point, const glm::vec2& center, const glm::vec2& halfSize) {
-    return point.x >= center.x - halfSize.x && point.x <= center.x + halfSize.x &&
-           point.y >= center.y - halfSize.y && point.y <= center.y + halfSize.y;
-}
-
-} // namespace
-
 GameView::GameView(DifficultyType difficulty)
     : m_Difficulty(difficulty), m_UIView(m_Renderer) {
 }
@@ -35,18 +22,7 @@ void GameView::Initialize(const GameModel& model) {
     InitializeBackground(model);
     InitializePopSounds();
     m_UIView.Initialize();
-    InitializeReturnButton();
     m_Initialized = true;
-}
-
-void GameView::InitializeReturnButton() {
-    m_ReturnButton = std::make_shared<Util::GameObject>(
-        m_Resources.GetImage("btn_end"),
-        95.0f
-    );
-    m_ReturnButton->m_Transform.translation = kReturnButtonCenter;
-    m_ReturnButton->m_Transform.scale *= kReturnButtonScale;
-    m_Renderer.AddChild(m_ReturnButton);
 }
 
 void GameView::InitializePopSounds() {
@@ -484,8 +460,4 @@ void GameView::CreateOrUpdatePreviewRange(const GameModel& model) {
     const float textureRadius = circleImage->GetSize().x * 0.5f;
     const float scale = preview->GetPreviewRange() / textureRadius;
     m_PreviewRangeObject->m_Transform.scale = {scale, scale};
-}
-
-bool GameView::IsReturnButtonHit(const glm::vec2& point) const {
-    return IsInsideRect(point, kReturnButtonCenter, kReturnButtonHalfSize);
 }

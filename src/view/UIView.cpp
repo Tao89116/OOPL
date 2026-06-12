@@ -183,6 +183,16 @@ void UIView::InitializeButtons() {
     m_ButtonStart->m_Transform.scale *= startButton.renderScale;
 }
 
+void UIView::InitializeReturnButton() {
+    const auto& returnButton = GameUILayout::GetReturnButton();
+    m_ReturnButton = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage(returnButton.spriteKey),
+        95.0f
+    );
+    m_ReturnButton->m_Transform.translation = returnButton.hitArea.center;
+    m_ReturnButton->m_Transform.scale *= returnButton.renderScale;
+}
+
 
 void UIView::InitializeActionButtons() {
     const auto& sellButton = GameUILayout::GetSellButton();
@@ -239,6 +249,7 @@ void UIView::RegisterObjectsToRenderer() {
         m_Renderer.AddChild(button);
     }
     m_Renderer.AddChild(m_ButtonStart);
+    m_Renderer.AddChild(m_ReturnButton);
     m_Renderer.AddChild(m_ButtonSell);
     m_Renderer.AddChild(m_ButtonUpgrade1);
     m_Renderer.AddChild(m_ButtonUpgrade2);
@@ -266,6 +277,7 @@ void UIView::Initialize() {
     InitializeHoverTooltip();
     InitializeButtons();
     InitializeActionButtons();
+    InitializeReturnButton();
     RegisterObjectsToRenderer();
 
     m_Initialized = true;
@@ -362,4 +374,3 @@ void UIView::Sync(const GameModel& model) {
     SyncHoverTooltip(model);
 
 }
-
