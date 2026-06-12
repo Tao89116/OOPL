@@ -12,7 +12,8 @@ namespace {
 constexpr std::size_t kHoverTooltipMaxLineLength = 20;
 constexpr float kUpgradeIconZIndex = 95.0f;
 constexpr float kUpgradeIconScale = 0.35f;
-constexpr float kUpgradeIconYOffset = 12.0f;
+constexpr float kUpgradeIconYOffset = 22.0f;
+constexpr float kUpgradeNameYOffset = -10.0f;
 
 void AppendWrappedWord(std::string& wrappedText, std::string& currentLine, const std::string& word) {
     if (word.empty()) {
@@ -48,6 +49,37 @@ void AppendWrappedWord(std::string& wrappedText, std::string& currentLine, const
 
     wrappedText += currentLine + "\n";
     currentLine = word;
+}
+
+
+std::string FormatUpgradeNameText(const std::string& upgradeName) {
+    std::string formattedText;
+    std::size_t wordStart = 0;
+
+    while (wordStart < upgradeName.size()) {
+        while (wordStart < upgradeName.size() && upgradeName[wordStart] == ' ') {
+            ++wordStart;
+        }
+
+        const std::size_t wordEnd = upgradeName.find(' ', wordStart);
+        const std::string word = upgradeName.substr(
+            wordStart,
+            wordEnd == std::string::npos ? std::string::npos : wordEnd - wordStart
+        );
+        if (!word.empty()) {
+            if (!formattedText.empty()) {
+                formattedText += "\n";
+            }
+            formattedText += word;
+        }
+
+        if (wordEnd == std::string::npos) {
+            break;
+        }
+        wordStart = wordEnd + 1;
+    }
+
+    return formattedText;
 }
 
 std::string WrapTooltipLine(const std::string& line) {
@@ -248,6 +280,14 @@ void UIView::InitializeActionButtons() {
     m_ButtonUpgrade2TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade2Text, 100.0f);
     m_ButtonUpgrade2TextObj->m_Transform.translation = GameUILayout::GetUpgradePriceLabelPosition(1);
 
+    m_ButtonUpgrade1NameText = m_Resources.CreateText("default", 10, "", Util::Color(255, 255, 255));
+    m_ButtonUpgrade1NameTextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade1NameText, 100.0f);
+    m_ButtonUpgrade1NameTextObj->m_Transform.translation = upgradeButton1.hitArea.center + glm::vec2(0.0f, kUpgradeNameYOffset);
+
+    m_ButtonUpgrade2NameText = m_Resources.CreateText("default", 10, "", Util::Color(255, 255, 255));
+    m_ButtonUpgrade2NameTextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade2NameText, 100.0f);
+    m_ButtonUpgrade2NameTextObj->m_Transform.translation = upgradeButton2.hitArea.center + glm::vec2(0.0f, kUpgradeNameYOffset);
+
     m_SelectedText = m_Resources.CreateText("default", 20, "", Util::Color(255, 255, 255));
     m_SelectedObject = std::make_shared<Util::GameObject>(m_SelectedText, 98.0f);
     m_SelectedObject->m_Transform.translation = GameUILayout::GetSelectedInfoPosition();
@@ -260,6 +300,8 @@ void UIView::InitializeActionButtons() {
     m_ButtonSellTextObj->SetVisible(false);
     m_ButtonUpgrade1TextObj->SetVisible(false);
     m_ButtonUpgrade2TextObj->SetVisible(false);
+    m_ButtonUpgrade1NameTextObj->SetVisible(false);
+    m_ButtonUpgrade2NameTextObj->SetVisible(false);
     m_SelectedObject->SetVisible(false);
 }
 
@@ -277,6 +319,8 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_ButtonSellTextObj);
     m_Renderer.AddChild(m_ButtonUpgrade1TextObj);
     m_Renderer.AddChild(m_ButtonUpgrade2TextObj);
+    m_Renderer.AddChild(m_ButtonUpgrade1NameTextObj);
+    m_Renderer.AddChild(m_ButtonUpgrade2NameTextObj);
 
     m_Renderer.AddChild(m_SelectedObject);
     m_Renderer.AddChild(m_HudObject);
@@ -339,15 +383,19 @@ void UIView::SyncActionButtons(const GameModel& model) {
     m_ButtonUpgrade1->SetVisible(showUpgrade1);
     SyncUpgradeIcon(model.GetSelectedPlacedTower(), 0, showUpgrade1);
     m_ButtonUpgrade1TextObj->SetVisible(showUpgrade1);
+    m_ButtonUpgrade1NameTextObj->SetVisible(showUpgrade1);
     if (showUpgrade1) {
         m_ButtonUpgrade1Text->SetText("$" + std::to_string(model.GetSelectedTowerUpgradeCost(0)));
+        m_ButtonUpgrade1NameText->SetText(FormatUpgradeNameText(model.GetSelectedPlacedTower()->GetUpgradeName(0)));
     }
 
     m_ButtonUpgrade2->SetVisible(showUpgrade2);
     SyncUpgradeIcon(model.GetSelectedPlacedTower(), 1, showUpgrade2);
     m_ButtonUpgrade2TextObj->SetVisible(showUpgrade2);
+    m_ButtonUpgrade2NameTextObj->SetVisible(showUpgrade2);
     if (showUpgrade2) {
         m_ButtonUpgrade2Text->SetText("$" + std::to_string(model.GetSelectedTowerUpgradeCost(1)));
+        m_ButtonUpgrade2NameText->SetText(FormatUpgradeNameText(model.GetSelectedPlacedTower()->GetUpgradeName(1)));
     }
 }
 

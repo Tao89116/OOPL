@@ -79,9 +79,13 @@ private:
     std::shared_ptr<Util::Text> m_ButtonSellText = nullptr;
     std::shared_ptr<Util::Text> m_ButtonUpgrade1Text = nullptr;
     std::shared_ptr<Util::Text> m_ButtonUpgrade2Text = nullptr;
+    std::shared_ptr<Util::Text> m_ButtonUpgrade1NameText = nullptr;
+    std::shared_ptr<Util::Text> m_ButtonUpgrade2NameText = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonSellTextObj = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade1TextObj = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade2TextObj = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade1NameTextObj = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade2NameTextObj = nullptr;
     std::array<std::string, 2> m_CurrentUpgradeIconKeys = {"", ""};
 
     std::shared_ptr<Util::GameObject> m_HudImg = nullptr;
