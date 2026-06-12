@@ -209,6 +209,7 @@ BuildableRegistry
 WaveConfig
 ```
 其他的oop設計 ↓ (都舉部分)
+
 5. Interface / Abstract Class
 
 使用多個 interface 與 abstract class 來定義共同規格。例如 IScene 定義所有場景都必須實作 Update()，IGameState 定義遊戲狀態的 Enter、Update、Exit，ICommand 定義所有操作指令都必須能 Execute，而 IBuildable 則定義所有可建造物都必須具備 Update、GetId、GetCost、GetPosition 等方法。
@@ -229,27 +230,32 @@ WaveConfig
 使用繼承來整理相似物件的共同行為。例如所有可建造物都繼承 IBuildable，塔類別再由 TowerBase 延伸出 AttackTowerBase 與 TrapBase。攻擊塔如 DartTower、CannonTower、SuperTower 繼承 AttackTowerBase；陷阱如 GlueTrap、SpikeTrap 則繼承 TrapBase。
 
 子彈系統也使用 ProjectileModel 作為共同基底，再延伸出 CannonProjectile、IceBallProjectile、BoomerangProjectile、GlueProjectile 等不同子彈。透過繼承可以減少重複程式碼，並讓相似物件共用共同邏輯。
+
 7. Polymorphism
 
 本透過多型讓 GameModel 可以用同一個容器管理不同種類的塔。例如所有塔與陷阱都可以被視為 IBuildable，因此 GameModel 只需要呼叫 tower->Update()，實際執行時會依照物件真實型別執行 DartTower、CannonTower、GlueTrap 或 SpikeTrap 的更新邏輯。
 
 
 同樣地，ProjectileModel 也透過多型讓不同子彈可以覆寫 Update() 或 OnHit()，例如砲彈可以造成範圍傷害，冰球可以凍結敵人，膠水子彈可以緩速敵人。這讓遊戲能用統一流程管理不同物件，又保留各自的特殊行為。 
+
 8. Encapsulation
 
 本專案透過封裝讓不同類別負責自己的資料與行為。GameModel 負責 HP、Gold、Round、塔、敵人、子彈與勝敗判斷；GameView 負責畫面物件、UI、音效與特效同步；GameController 負責玩家輸入與指令執行。EnemyModel、ProjectileModel、PlacementModel、MapModel 也各自封裝自己的狀態與操作方法。
 
 透過封裝，外部不需要直接修改物件內部資料，而是透過方法進行操作，能降低錯誤發生機率，也讓程式更容易維護。
+
 9. Smart Pointer / Resource Management
 
 使用 C++ smart pointer 管理物件生命週期。例如 SceneManager 使用 unique_ptr 管理目前 Scene，GameModel 使用 unique_ptr 管理目前 GameState，並使用 shared_ptr 管理塔、敵人與子彈等遊戲物件。ProjectileModel 對目標敵人使用 weak_ptr，避免因互相持有 shared_ptr 而造成循環引用。
 
 透過 smart pointer，可以減少手動 new/delete 造成的記憶體管理問題，也能降低 memory leak 的風險。
+
 10. Manual Data Binding / View Synchronization
 
 沒有做到自動 Data Binding，而是由 GameView 每一幀主動讀取 GameModel 的資料，並同步畫面上的塔、敵人與子彈物件。當 Model 中有新物件但 View 還沒有對應 GameObject 時，View 會建立新畫面物件；當 Model 物件狀態改變時，View 會更新位置、旋轉與顯示效果；當 Model 物件消失時，View 則移除對應畫面物件。
 
 這種手動同步方式可以讓 Model 不依賴 View，同時保持畫面與遊戲資料一致。
+
 11. Event System / Observer-like Design
 
 Model 不會直接呼叫 View 播放音效或產生特效，而是將事件暫存在 GameModel 中，例如 PoppedEnemyEvent、HitEffectEvent、PoppedBloonCount。GameScene 在更新流程中取出這些事件，再交給 GameView 顯示特效或播放音效。
