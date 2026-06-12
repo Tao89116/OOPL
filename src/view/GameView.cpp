@@ -260,8 +260,20 @@ void GameView::SyncPopEffects(float deltaTimeMs) {
 }
 
 void GameView::CreateHitEffect(const HitEffectEvent& event) {
+    std::vector<std::string> frameKeys;
+    if (event.frameCount > 1) {
+        frameKeys.reserve(static_cast<std::size_t>(event.frameCount));
+        for (int frame = 0; frame < event.frameCount; ++frame) {
+            const std::string frameKey = event.imageKey + std::to_string(frame);
+            if (m_Resources.HasImage(frameKey)) {
+                frameKeys.push_back(frameKey);
+            }
+        }
+    }
+
+    const std::string initialImageKey = frameKeys.empty() ? event.imageKey : frameKeys.front();
     auto obj = std::make_shared<Util::GameObject>(
-        m_Resources.GetImage(event.imageKey),
+        m_Resources.GetImage(initialImageKey),
         32.0f
     );
 
@@ -270,12 +282,29 @@ void GameView::CreateHitEffect(const HitEffectEvent& event) {
     obj->m_Transform.scale = {effectScale, effectScale};
     m_Renderer.AddChild(obj);
 
-    m_HitEffects.push_back({obj, event.durationMs});
+    const float effectDurationMs = std::max(event.durationMs, 0.0f);
+    const float frameDurationMs = event.frameDurationMs > 0.0f
+        ? event.frameDurationMs
+        : (frameKeys.empty() ? 0.0f : effectDurationMs / static_cast<float>(frameKeys.size()));
+    m_HitEffects.push_back({obj, effectDurationMs, 0.0f, frameDurationMs, frameKeys, 0});
 }
 
 void GameView::SyncHitEffects(float deltaTimeMs) {
     for (auto it = m_HitEffects.begin(); it != m_HitEffects.end();) {
         it->remainingMs -= deltaTimeMs;
+        it->elapsedMs += deltaTimeMs;
+
+        if (!it->frameKeys.empty() && it->frameDurationMs > 0.0f) {
+            const auto nextFrame = std::min<std::size_t>(
+                static_cast<std::size_t>(it->elapsedMs / it->frameDurationMs),
+                it->frameKeys.size() - 1
+            );
+            if (nextFrame != it->currentFrame && it->object) {
+                it->object->SetDrawable(m_Resources.GetImage(it->frameKeys[nextFrame]));
+                it->currentFrame = nextFrame;
+            }
+        }
+
         if (it->remainingMs <= 0.0f) {
             if (it->object) {
                 m_Renderer.RemoveChild(it->object);

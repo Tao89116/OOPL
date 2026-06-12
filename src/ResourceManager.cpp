@@ -93,6 +93,10 @@ void ResourceManager::Initialize() {
     m_ImagePaths["hit"] = root + "/BTD1_dart_hitbit.png";
     m_ImagePaths["pop"] = root + "/pop.png";
     m_ImagePaths["tower3_explosion"] = root + "/tower3_explosion.png";
+    for (int frame = 0; frame <= 12; ++frame) {
+        const std::string key = "tower3_explosion" + std::to_string(frame);
+        m_ImagePaths[key] = root + "/" + key + ".png";
+    }
 
     // Towers / slots
     m_ImagePaths["tower_basic"]  = root + "/tower-0.png";

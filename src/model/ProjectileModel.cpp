@@ -376,7 +376,9 @@ void CannonProjectile::OnHit(
         "bombsnd",
         center,
         std::max(m_ExplosionRadius / 75.0f, 0.1f),
-        220.0f
+        260.0f,
+        13,
+        20.0f
     });
 
     for (const auto& enemy : enemies) {

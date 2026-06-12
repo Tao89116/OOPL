@@ -61,6 +61,10 @@ private:
     struct PopEffect {
         std::shared_ptr<Util::GameObject> object;
         float remainingMs = 0.0f;
+        float elapsedMs = 0.0f;
+        float frameDurationMs = 0.0f;
+        std::vector<std::string> frameKeys;
+        std::size_t currentFrame = 0;
     };
 
     std::shared_ptr<Util::GameObject> m_Background = nullptr;
