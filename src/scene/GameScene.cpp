@@ -69,23 +69,13 @@ void GameScene::DrawCheatGui(SceneManager& sceneManager) {
 bool GameScene::HandleReturnToDifficulty(SceneManager& sceneManager) {
     const auto& returnButton = GameUILayout::GetReturnButton();
     if (!Util::Input::IsKeyUp(Util::Keycode::MOUSE_LB) ||
-        !returnButton.hitArea.Contains(Util::Input::GetCursorPosition())) {
+        !returnButton.hitArea.Contains(Util::Input::GetCursorPosition()) ||
+        !returnButton.command ||
+        !returnButton.command->IsAvailable(*m_Model)) {
         return false;
     }
 
-    switch (returnButton.command) {
-    case GameUILayout::CommandType::ReturnToDifficulty:
-        sceneManager.SetGameSession(nullptr);
-        sceneManager.RequestSceneChange(SceneType::Difficulty);
-        return true;
-    case GameUILayout::CommandType::SelectBuildable:
-    case GameUILayout::CommandType::StartRound:
-    case GameUILayout::CommandType::SellSelectedTower:
-    case GameUILayout::CommandType::UpgradeSelectedTower:
-        return false;
-    }
-
-    return false;
+    return returnButton.command->Execute(*m_Model, &sceneManager);
 }
 
 void GameScene::UpdateGameFrame(float deltaTimeMs) {
