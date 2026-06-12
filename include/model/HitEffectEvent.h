@@ -9,6 +9,8 @@ struct HitEffectEvent {
     glm::vec2 position = {0.0f, 0.0f};
     float scale = 1.0f;
     float durationMs = 200.0f;
+    int frameCount = 1;
+    float frameDurationMs = 0.0f;
 };
 
 #endif
