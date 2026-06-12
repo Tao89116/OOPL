@@ -23,6 +23,7 @@ public:
     bool IsUpgradeable() const override { return true; }
     int GetUpgradeTier(int pathIndex) const override;
     std::string GetUpgradeName(int pathIndex) const override;
+    std::string GetUpgradeIconKey(int pathIndex) const override;
     bool ApplyUpgrade(int pathIndex) override = 0;
 
 protected:
@@ -55,6 +56,7 @@ protected:
     bool m_CanPopFrozen = false;
     std::array<int, 2> m_UpgradeTiers = {0, 0};
     std::array<std::string, 2> m_UpgradeNames = {"", ""};
+    std::array<std::string, 2> m_UpgradeIconKeys = {"", ""};
 };
 
 #endif

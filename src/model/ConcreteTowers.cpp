@@ -27,6 +27,7 @@ DartTower::DartTower(const glm::vec2& position)
     m_AttackIntervalMs = 825.0f;
     m_Damage = 1;
     m_UpgradeNames = {"Piercing Darts", "Long Range Darts"};
+    m_UpgradeIconKeys = {"upgrade_dart_0", "upgrade_dart_1"};
 }
 
 bool DartTower::ApplyUpgrade(int pathIndex) {
@@ -92,6 +93,7 @@ TrackTower::TrackTower(const glm::vec2& position)
     m_AttackIntervalMs = 1375.0f;
     m_Damage = 1;
     m_UpgradeNames = {"Faster Shooting", "Extra Range Tacks"};
+    m_UpgradeIconKeys = {"upgrade_tack_0", "upgrade_tack_1"};
 }
 
 bool TrackTower::ApplyUpgrade(int pathIndex) {
@@ -208,6 +210,7 @@ IceBallTower::IceBallTower(const glm::vec2& position)
     m_AttackIntervalMs = 2325.0f;
     m_Damage = 0;
     m_UpgradeNames = {"Long Freeze Time", "Wide Freeze Radius"};
+    m_UpgradeIconKeys = {"upgrade_ice_0", "upgrade_ice_1"};
 }
 
 bool IceBallTower::ApplyUpgrade(int pathIndex) {
@@ -305,6 +308,7 @@ CannonTower::CannonTower(const glm::vec2& position)
     m_Damage = 1;
     m_CanPopFrozen = true;
     m_UpgradeNames = {"Bigger Bombs", "Extra Range Bombs"};
+    m_UpgradeIconKeys = {"upgrade_bomb_0", "upgrade_bomb_1"};
 }
 
 bool CannonTower::ApplyUpgrade(int pathIndex) {
@@ -403,6 +407,7 @@ SuperTower::SuperTower(const glm::vec2& position)
     m_AttackIntervalMs = 100.0f;
     m_Damage = 1;
     m_UpgradeNames = {"Epic Range", "Laser Vision"};
+    m_UpgradeIconKeys = {"upgrade_super_0", "upgrade_super_1"};
 }
 
 bool SuperTower::ApplyUpgrade(int pathIndex) {
@@ -470,6 +475,7 @@ BoomerangTower::BoomerangTower(const glm::vec2& position)
     m_AttackIntervalMs = 1250.0f;
     m_Damage = 1;
     m_UpgradeNames = {"Multi Target", "Sonic Boom"};
+    m_UpgradeIconKeys = {"upgrade_boomerang_0", "upgrade_boomerang_1"};
 }
 
 bool BoomerangTower::ApplyUpgrade(int pathIndex) {

@@ -10,6 +10,9 @@
 namespace {
 
 constexpr std::size_t kHoverTooltipMaxLineLength = 20;
+constexpr float kUpgradeIconZIndex = 95.0f;
+constexpr float kUpgradeIconScale = 0.35f;
+constexpr float kUpgradeIconYOffset = 12.0f;
 
 void AppendWrappedWord(std::string& wrappedText, std::string& currentLine, const std::string& word) {
     if (word.empty()) {
@@ -211,6 +214,13 @@ void UIView::InitializeActionButtons() {
     m_ButtonUpgrade1->m_Transform.translation = upgradeButton1.hitArea.center;
     m_ButtonUpgrade1->m_Transform.scale *= upgradeButton1.renderScale;
 
+    m_ButtonUpgrade1Icon = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage("whiteground"),
+        kUpgradeIconZIndex
+    );
+    m_ButtonUpgrade1Icon->m_Transform.translation = upgradeButton1.hitArea.center + glm::vec2(0.0f, kUpgradeIconYOffset);
+    m_ButtonUpgrade1Icon->m_Transform.scale *= kUpgradeIconScale;
+
     const auto& upgradeButton2 = GameUILayout::GetUpgradeButton(1);
     m_ButtonUpgrade2 = std::make_shared<Util::GameObject>(
         m_Resources.GetImage(upgradeButton2.spriteKey),
@@ -218,6 +228,13 @@ void UIView::InitializeActionButtons() {
     );
     m_ButtonUpgrade2->m_Transform.translation = upgradeButton2.hitArea.center;
     m_ButtonUpgrade2->m_Transform.scale *= upgradeButton2.renderScale;
+
+    m_ButtonUpgrade2Icon = std::make_shared<Util::GameObject>(
+        m_Resources.GetImage("whiteground"),
+        kUpgradeIconZIndex
+    );
+    m_ButtonUpgrade2Icon->m_Transform.translation = upgradeButton2.hitArea.center + glm::vec2(0.0f, kUpgradeIconYOffset);
+    m_ButtonUpgrade2Icon->m_Transform.scale *= kUpgradeIconScale;
 
     m_ButtonSellText = m_Resources.CreateText("default", 16, "", Util::Color(255, 255, 255));
     m_ButtonSellTextObj = std::make_shared<Util::GameObject>(m_ButtonSellText, 100.0f);
@@ -238,6 +255,8 @@ void UIView::InitializeActionButtons() {
     m_ButtonSell->SetVisible(false);
     m_ButtonUpgrade1->SetVisible(false);
     m_ButtonUpgrade2->SetVisible(false);
+    m_ButtonUpgrade1Icon->SetVisible(false);
+    m_ButtonUpgrade2Icon->SetVisible(false);
     m_ButtonSellTextObj->SetVisible(false);
     m_ButtonUpgrade1TextObj->SetVisible(false);
     m_ButtonUpgrade2TextObj->SetVisible(false);
@@ -253,6 +272,8 @@ void UIView::RegisterObjectsToRenderer() {
     m_Renderer.AddChild(m_ButtonSell);
     m_Renderer.AddChild(m_ButtonUpgrade1);
     m_Renderer.AddChild(m_ButtonUpgrade2);
+    m_Renderer.AddChild(m_ButtonUpgrade1Icon);
+    m_Renderer.AddChild(m_ButtonUpgrade2Icon);
     m_Renderer.AddChild(m_ButtonSellTextObj);
     m_Renderer.AddChild(m_ButtonUpgrade1TextObj);
     m_Renderer.AddChild(m_ButtonUpgrade2TextObj);
@@ -316,16 +337,55 @@ void UIView::SyncActionButtons(const GameModel& model) {
         model.GetSelectedTowerUpgradeCost(1) < 999999;
 
     m_ButtonUpgrade1->SetVisible(showUpgrade1);
+    SyncUpgradeIcon(model.GetSelectedPlacedTower(), 0, showUpgrade1);
     m_ButtonUpgrade1TextObj->SetVisible(showUpgrade1);
     if (showUpgrade1) {
         m_ButtonUpgrade1Text->SetText("$" + std::to_string(model.GetSelectedTowerUpgradeCost(0)));
     }
 
     m_ButtonUpgrade2->SetVisible(showUpgrade2);
+    SyncUpgradeIcon(model.GetSelectedPlacedTower(), 1, showUpgrade2);
     m_ButtonUpgrade2TextObj->SetVisible(showUpgrade2);
     if (showUpgrade2) {
         m_ButtonUpgrade2Text->SetText("$" + std::to_string(model.GetSelectedTowerUpgradeCost(1)));
     }
+}
+
+void UIView::SyncUpgradeIcon(
+    const std::shared_ptr<IBuildable>& selectedTower,
+    int pathIndex,
+    bool visible
+) {
+    const std::size_t iconIndex = static_cast<std::size_t>(pathIndex);
+    auto& iconObject = (pathIndex == 0) ? m_ButtonUpgrade1Icon : m_ButtonUpgrade2Icon;
+
+    if (!iconObject || !visible || !selectedTower) {
+        if (iconObject) {
+            iconObject->SetVisible(false);
+        }
+        if (iconIndex < m_CurrentUpgradeIconKeys.size()) {
+            m_CurrentUpgradeIconKeys[iconIndex].clear();
+        }
+        return;
+    }
+
+    const std::string iconKey = selectedTower->GetUpgradeIconKey(pathIndex);
+    if (iconKey.empty() || !m_Resources.HasImage(iconKey)) {
+        iconObject->SetVisible(false);
+        if (iconIndex < m_CurrentUpgradeIconKeys.size()) {
+            m_CurrentUpgradeIconKeys[iconIndex].clear();
+        }
+        return;
+    }
+
+    if (iconIndex >= m_CurrentUpgradeIconKeys.size() || m_CurrentUpgradeIconKeys[iconIndex] != iconKey) {
+        iconObject->SetDrawable(m_Resources.GetImage(iconKey));
+        if (iconIndex < m_CurrentUpgradeIconKeys.size()) {
+            m_CurrentUpgradeIconKeys[iconIndex] = iconKey;
+        }
+    }
+
+    iconObject->SetVisible(true);
 }
 
 std::string UIView::BuildTooltipText(const GameModel& model) const {

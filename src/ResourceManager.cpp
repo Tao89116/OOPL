@@ -51,6 +51,21 @@ void ResourceManager::Initialize() {
     m_ImagePaths["btn_sell"] = root + "/btn_sell.png";
     m_ImagePaths["btn_upgrade_1"] = root + "/btn_upgrade_1.png";
     m_ImagePaths["btn_upgrade_2"] = root + "/btn_upgrade_2.png";
+
+    // Upgrade icons
+    m_ImagePaths["upgrade_dart_0"] = root + "/BTD1_dart1.png";
+    m_ImagePaths["upgrade_dart_1"] = root + "/BTD1_dart2.png";
+    m_ImagePaths["upgrade_tack_0"] = root + "/BTD1_tack1.png";
+    m_ImagePaths["upgrade_tack_1"] = root + "/BTD1_tack2.png";
+    m_ImagePaths["upgrade_ice_0"] = root + "/BTD1_ice1.png";
+    m_ImagePaths["upgrade_ice_1"] = root + "/BTD1_ice2.png";
+    m_ImagePaths["upgrade_bomb_0"] = root + "/BTD1_bomb1.png";
+    m_ImagePaths["upgrade_bomb_1"] = root + "/BTD1_bomb2.png";
+    m_ImagePaths["upgrade_boomerang_0"] = root + "/BTD2_boomerang1.png";
+    m_ImagePaths["upgrade_boomerang_1"] = root + "/BTD2_boomerang2.png";
+    m_ImagePaths["upgrade_super_0"] = root + "/BTD1_super1.png";
+    m_ImagePaths["upgrade_super_1"] = root + "/BTD2_super2.png";
+
     m_ImagePaths["btn_play"] = root + "/play.png";
     m_ImagePaths["btn_end"] = root + "/end.png";
 
@@ -156,6 +171,10 @@ void ResourceManager::Clear() {
     m_JsonPaths.clear();
     m_ImageCache.clear();
     m_JsonCache.clear();
+}
+
+bool ResourceManager::HasImage(const std::string& key) const {
+    return m_ImagePaths.find(key) != m_ImagePaths.end();
 }
 
 std::string ResourceManager::GetImagePath(const std::string& key) const {
