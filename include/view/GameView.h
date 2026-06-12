@@ -61,6 +61,11 @@ private:
     struct PopEffect {
         std::shared_ptr<Util::GameObject> object;
         float remainingMs = 0.0f;
+    };
+
+    struct HitEffect {
+        std::shared_ptr<Util::GameObject> object;
+        float remainingMs = 0.0f;
         float elapsedMs = 0.0f;
         float frameDurationMs = 0.0f;
         std::vector<std::string> frameKeys;
@@ -75,7 +80,7 @@ private:
     std::unordered_map<const EnemyModel*, std::shared_ptr<Util::GameObject>> m_IcedEnemyObjects;
     std::unordered_map<const ProjectileModel*, std::shared_ptr<Util::GameObject>> m_ProjectileObjects;
     std::vector<PopEffect> m_PopEffects;
-    std::vector<PopEffect> m_HitEffects;
+    std::vector<HitEffect> m_HitEffects;
     std::unordered_set<const EnemyModel*> m_PendingPopEffects;
 
     std::shared_ptr<Util::GameObject> m_PreviewTowerObject = nullptr;
