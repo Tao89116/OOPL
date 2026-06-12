@@ -2,9 +2,11 @@
 #include "GameConfig.h"
 #include "model/DifficultyModel.h"
 #include "model/HitEffectEmitter.h"
+#include "model/GameStates.h"
 #include "model/WaveConfig.h"
 #include <limits>
 #include <utility>
+
 
 GameModel::GameModel(DifficultyType difficulty)
     : m_Difficulty(difficulty), m_Map(difficulty) {
@@ -35,11 +37,6 @@ void GameModel::SetupDifficulty() {
 void GameModel::Reset() {
     m_Round = 1;
     m_TotalRounds = WaveConfig::GetInstance().GetTotalRounds();
-    m_RoundRunning = false;
-    m_Paused = false;
-    m_Win = false;
-    m_Lose = false;
-
     m_SelectedBuildableEntry = BuildableRegistry::GetInstance().FindById("dart_tower");
     m_HoveredBuildableEntry = nullptr;
     m_Message = "Click tower button (button-0~7) or press 1~7, then click map to place.";
@@ -60,6 +57,7 @@ void GameModel::Reset() {
 
     SetupDifficulty();
     m_SpawnIntervalMs = static_cast<float>(WaveConfig::GetInstance().GetSpawnIntervalMs());
+    ChangeState(std::make_unique<ReadyState>());
 }
 
 void GameModel::SelectBuildable(const BuildableRegistry::Entry* entry) {
@@ -72,7 +70,7 @@ void GameModel::SelectBuildable(const BuildableRegistry::Entry* entry) {
 }
 
 void GameModel::BeginPlacement(const BuildableRegistry::Entry* entry) {
-    if (!entry || m_Win || m_Lose) {
+    if (!entry || IsWin() || IsLose()) {
         return;
     }
 
@@ -359,28 +357,89 @@ bool GameModel::ConfirmPlacement() {
 }
 
 void GameModel::StartRound() {
-    if (m_Win || m_Lose) {
+    if (IsWin() || IsLose()) {
         return;
     }
-    if (m_RoundRunning) {
+    if (IsRoundRunning()) {
         m_Message = "Round is already running.";
         return;
     }
 
     SetupWave();
-    m_RoundRunning = true;
     m_SpawnedCount = 0;
     m_SpawnTimerMs = 0.0f;
+    ChangeState(std::make_unique<RoundRunningState>());
     m_Message = "Round started!";
 }
 
 void GameModel::TogglePause() {
-    if (m_Win || m_Lose) {
+    if (IsWin() || IsLose()) {
         return;
     }
 
-    m_Paused = !m_Paused;
-    m_Message = m_Paused ? "Paused." : "Resume.";
+    if (IsPaused()) {
+        ResumePausedState();
+        m_Message = "Resume.";
+        return;
+    }
+
+    PauseCurrentState();
+    m_Message = "Paused.";
+}
+
+
+bool GameModel::IsRoundRunning() const {
+    return m_State && m_State->IsRoundRunning();
+}
+
+bool GameModel::IsPaused() const {
+    return m_State && m_State->IsPaused();
+}
+
+bool GameModel::IsWin() const {
+    return m_State && m_State->IsWin();
+}
+
+bool GameModel::IsLose() const {
+    return m_State && m_State->IsLose();
+}
+
+const char* GameModel::GetStateName() const {
+    return m_State ? m_State->GetName() : "Ready";
+}
+
+void GameModel::ChangeState(std::unique_ptr<IGameState> state) {
+    if (m_State) {
+        m_State->Exit(*this);
+    }
+
+    m_State = std::move(state);
+    if (m_State) {
+        m_State->Enter(*this);
+    }
+}
+
+void GameModel::PauseCurrentState() {
+    if (m_State) {
+        m_State->Exit(*this);
+    }
+
+    auto previousState = std::move(m_State);
+    m_State = std::make_unique<PausedState>(std::move(previousState));
+    m_State->Enter(*this);
+}
+
+void GameModel::ResumePausedState() {
+    if (!m_State) {
+        return;
+    }
+
+    auto previousState = m_State->ReleasePreviousState();
+    if (!previousState) {
+        return;
+    }
+
+    ChangeState(std::move(previousState));
 }
 
 void GameModel::SetupWave() {
@@ -388,19 +447,23 @@ void GameModel::SetupWave() {
 }
 
 void GameModel::Update(float deltaTimeMs) {
-    if (m_Win || m_Lose || m_Paused) {
-        return;
+    if (!m_State) {
+        ChangeState(std::make_unique<ReadyState>());
     }
 
-    if (m_RoundRunning) {
-        m_SpawnTimerMs += deltaTimeMs;
-        if (m_SpawnedCount < static_cast<int>(m_CurrentWave.size()) &&
-            m_SpawnTimerMs >= m_SpawnIntervalMs) {
-            SpawnEnemy();
-            m_SpawnTimerMs = 0.0f;
-        }
-    }
+    m_State->Update(*this, deltaTimeMs);
+}
 
+void GameModel::UpdateRoundSpawning(float deltaTimeMs) {
+    m_SpawnTimerMs += deltaTimeMs;
+    if (m_SpawnedCount < static_cast<int>(m_CurrentWave.size()) &&
+        m_SpawnTimerMs >= m_SpawnIntervalMs) {
+        SpawnEnemy();
+        m_SpawnTimerMs = 0.0f;
+    }
+}
+
+void GameModel::UpdateActiveObjects(float deltaTimeMs) {
     UpdateTowers(deltaTimeMs);
     UpdateEnemies(deltaTimeMs);
     UpdateProjectiles(deltaTimeMs);
@@ -535,15 +598,13 @@ void GameModel::CleanupObjects() {
     );
 
     const bool roundEndedThisCleanup =
-        m_RoundRunning &&
+        IsRoundRunning() &&
         m_SpawnedCount >= static_cast<int>(m_CurrentWave.size()) &&
         m_Enemies.empty() &&
         m_Projectiles.empty();
 
     bool trapsExpiredAtRoundEnd = false;
     if (roundEndedThisCleanup) {
-        m_RoundRunning = false;
-
         for (const auto& tower : m_Towers) {
             if (!tower) {
                 continue;
@@ -573,9 +634,10 @@ void GameModel::CleanupObjects() {
         const std::string rewardText = " +" + std::to_string(clearReward) + " gold.";
 
         if (m_Round >= m_TotalRounds) {
-            m_Win = true;
+            ChangeState(std::make_unique<WinState>());
             m_Message = trapsExpiredAtRoundEnd ? "Victory! Traps expired." + rewardText : "Victory!" + rewardText;
         } else {
+            ChangeState(std::make_unique<ReadyState>());
             ++m_Round;
             m_Message = trapsExpiredAtRoundEnd
                             ? "Round cleared. Traps expired." + rewardText + " Press SPACE for next round."
@@ -585,29 +647,30 @@ void GameModel::CleanupObjects() {
 }
 
 void GameModel::CheckEndState() {
+    if (IsWin() || IsLose()) {
+        return;
+    }
+
     if (m_HP <= 0) {
         m_HP = 0;
-        m_Lose = true;
-        m_RoundRunning = false;
+        ChangeState(std::make_unique<LoseState>());
         m_Message = "Defeat.";
     }
 }
 //debugmode
 void GameModel::ForceWin() {
-    if (m_Lose) {
+    if (IsLose()) {
         return;
     }
-    m_Win = true;
-    m_RoundRunning = false;
+    ChangeState(std::make_unique<WinState>());
     m_Message = "Cheat applied: force win.";
 }
 
 void GameModel::ForceLose() {
-    if (m_Win) {
+    if (IsWin()) {
         return;
     }
-    m_Lose = true;
-    m_RoundRunning = false;
+    ChangeState(std::make_unique<LoseState>());
     m_HP = 0;
     m_Message = "Cheat applied: force lose.";
 }
@@ -618,7 +681,7 @@ bool GameModel::SetDifficultyCheat(DifficultyType difficulty) {
     SetupDifficulty();
     m_Enemies.clear();
     m_Projectiles.clear();
-    m_RoundRunning = false;
+    ChangeState(std::make_unique<ReadyState>());
     m_Message = "Cheat applied: difficulty changed.";
     return true;
 }
@@ -630,7 +693,7 @@ bool GameModel::SetRoundCheat(int round) {
     }
 
     m_Round = round;
-    m_RoundRunning = false;
+    ChangeState(std::make_unique<ReadyState>());
     m_CurrentWave.clear();
     m_Enemies.clear();
     m_Projectiles.clear();
@@ -657,8 +720,8 @@ bool GameModel::SetHPCheat(int hp) {
         return false;
     }
     m_HP = hp;
-    if (m_HP > 0) {
-        m_Lose = false;
+    if (m_HP > 0 && IsLose()) {
+        ChangeState(std::make_unique<ReadyState>());
     }
     m_Message = "Cheat applied: HP set to " + std::to_string(hp) + ".";
     return true;
