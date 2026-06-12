@@ -6,12 +6,14 @@
 #include "model/BuildableRegistry.h"
 #include "model/EnemyModel.h"
 #include "model/HitEffectEvent.h"
+#include "model/IGameState.h"
 #include "model/IBuildable.h"
 #include "model/MapModel.h"
 #include "model/PlacementModel.h"
 #include "model/ProjectileModel.h"
+#include <memory>
 
-class GameModel {
+class GameModel : private IGameStateContext {
 public:
     struct PoppedEnemyEvent {
         const EnemyModel* enemy = nullptr;
@@ -60,10 +62,11 @@ public:
     int GetRound() const { return m_Round; }
     int GetTotalRounds() const { return m_TotalRounds; }
 
-    bool IsRoundRunning() const { return m_RoundRunning; }
-    bool IsPaused() const { return m_Paused; }
-    bool IsWin() const { return m_Win; }
-    bool IsLose() const { return m_Lose; }
+    bool IsRoundRunning() const;
+    bool IsPaused() const;
+    bool IsWin() const;
+    bool IsLose() const;
+    const char* GetStateName() const;
     bool IsCheatMode() const { return m_CheatMode; }
     void SetCheatMode(bool value) { m_CheatMode = value; }
 
@@ -98,6 +101,11 @@ private:
     void SetupDifficulty();
     void SetupWave();
     void SpawnEnemy();
+    void ChangeState(std::unique_ptr<IGameState> state);
+    void PauseCurrentState();
+    void ResumePausedState();
+    void UpdateRoundSpawning(float deltaTimeMs) override;
+    void UpdateActiveObjects(float deltaTimeMs) override;
     void UpdateTowers(float deltaTimeMs);
     void UpdateEnemies(float deltaTimeMs);
     void UpdateProjectiles(float deltaTimeMs);
@@ -114,10 +122,7 @@ private:
     int m_Round = 1;
     int m_TotalRounds = 50;
 
-    bool m_RoundRunning = false;
-    bool m_Paused = false;
-    bool m_Win = false;
-    bool m_Lose = false;
+    std::unique_ptr<IGameState> m_State;
 
     const BuildableRegistry::Entry* m_SelectedBuildableEntry = nullptr;
     const BuildableRegistry::Entry* m_HoveredBuildableEntry = nullptr;
