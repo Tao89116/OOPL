@@ -22,6 +22,15 @@ std::string AttackTowerBase::GetUpgradeName(int pathIndex) const {
     return m_UpgradeNames[static_cast<std::size_t>(pathIndex)];
 }
 
+
+std::string AttackTowerBase::GetUpgradeIconKey(int pathIndex) const {
+    if (pathIndex < 0 || pathIndex >= static_cast<int>(m_UpgradeIconKeys.size())) {
+        return "";
+    }
+
+    return m_UpgradeIconKeys[static_cast<std::size_t>(pathIndex)];
+}
+
 bool AttackTowerBase::CanApplyUpgrade(int pathIndex) const {
     if (pathIndex < 0 || pathIndex >= static_cast<int>(m_UpgradeTiers.size())) {
         return false;

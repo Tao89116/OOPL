@@ -15,6 +15,7 @@
 #include "Util/Renderer.hpp"
 #include "Util/Text.hpp"
 #include "model/GameModel.h"
+#include "model/IBuildable.h"
 #include "view/GameUILayout.h"
 
 class UIView {
@@ -35,6 +36,11 @@ private:
 
     void SyncHudText(const GameModel& model);
     void SyncActionButtons(const GameModel& model);
+    void SyncUpgradeIcon(
+        const std::shared_ptr<IBuildable>& selectedTower,
+        int pathIndex,
+        bool visible
+    );
     void SyncHoverTooltip(const GameModel& model);
     std::string BuildTooltipText(const GameModel& model) const;
 
@@ -66,14 +72,21 @@ private:
     std::shared_ptr<Util::GameObject> m_ButtonSell = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade1 = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade2 = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade1Icon = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade2Icon = nullptr;
     std::shared_ptr<Util::GameObject> m_ReturnButton = nullptr;
 
     std::shared_ptr<Util::Text> m_ButtonSellText = nullptr;
     std::shared_ptr<Util::Text> m_ButtonUpgrade1Text = nullptr;
     std::shared_ptr<Util::Text> m_ButtonUpgrade2Text = nullptr;
+    std::shared_ptr<Util::Text> m_ButtonUpgrade1NameText = nullptr;
+    std::shared_ptr<Util::Text> m_ButtonUpgrade2NameText = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonSellTextObj = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade1TextObj = nullptr;
     std::shared_ptr<Util::GameObject> m_ButtonUpgrade2TextObj = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade1NameTextObj = nullptr;
+    std::shared_ptr<Util::GameObject> m_ButtonUpgrade2NameTextObj = nullptr;
+    std::array<std::string, 2> m_CurrentUpgradeIconKeys = {"", ""};
 
     std::shared_ptr<Util::GameObject> m_HudImg = nullptr;
 

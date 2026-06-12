@@ -50,6 +50,7 @@ public:
     virtual bool IsUpgradeable() const { return false; }
     virtual int GetUpgradeTier(int pathIndex) const { (void)pathIndex; return 0; }
     virtual std::string GetUpgradeName(int pathIndex) const { (void)pathIndex; return ""; }
+    virtual std::string GetUpgradeIconKey(int pathIndex) const { (void)pathIndex; return ""; }
     virtual bool ApplyUpgrade(int pathIndex) { (void)pathIndex; return false; }
 };
 

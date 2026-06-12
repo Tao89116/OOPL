@@ -16,6 +16,7 @@ public:
 
     std::shared_ptr<Util::Image> GetImage(const std::string& key);
     std::string GetImagePath(const std::string& key) const;
+    bool HasImage(const std::string& key) const;
     std::shared_ptr<Util::Text> CreateText(
         const std::string& fontKey,
         int fontSize,
