@@ -333,6 +333,6 @@ MapModel 負責保存不同難度對應的路徑資料，例如 Easy、Medium、
 ### 貢獻比例
 我獨自升級
 ### 備註
->[作弊模式]()
+>[作弊模式](https://github.com/Tao89116/OOPL#%E4%BD%9C%E5%BC%8A%E6%A8%A1%E5%BC%8F%E5%95%9F%E5%8B%95%E5%9C%A8%E9%9B%A3%E6%98%93%E5%BA%A6%E9%81%B8%E6%93%87%E7%95%AB%E9%9D%A2%E4%B8%BB%E7%95%AB%E9%9D%A2%E8%BC%B8%E5%85%A5konami-code-%E6%B3%A8%E6%84%8F%E8%BC%B8%E5%85%A5%E6%B3%95)
 
 >[cmake version 3.28](https://github.com/Kitware/CMake/releases/tag/v3.28.0)
