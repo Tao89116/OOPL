@@ -6,6 +6,9 @@
 #define ENEMY_MODEL_H
 
 #include "pch.hpp"
+#include "model/StatusEffects/IStatusEffect.h"
+
+#include <memory>
 #include <optional>
 
 enum class EnemyType {
@@ -42,13 +45,15 @@ public:
 
     void Update(float deltaTimeMs, const std::vector<glm::vec2>& path);
     void TakeDamage(int damage, const DamageRule& damageRule = BasicDamageRule());
+    void TakePureDamage(int damage);
     bool CanReceiveDamage(const DamageRule& damageRule = BasicDamageRule()) const;
     bool CanReceiveFreeze() const;
     void ApplyFreeze(float durationMs);
     void ApplySlow(float speedMultiplier, float durationMs);
+    void AddStatusEffect(std::unique_ptr<IStatusEffect> statusEffect);
 
     bool IsAlive() const { return m_Alive; }
-    bool IsFrozen() const { return m_FreezeRemainMs > 0.0f; }
+    bool IsFrozen() const;
     bool HasReachedGoal() const { return m_ReachedGoal; }
     bool CanBeTargeted() const { return m_Alive && !m_ReachedGoal; }
 
@@ -75,15 +80,12 @@ private:
     int m_HP = 1;
     float m_BaseSpeed = 0.12f;
     float m_SpeedMultiplier = 1.0f;
-    float m_SlowMultiplier = 1.0f;
-    float m_FreezeRemainMs = 0.0f;
-    float m_SlowRemainMs = 0.0f;
+    std::vector<std::unique_ptr<IStatusEffect>> m_StatusEffects;
     int m_Reward = 15;
     int m_LeakDamage = 1;
 
     bool m_Alive = true;
     bool m_ReachedGoal = false;
-    bool m_isSlowed = false;
     bool m_DeathEventConsumed = false;
     std::vector<EnemyType> m_ChildrenToSpawn;
 

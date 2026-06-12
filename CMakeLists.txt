@@ -39,6 +39,11 @@ add_executable(${PROJECT_NAME}
         src/ResourceManager.cpp
         include/GameConfig.h
         include/model/EnemyModel.h
+        include/model/StatusEffects/IStatusEffect.h
+        include/model/StatusEffects/FreezeEffect.h
+        include/model/StatusEffects/SlowEffect.h
+        include/model/StatusEffects/BurnEffect.h
+        include/model/StatusEffects/PoisonEffect.h
         include/model/HitEffectEvent.h
         include/model/HitEffectEmitter.h
         src/model/EnemyModel.cpp
