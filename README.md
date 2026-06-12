@@ -157,7 +157,7 @@ flowchart LR
 ### 程式技術
 1. MVC Pattern
 
-整體架構是HMVC(Hierarchical-Model-View-Controller)，最上層由 SceneManager 管理不同 Scene，而每個 Scene 內部再依職責拆成 Model、View、Controller，以達到低耦合和模組重用性。
+整體架構採用HMVC(Hierarchical-Model-View-Controller)。最上層由 SceneManager 管理不同 Scene，而每個 Scene 內部再依職責拆成 Model、View、Controller。Controller 負責接收輸入並修改 Model，View 負責讀取 Model 狀態並更新畫面，Model 則只負責資料與邏輯，不依賴 View 或 Controller。這樣可以降低耦合，也讓不同場景能獨立維護。
 ```
 Scene
 ├── Model      資料 / 狀態
@@ -166,7 +166,9 @@ Scene
 ```
 2. State Pattern
 
-把不同遊戲流程狀態拆成獨立類別，來達到「解耦複雜條件分支（if-else/switch），並讓遊戲狀態能自主管理其行為與切換」。
+有兩層 State Pattern 的概念。第一層是 SceneManager 作為場景狀態機，負責在 Start、Difficulty、Game、Result 之間切換。第二層是 GameModel 內部的遊戲狀態，透過 IGameState 拆分成 ReadyState、RoundRunningState、PausedState、WinState、LoseState。
+
+這樣可以避免用大量 if-else 或 switch 判斷目前遊戲狀態，讓每個狀態自己管理對應行為。
 ```
 IGameState
 ├── ReadyState
@@ -177,7 +179,9 @@ IGameState
 ```
 3. Command Pattern
 
-將玩家操作（建造、升級、變賣等）全面物件化，藉此消除臃腫的條件分支，實現 UI 表現層與核心邏輯層的完全解耦。
+將玩家操作封裝成 Command 物件，例如 SelectBuildableCommand、StartRoundCommand、SellTowerCommand、UpgradeTowerCommand、ReturnToDifficultyCommand。Controller 不需要直接把所有操作邏輯寫在一起，而是根據輸入執行對應 Command。
+
+這樣可以讓 UI、輸入處理與遊戲邏輯分離，未來若要新增快捷鍵或新按鈕，只需要新增對應 Command，較不會影響原本 Controller。
 ```
 ICommand
 ├── SelectBuildableCommand
@@ -186,26 +190,71 @@ ICommand
 ├── UpgradeTowerCommand
 └── ReturnToDifficultyCommand
 ```
-4. Factory Pattern
 
-玩家選擇某個塔時，只要根據 id 找到 factory，就能建立對應的塔。
-GameModel 不需要直接知道每個塔的具體類別，降低耦合。
+4. Factory Pattern + Singleton Pattern
+
+使用 BuildableRegistry 管理所有可建造物的 id 與 factory function。玩家選擇塔時，GameModel 只需要根據 id 向 BuildableRegistry 查詢 factory，就能建立對應的 IBuildable 物件，不需要直接依賴 DartTower、CannonTower、GlueTrap 等具體類別。
+
+BuildableRegistry 同時使用 Singleton Pattern，確保整個遊戲只有一份可建造物註冊表，避免不同系統各自建立 registry 造成資料不同步或重複註冊。這讓新增塔與陷阱時，只需要集中註冊新的 factory，提升擴充性與維護性。
 ```
 BuildableRegistry
 ├── tower id
 ├── factory function
 └── create IBuildable
 ```
-5. Singleton Pattern
-
-這些物件全域唯一，資源管理、塔註冊資料、和波次設定。
-Singleton 避免重複載入資料，也方便不同系統共用同一份設定。
+>Singleton Pattern：這些物件全域唯一，包括資源管理、塔註冊資料、和波次設定。 避免重複載入資料，也方便不同系統共用同一份設定。
 ```
 ResourceManager
 BuildableRegistry
 WaveConfig
 ```
+其他的oop設計 ↓ (都舉部分)
+5. Interface / Abstract Class
 
+使用多個 interface 與 abstract class 來定義共同規格。例如 IScene 定義所有場景都必須實作 Update()，IGameState 定義遊戲狀態的 Enter、Update、Exit，ICommand 定義所有操作指令都必須能 Execute，而 IBuildable 則定義所有可建造物都必須具備 Update、GetId、GetCost、GetPosition 等方法。
+
+透過介面與抽象類別，GameModel 和 SceneManager 不需要知道具體類別，只要依賴共同介面即可操作不同物件，達到低耦合與高擴充性。
+```
+   IScene
+   IGameState
+   ICommand
+   IBuildable
+   TowerBase
+   AttackTowerBase
+   TrapBase
+   ProjectileModel
+```
+6. Inheritance
+
+使用繼承來整理相似物件的共同行為。例如所有可建造物都繼承 IBuildable，塔類別再由 TowerBase 延伸出 AttackTowerBase 與 TrapBase。攻擊塔如 DartTower、CannonTower、SuperTower 繼承 AttackTowerBase；陷阱如 GlueTrap、SpikeTrap 則繼承 TrapBase。
+
+子彈系統也使用 ProjectileModel 作為共同基底，再延伸出 CannonProjectile、IceBallProjectile、BoomerangProjectile、GlueProjectile 等不同子彈。透過繼承可以減少重複程式碼，並讓相似物件共用共同邏輯。
+7. Polymorphism
+
+本透過多型讓 GameModel 可以用同一個容器管理不同種類的塔。例如所有塔與陷阱都可以被視為 IBuildable，因此 GameModel 只需要呼叫 tower->Update()，實際執行時會依照物件真實型別執行 DartTower、CannonTower、GlueTrap 或 SpikeTrap 的更新邏輯。
+
+
+同樣地，ProjectileModel 也透過多型讓不同子彈可以覆寫 Update() 或 OnHit()，例如砲彈可以造成範圍傷害，冰球可以凍結敵人，膠水子彈可以緩速敵人。這讓遊戲能用統一流程管理不同物件，又保留各自的特殊行為。 
+8. Encapsulation
+
+本專案透過封裝讓不同類別負責自己的資料與行為。GameModel 負責 HP、Gold、Round、塔、敵人、子彈與勝敗判斷；GameView 負責畫面物件、UI、音效與特效同步；GameController 負責玩家輸入與指令執行。EnemyModel、ProjectileModel、PlacementModel、MapModel 也各自封裝自己的狀態與操作方法。
+
+透過封裝，外部不需要直接修改物件內部資料，而是透過方法進行操作，能降低錯誤發生機率，也讓程式更容易維護。
+9. Smart Pointer / Resource Management
+
+使用 C++ smart pointer 管理物件生命週期。例如 SceneManager 使用 unique_ptr 管理目前 Scene，GameModel 使用 unique_ptr 管理目前 GameState，並使用 shared_ptr 管理塔、敵人與子彈等遊戲物件。ProjectileModel 對目標敵人使用 weak_ptr，避免因互相持有 shared_ptr 而造成循環引用。
+
+透過 smart pointer，可以減少手動 new/delete 造成的記憶體管理問題，也能降低 memory leak 的風險。
+10. Manual Data Binding / View Synchronization
+
+沒有做到自動 Data Binding，而是由 GameView 每一幀主動讀取 GameModel 的資料，並同步畫面上的塔、敵人與子彈物件。當 Model 中有新物件但 View 還沒有對應 GameObject 時，View 會建立新畫面物件；當 Model 物件狀態改變時，View 會更新位置、旋轉與顯示效果；當 Model 物件消失時，View 則移除對應畫面物件。
+
+這種手動同步方式可以讓 Model 不依賴 View，同時保持畫面與遊戲資料一致。
+11. Event System / Observer-like Design
+
+Model 不會直接呼叫 View 播放音效或產生特效，而是將事件暫存在 GameModel 中，例如 PoppedEnemyEvent、HitEffectEvent、PoppedBloonCount。GameScene 在更新流程中取出這些事件，再交給 GameView 顯示特效或播放音效。
+
+雖然這不是完整的 Observer Pattern，但具有事件傳遞的概念，可以降低 Model 與 View 之間的耦合，讓遊戲邏輯和畫面表現分離。
 ### 使用到 AI/AI Agent 的部分
 
 開發過程中有使用codex和chatgpt輔助，主要架構設計、程式設計與整合仍由本人完成。AI Agent 主要用於架構分析、程式重構建議、設計模式判斷、Debug 方向整理，以及報告內容與架構圖的輔助產生。
@@ -264,5 +313,13 @@ MapModel 負責保存不同難度對應的路徑資料，例如 Easy、Medium、
 | 15 | 專案權限已改為 public，並附上 README 與遊戲畫面 | V |
 
 ### 心得
+
+從專案一開始，我就打算用 HMVC 的架構來完成這個遊戲。雖然看到有同學選擇大幅修改 PTSD 框架時有點被嚇到，也會擔心自己選的 Bloons Tower Defense 2 比起來太low，但我自己的想法是先降低風險，能做出來成績也過比較重要。因為這是個人專案，我更需要確保每個功能都能完成，而不是一開始就把範圍拉得太大，最後反而無法收尾。
+
+在實作過程中，我發現真正困難的地方不只是把畫面做出來，而是當功能越來越多時，程式會很容易變得混亂。一開始有些場景切換、遊戲狀態、地圖路徑和回合資料都使用 if-else 或 switch-case 寫在一起，短期內可以運作，但後來要設計完整 50 回合、不同難度地圖、建塔、升級、賣塔和異常狀態時，就開始變得很難維護。因此我回頭複習課堂中提到的 OOP 與 design pattern，並把部分程式重新整理成 State Pattern、Command Pattern、Factory Pattern 等架構，讓不同類別各自負責不同工作。
+
+這次專案讓我比較深刻體會到，OOP 不只是把程式拆成很多 class，而是要讓每個 class 的責任清楚。像 GameModel 應該專注在遊戲資料與規則，GameView 負責畫面同步，GameController 負責輸入與指令，SceneManager 則負責場景切換。當我把地圖資料交給 MapModel、回合資料交給 WaveConfig、玩家操作交給 Command 物件後，雖然類別數量變多，但整體反而更容易理解，也比較不會因為修改一個功能影響到其他部分。
+
+完成這個專案後還是蠻有成就感的。雖然我選擇的是風險較低、規則相對明確的遊戲，但從實作過程中還是遇到了許多架構與邏輯問題，也透過重構一步步解決。這次專案讓我學到，設計模式不是為了讓程式看起來很厲害，而是在功能變多、程式開始變亂時，用來控制複雜度的方法。最後能把遊戲做完，並整理出一套自己能解釋的架構，是這次專案中我覺得最有收穫的地方。
 ### 貢獻比例
 我獨自升級
