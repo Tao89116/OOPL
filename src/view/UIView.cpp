@@ -12,8 +12,8 @@ namespace {
 constexpr std::size_t kHoverTooltipMaxLineLength = 20;
 constexpr float kUpgradeIconZIndex = 95.0f;
 constexpr float kUpgradeIconScale = 0.35f;
-constexpr float kUpgradeIconYOffset = 22.0f;
-constexpr float kUpgradeNameYOffset = -10.0f;
+constexpr float kUpgradeIconYOffset = 40.0f;
+constexpr float kUpgradeNameYOffset = 0.0f;
 
 void AppendWrappedWord(std::string& wrappedText, std::string& currentLine, const std::string& word) {
     if (word.empty()) {
@@ -280,13 +280,13 @@ void UIView::InitializeActionButtons() {
     m_ButtonUpgrade2TextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade2Text, 100.0f);
     m_ButtonUpgrade2TextObj->m_Transform.translation = GameUILayout::GetUpgradePriceLabelPosition(1);
 
-    m_ButtonUpgrade1NameText = m_Resources.CreateText("default", 10, "", Util::Color(255, 255, 255));
+    m_ButtonUpgrade1NameText = m_Resources.CreateText("default", 15, "", Util::Color(255, 255, 255));
     m_ButtonUpgrade1NameTextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade1NameText, 100.0f);
-    m_ButtonUpgrade1NameTextObj->m_Transform.translation = upgradeButton1.hitArea.center + glm::vec2(0.0f, kUpgradeNameYOffset);
+    m_ButtonUpgrade1NameTextObj->m_Transform.translation = upgradeButton1.hitArea.center + glm::vec2(10.0f, kUpgradeNameYOffset);
 
-    m_ButtonUpgrade2NameText = m_Resources.CreateText("default", 10, "", Util::Color(255, 255, 255));
+    m_ButtonUpgrade2NameText = m_Resources.CreateText("default", 15, "", Util::Color(255, 255, 255));
     m_ButtonUpgrade2NameTextObj = std::make_shared<Util::GameObject>(m_ButtonUpgrade2NameText, 100.0f);
-    m_ButtonUpgrade2NameTextObj->m_Transform.translation = upgradeButton2.hitArea.center + glm::vec2(0.0f, kUpgradeNameYOffset);
+    m_ButtonUpgrade2NameTextObj->m_Transform.translation = upgradeButton2.hitArea.center + glm::vec2(10.0f, kUpgradeNameYOffset);
 
     m_SelectedText = m_Resources.CreateText("default", 20, "", Util::Color(255, 255, 255));
     m_SelectedObject = std::make_shared<Util::GameObject>(m_SelectedText, 98.0f);
