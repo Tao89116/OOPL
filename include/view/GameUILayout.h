@@ -83,7 +83,7 @@ inline const ButtonBinding& GetReturnButton() {
     static const ButtonBinding button = {
         "btn_end",
         CommandType::ReturnToDifficulty,
-        {{600.0f, -325.0f}, {45.0f, 18.0f}},
+        {{600.0f, -325.0f}, {8.0f, 8.0f}},
         "",
         -1,
         Util::Keycode::UNKNOWN,
