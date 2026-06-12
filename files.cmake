@@ -62,6 +62,12 @@ set(INCLUDE_FILES
         controller/StartController.h
         controller/DifficultyController.h
         controller/GameController.h
+        controller/commands/ICommand.h
+        controller/commands/SelectBuildableCommand.h
+        controller/commands/StartRoundCommand.h
+        controller/commands/SellTowerCommand.h
+        controller/commands/UpgradeTowerCommand.h
+        controller/commands/ReturnToDifficultyCommand.h
         controller/ResultController.h
 )
 

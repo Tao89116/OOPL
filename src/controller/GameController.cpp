@@ -6,54 +6,14 @@
 
 namespace {
 
-bool IsActionAvailable(const GameUILayout::ButtonBinding& binding, const GameModel& model) {
-    const bool hasSelectedTower = static_cast<bool>(model.GetSelectedPlacedTower());
-    const bool showActions = hasSelectedTower && !model.GetPlacement().IsActive();
-
-    switch (binding.command) {
-    case GameUILayout::CommandType::SellSelectedTower:
-        return showActions;
-    case GameUILayout::CommandType::UpgradeSelectedTower:
-        return showActions &&
-               model.GetSelectedPlacedTower()->IsUpgradeable() &&
-               model.GetSelectedTowerUpgradeCost(binding.upgradePathIndex) < 999999;
-    case GameUILayout::CommandType::SelectBuildable:
-    case GameUILayout::CommandType::StartRound:
-        return true;
-    case GameUILayout::CommandType::ReturnToDifficulty:
-        return false;
-    }
-
-    return false;
-}
-
 bool ExecuteButtonCommand(const GameUILayout::ButtonBinding& binding, GameModel& model) {
-    if (!IsActionAvailable(binding, model)) {
+    if (!binding.command || !binding.command->IsAvailable(model)) {
         return false;
     }
 
-    switch (binding.command) {
-    case GameUILayout::CommandType::SelectBuildable:
-        if (binding.buildableId[0] == '\0') {
-            return false;
-        }
-        model.SelectBuildable(BuildableRegistry::GetInstance().FindById(binding.buildableId));
-        return true;
-    case GameUILayout::CommandType::StartRound:
-        model.StartRound();
-        return true;
-    case GameUILayout::CommandType::SellSelectedTower:
-        model.SellSelectedTower();
-        return true;
-    case GameUILayout::CommandType::UpgradeSelectedTower:
-        model.UpgradeSelectedTower(binding.upgradePathIndex);
-        return true;
-    case GameUILayout::CommandType::ReturnToDifficulty:
-        return false;
-    }
-
-    return false;
+    return binding.command->Execute(model);
 }
+
 
 
 void UpdateHoveredBuildable(const glm::vec2& mousePos, GameModel& model) {

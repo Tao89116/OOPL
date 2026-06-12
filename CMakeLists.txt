@@ -64,6 +64,12 @@ add_executable(${PROJECT_NAME}
         include/view/GameUILayout.h
         src/View/GameView.cpp
         include/Controller/GameController.h
+        include/controller/commands/ICommand.h
+        include/controller/commands/SelectBuildableCommand.h
+        include/controller/commands/StartRoundCommand.h
+        include/controller/commands/SellTowerCommand.h
+        include/controller/commands/UpgradeTowerCommand.h
+        include/controller/commands/ReturnToDifficultyCommand.h
         src/Controller/GameController.cpp
         include/Scene/GameScene.h
         src/Scene/GameScene.cpp

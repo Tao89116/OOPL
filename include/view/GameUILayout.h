@@ -3,17 +3,15 @@
 
 #include "pch.hpp"
 #include "Util/Keycode.hpp"
+#include "controller/commands/ReturnToDifficultyCommand.h"
+#include "controller/commands/SelectBuildableCommand.h"
+#include "controller/commands/SellTowerCommand.h"
+#include "controller/commands/StartRoundCommand.h"
+#include "controller/commands/UpgradeTowerCommand.h"
 #include <array>
+#include <memory>
 
 namespace GameUILayout {
-
-enum class CommandType {
-    SelectBuildable,
-    StartRound,
-    SellSelectedTower,
-    UpgradeSelectedTower,
-    ReturnToDifficulty
-};
 
 struct Rect {
     glm::vec2 center;
@@ -29,7 +27,7 @@ struct Rect {
 
 struct ButtonBinding {
     const char* spriteKey;
-    CommandType command;
+    std::shared_ptr<ICommand> command;
     Rect hitArea;
     const char* buildableId = "";
     int upgradePathIndex = -1;
@@ -46,21 +44,21 @@ constexpr float kReturnButtonScale = 0.55f;
 
 inline const std::array<ButtonBinding, TowerButtonCount>& GetTowerButtons() {
     static const std::array<ButtonBinding, TowerButtonCount> buttons = {{
-        {"btn_tower_1", CommandType::SelectBuildable, {{462.5f, 180.0f}, {22.5f, 22.5f}},
+        {"btn_tower_1", std::make_shared<SelectBuildableCommand>("dart_tower"), {{462.5f, 180.0f}, {22.5f, 22.5f}},
          "dart_tower", -1, Util::Keycode::NUM_1, kTowerButtonScale},
-        {"btn_tower_2", CommandType::SelectBuildable, {{507.5f, 180.0f}, {22.5f, 22.5f}},
+        {"btn_tower_2", std::make_shared<SelectBuildableCommand>("track_tower"), {{507.5f, 180.0f}, {22.5f, 22.5f}},
          "track_tower", -1, Util::Keycode::NUM_2, kTowerButtonScale},
-        {"btn_tower_3", CommandType::SelectBuildable, {{552.5f, 180.0f}, {22.5f, 22.5f}},
+        {"btn_tower_3", std::make_shared<SelectBuildableCommand>("iceball_tower"), {{552.5f, 180.0f}, {22.5f, 22.5f}},
          "iceball_tower", -1, Util::Keycode::NUM_3, kTowerButtonScale},
-        {"btn_tower_4", CommandType::SelectBuildable, {{597.5f, 180.0f}, {22.5f, 22.5f}},
+        {"btn_tower_4", std::make_shared<SelectBuildableCommand>("cannon_tower"), {{597.5f, 180.0f}, {22.5f, 22.5f}},
          "cannon_tower", -1, Util::Keycode::NUM_4, kTowerButtonScale},
-        {"btn_tower_5", CommandType::SelectBuildable, {{462.5f, 130.0f}, {22.5f, 22.5f}},
+        {"btn_tower_5", std::make_shared<SelectBuildableCommand>("boomerang_tower"), {{462.5f, 130.0f}, {22.5f, 22.5f}},
          "boomerang_tower", -1, Util::Keycode::NUM_5, kTowerButtonScale},
-        {"btn_tower_6", CommandType::SelectBuildable, {{507.5f, 130.0f}, {22.5f, 22.5f}},
+        {"btn_tower_6", std::make_shared<SelectBuildableCommand>("super_tower"), {{507.5f, 130.0f}, {22.5f, 22.5f}},
          "super_tower", -1, Util::Keycode::NUM_6, kTowerButtonScale},
-        {"btn_tower_7", CommandType::SelectBuildable, {{552.5f, 130.0f}, {22.5f, 22.5f}},
+        {"btn_tower_7", std::make_shared<SelectBuildableCommand>("spike_trap"), {{552.5f, 130.0f}, {22.5f, 22.5f}},
          "spike_trap", -1, Util::Keycode::NUM_7, kTowerButtonScale},
-        {"btn_tower_8", CommandType::SelectBuildable, {{597.5f, 130.0f}, {22.5f, 22.5f}},
+        {"btn_tower_8", std::make_shared<SelectBuildableCommand>("glue_trap"), {{597.5f, 130.0f}, {22.5f, 22.5f}},
          "glue_trap", -1, Util::Keycode::NUM_8, kTowerButtonScale}
     }};
     return buttons;
@@ -69,7 +67,7 @@ inline const std::array<ButtonBinding, TowerButtonCount>& GetTowerButtons() {
 inline const ButtonBinding& GetStartRoundButton() {
     static const ButtonBinding button = {
         "btn_start",
-        CommandType::StartRound,
+        std::make_shared<StartRoundCommand>(),
         {{535.0f, -275.0f}, {73.5f, 25.2f}},
         "",
         -1,
@@ -82,7 +80,7 @@ inline const ButtonBinding& GetStartRoundButton() {
 inline const ButtonBinding& GetReturnButton() {
     static const ButtonBinding button = {
         "btn_end",
-        CommandType::ReturnToDifficulty,
+        std::make_shared<ReturnToDifficultyCommand>(),
         {{600.0f, -325.0f}, {8.0f, 8.0f}},
         "",
         -1,
@@ -95,7 +93,7 @@ inline const ButtonBinding& GetReturnButton() {
 inline const ButtonBinding& GetSellButton() {
     static const ButtonBinding button = {
         "btn_sell",
-        CommandType::SellSelectedTower,
+        std::make_shared<SellTowerCommand>(),
         {{535.0f, -220.0f}, {64.0f, 12.0f}},
         "",
         -1,
@@ -107,9 +105,9 @@ inline const ButtonBinding& GetSellButton() {
 
 inline const ButtonBinding& GetUpgradeButton(int pathIndex) {
     static const std::array<ButtonBinding, 2> buttons = {{
-        {"btn_upgrade_1", CommandType::UpgradeSelectedTower, {{500.0f, -120.0f}, {30.0f, 56.0f}},
+        {"btn_upgrade_1", std::make_shared<UpgradeTowerCommand>(0), {{500.0f, -120.0f}, {30.0f, 56.0f}},
          "", 0, Util::Keycode::UNKNOWN, kActionButtonScale},
-        {"btn_upgrade_2", CommandType::UpgradeSelectedTower, {{570.0f, -120.0f}, {30.0f, 56.0f}},
+        {"btn_upgrade_2", std::make_shared<UpgradeTowerCommand>(1), {{570.0f, -120.0f}, {30.0f, 56.0f}},
          "", 1, Util::Keycode::UNKNOWN, kActionButtonScale}
     }};
     return buttons[static_cast<std::size_t>(pathIndex)];
