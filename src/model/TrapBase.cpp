@@ -58,4 +58,3 @@ void TrapBase::Update(
         }
     }
 }
-//TODO: 陷阱的hitbox

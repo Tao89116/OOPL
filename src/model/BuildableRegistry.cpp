@@ -53,9 +53,6 @@ void BuildableRegistry::RegisterDefaults() {
         return std::make_shared<BoomerangTower>(position);
     });
 
-    // TODO:
-    // 新塔新增時，只要在這裡註冊 factory 即可
-
     m_DefaultsRegistered = true;
 }
 

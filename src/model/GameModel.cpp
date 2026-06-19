@@ -554,7 +554,7 @@ void GameModel::CleanupObjects() {
             }
 
             if (deathEvent->reachedGoal) {
-                const int leakDamage = std::max(1, enemy->GetLeakDamage());
+                const int leakDamage = std::max(1, EnemyModel::GetRBE(enemy->GetType()));
                 m_HP -= leakDamage;
                 m_Message = "A bloon leaked through! -" + std::to_string(leakDamage) + " HP";
             } else {

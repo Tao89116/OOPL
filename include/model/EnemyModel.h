@@ -54,14 +54,10 @@ public:
 
     bool IsAlive() const { return m_Alive; }
     bool IsFrozen() const;
-    bool HasReachedGoal() const { return m_ReachedGoal; }
     bool CanBeTargeted() const { return m_Alive && !m_ReachedGoal; }
 
     const glm::vec2& GetPosition() const { return m_Position; }
     EnemyType GetType() const { return m_Type; }
-    int GetHP() const { return m_HP; }
-    int GetReward() const { return m_Reward; }
-    int GetLeakDamage() const { return m_LeakDamage; }
     const std::string& GetSpriteKey() const { return m_SpriteKey; }
 
     int GetPathBranchIndex() const { return m_PathBranchIndex; }
@@ -70,7 +66,6 @@ public:
     std::optional<DeathEvent> ConsumeDeathEvent();
 private:
     void SetupStatsByType(EnemyType type);
-    static std::vector<EnemyType> GetChildrenByType(EnemyType type);
 
 private:
     EnemyType m_Type;
@@ -82,7 +77,6 @@ private:
     float m_SpeedMultiplier = 1.0f;
     std::vector<std::unique_ptr<IStatusEffect>> m_StatusEffects;
     int m_Reward = 15;
-    int m_LeakDamage = 1;
 
     bool m_Alive = true;
     bool m_ReachedGoal = false;

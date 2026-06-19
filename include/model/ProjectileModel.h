@@ -184,7 +184,7 @@ public:
         const std::string& spriteKey,
         const std::shared_ptr<EnemyModel>& target,
         const EnemyModel::DamageRule& damageRule = EnemyModel::BasicDamageRule(),
-        float explosionRadius = 75.0f,
+        float explosionRadius = 50.0f,
         float renderScale = 1.0f
     );
 
@@ -195,7 +195,7 @@ protected:
     ) override;
 
 private:
-    float m_ExplosionRadius = 75.0f;
+    float m_ExplosionRadius = 50.0f;
 };
 
 // ===================== Glue Projectile =====================

@@ -1,74 +1,92 @@
 set(SRC_FILES
         App.cpp
         ResourceManager.cpp
-
-        model/EnemyModel.cpp
-        model/ProjectileModel.cpp
-        model/MapModel.cpp
-        model/GameModel.cpp
-        model/WaveConfig.cpp
-        model/StartModel.cpp
-        model/ResultModel.cpp
-
-        view/StartView.cpp
-        view/DifficultyView.cpp
-        view/GameView.cpp
-        view/ResultView.cpp
-        view/UIView.cpp
-
-        controller/StartController.cpp
         controller/DifficultyController.cpp
         controller/GameController.cpp
         controller/ResultController.cpp
-
-        scene/StartScene.cpp
+        controller/StartController.cpp
+        model/AttackTowerBase.cpp
+        model/BuildableRegistry.cpp
+        model/ConcreteTowers.cpp
+        model/DifficultyModel.cpp
+        model/EnemyModel.cpp
+        model/GameModel.cpp
+        model/GameStates.cpp
+        model/MapFactory.cpp
+        model/MapModel.cpp
+        model/PlacementModel.cpp
+        model/ProjectileModel.cpp
+        model/ResultModel.cpp
+        model/StartModel.cpp
+        model/TowerBase.cpp
+        model/TrapBase.cpp
+        model/WaveConfig.cpp
         scene/DifficultyScene.cpp
         scene/GameScene.cpp
         scene/ResultScene.cpp
         scene/SceneManager.cpp
+        scene/StartScene.cpp
+        view/DifficultyView.cpp
+        view/GameView.cpp
+        view/ResultView.cpp
+        view/StartView.cpp
+        view/UIView.cpp
 )
 
 set(INCLUDE_FILES
-        App.h
         GameConfig.h
         ResourceManager.h
         SceneType.h
-
-        scene/IScene.h
-        scene/SceneManager.h
-        scene/StartScene.h
-        scene/DifficultyScene.h
-        scene/GameScene.h
-        scene/ResultScene.h
-
-        model/EnemyModel.h
-        model/HitEffectEvent.h
-        model/HitEffectEmitter.h
-        model/TowerModel.h
-        model/ProjectileModel.h
-        model/MapModel.h
-        model/GameModel.h
-        model/WaveConfig.h
-        model/StartModel.h
-        model/ResultModel.h
-
-        view/StartView.h
-        view/DifficultyView.h
-        view/GameView.h
-        view/GameUILayout.h
-        view/ResultView.h
-        view/UIView.h
-
-        controller/StartController.h
         controller/DifficultyController.h
         controller/GameController.h
-        controller/commands/ICommand.h
-        controller/commands/SelectBuildableCommand.h
-        controller/commands/StartRoundCommand.h
-        controller/commands/SellTowerCommand.h
-        controller/commands/UpgradeTowerCommand.h
-        controller/commands/ReturnToDifficultyCommand.h
         controller/ResultController.h
+        controller/StartController.h
+        controller/commands/ICommand.h
+        controller/commands/ReturnToDifficultyCommand.h
+        controller/commands/SelectBuildableCommand.h
+        controller/commands/SellTowerCommand.h
+        controller/commands/StartRoundCommand.h
+        controller/commands/UpgradeTowerCommand.h
+        model/AttackTowerBase.h
+        model/BuildableRegistry.h
+        model/ConcreteTowers.h
+        model/DifficultyModel.h
+        model/EnemyModel.h
+        model/GameModel.h
+        model/GameStates.h
+        model/HitEffectEmitter.h
+        model/HitEffectEvent.h
+        model/IBuildable.h
+        model/IGameState.h
+        model/MapData.h
+        model/MapFactory.h
+        model/MapModel.h
+        model/PlacementModel.h
+        model/ProjectileModel.h
+        model/ResultModel.h
+        model/StartModel.h
+        model/StatusEffects/BurnEffect.h
+        model/StatusEffects/FreezeEffect.h
+        model/StatusEffects/IStatusEffect.h
+        model/StatusEffects/PoisonEffect.h
+        model/StatusEffects/SlowEffect.h
+        model/TowerBase.h
+        model/TrapBase.h
+        model/WaveConfig.h
+        scene/DifficultyScene.h
+        scene/GameScene.h
+        scene/IScene.h
+        scene/ResultScene.h
+        scene/SceneManager.h
+        scene/StartScene.h
+        view/DifficultyView.h
+        view/GameUILayout.h
+        view/GameView.h
+        view/ResultView.h
+        view/StartView.h
+        view/UIView.h
+        App.hpp
+        nlohmann/json.hpp
 )
 
 set(TEST_FILES)
