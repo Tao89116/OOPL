@@ -136,7 +136,6 @@ private:
     std::vector<EnemyType> m_CurrentWave;
     int m_SpawnedCount = 0;
     float m_SpawnTimerMs = 0.0f;
-    float m_SpawnIntervalMs = 900.0f;
     int m_PoppedBloonCount = 0;
     std::vector<PoppedEnemyEvent> m_PoppedEnemyEvents;
     std::vector<HitEffectEvent> m_HitEffectEvents;
