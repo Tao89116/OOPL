@@ -2,7 +2,6 @@
 
 #include "Util/Logger.hpp"
 #include <fstream>
-#include <sstream>
 #include <stdexcept>
 
 ResourceManager& ResourceManager::GetInstance() {
@@ -25,7 +24,6 @@ void ResourceManager::Initialize() {
     m_ImagePaths["bg_result"] = root + "/background-0.png";
     m_ImagePaths["result_win"] = root + "/win.png";
     m_ImagePaths["result_gameover"] = root + "/gameover.png";
-    m_ImagePaths["bg_game"]   = root + "/background.png";
     m_ImagePaths["difficulty_phrame"] = root + "/phrame.png";
 
     // Start scene animation frames
@@ -109,7 +107,6 @@ void ResourceManager::Initialize() {
     m_ImagePaths["tower_spikes"] = root + "/tower-6.png";
     m_ImagePaths["tower_glues"]  = root + "/tower-7.png";
 
-    m_ImagePaths["tower_slot"] = root + "/slot.png";
     //UI
     m_ImagePaths["hud"] = root + "/hud.png";
     m_ImagePaths["whiteground"] = root + "/whiteground.png";

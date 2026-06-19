@@ -33,10 +33,6 @@ public:
     );
 
     static const std::array<DifficultyOption, 3>& GetDifficultyOptions();
-
-    // TODO:
-    // Sell refund ratio
-    // Income multiplier
 };
 
 #endif
