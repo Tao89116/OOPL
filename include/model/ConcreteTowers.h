@@ -79,7 +79,7 @@ protected:
     ) override;
 
 private:
-    float m_ExplosionRadius = 75.0f;
+    float m_ExplosionRadius = 50.0f;
     float m_ProjectileScale = 1.0f;
 };
 
