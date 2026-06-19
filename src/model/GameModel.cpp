@@ -19,17 +19,14 @@ void GameModel::SetupDifficulty() {
         case DifficultyType::Easy:
             m_HP = 100;
             m_Gold = 650;
-            m_SpawnIntervalMs = 400.0f;
             break;
         case DifficultyType::Normal:
             m_HP = 75;
             m_Gold = 650;
-            m_SpawnIntervalMs = 400.0f;
             break;
         case DifficultyType::Hard:
             m_HP = 50;
             m_Gold = 650;
-            m_SpawnIntervalMs = 400.0f;
             break;
     }
 }
@@ -56,7 +53,6 @@ void GameModel::Reset() {
     m_HitEffectEvents.clear();
 
     SetupDifficulty();
-    m_SpawnIntervalMs = static_cast<float>(WaveConfig::GetInstance().GetSpawnIntervalMs());
     ChangeState(std::make_unique<ReadyState>());
 }
 
@@ -457,7 +453,7 @@ void GameModel::Update(float deltaTimeMs) {
 void GameModel::UpdateRoundSpawning(float deltaTimeMs) {
     m_SpawnTimerMs += deltaTimeMs;
     if (m_SpawnedCount < static_cast<int>(m_CurrentWave.size()) &&
-        m_SpawnTimerMs >= m_SpawnIntervalMs) {
+        m_SpawnTimerMs >= static_cast<float>(WaveConfig::GetInstance().GetSpawnIntervalMs())) {
         SpawnEnemy();
         m_SpawnTimerMs = 0.0f;
     }

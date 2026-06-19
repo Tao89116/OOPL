@@ -21,7 +21,7 @@ private:
     static EnemyType ParseEnemyType(const std::string& typeName);
 
 private:
-    int m_SpawnIntervalMs = 400;
+    int m_SpawnIntervalMs = 0;
     std::vector<std::vector<EnemyType>> m_Rounds;
 };
 
