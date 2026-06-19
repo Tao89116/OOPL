@@ -293,8 +293,12 @@ void BoomerangProjectile::Update(
         + m_Perpendicular * (m_Radius * std::sin(angle));
 
     const glm::vec2 movement = m_Position - prevPos;
+    const float spinStep = m_SpinAngularVelocity * deltaTimeMs;
     if (glm::length(movement) > 0.0001f) {
-        m_Rotation = std::atan2(movement.y, movement.x);
+        const float pathRotation = std::atan2(movement.y, movement.x);
+        m_Rotation = pathRotation + m_ElapsedMs * m_SpinAngularVelocity;
+    } else {
+        m_Rotation += spinStep;
     }
 
     for (const auto& enemy : enemies) {
