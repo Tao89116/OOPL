@@ -531,10 +531,9 @@ SpikeTrap::SpikeTrap(const glm::vec2& position)
     m_FootprintRadius = 18.0f;
     m_CanPlaceOnPath = true;
 
-    m_ShowRangePreview = true;
-    m_PreviewRange = 25.0f;
-    //調整氣球的hitbox
-    m_TriggerRadius = 25.0f;
+    m_ShowRangePreview = false;
+    m_PreviewRange = 50.0f;
+    m_TriggerRadius = 50.0f;
     m_RemainingCharges = 8;
     m_Damage = 1;
 }
@@ -566,10 +565,9 @@ GlueTrap::GlueTrap(const glm::vec2& position)
     m_FootprintRadius = 18.0f;
     m_CanPlaceOnPath = true;
 
-    m_ShowRangePreview = true;
-    m_PreviewRange = 25.0f;
-    //調整氣球的hitbox
-    m_TriggerRadius = 25.0f;
+    m_ShowRangePreview = false;
+    m_PreviewRange = 50.0f;
+    m_TriggerRadius = 50.0f;
     m_RemainingCharges = 20;
     m_Damage = 0;
 }
